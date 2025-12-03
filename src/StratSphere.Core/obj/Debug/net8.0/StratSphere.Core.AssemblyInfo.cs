@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StratSphere.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8db8044a88ec557ada3d5efaa2e14d4bb5f6c38f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d39717b77c004d854fbb94dc449555b4639df619")]
 [assembly: System.Reflection.AssemblyProductAttribute("StratSphere.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StratSphere.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

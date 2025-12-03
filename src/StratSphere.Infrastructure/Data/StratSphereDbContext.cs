@@ -9,16 +9,16 @@ public interface ITenantProvider
     void SetCurrentLeagueId(Guid leagueId);
 }
 
-public class StratLeagueDbContext : DbContext
+public class StratSphereDbContext : DbContext
 {
     private readonly Guid? _currentLeagueId;
 
-    public StratLeagueDbContext(DbContextOptions<StratLeagueDbContext> options)
+    public StratSphereDbContext(DbContextOptions<StratSphereDbContext> options)
         : base(options)
     {
     }
 
-    public StratLeagueDbContext(DbContextOptions<StratLeagueDbContext> options, ITenantProvider tenantProvider)
+    public StratSphereDbContext(DbContextOptions<StratSphereDbContext> options, ITenantProvider tenantProvider)
         : base(options)
     {
         _currentLeagueId = tenantProvider.GetCurrentLeagueId();
@@ -66,7 +66,7 @@ public class StratLeagueDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Apply all configurations from this assembly
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StratLeagueDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StratSphereDbContext).Assembly);
 
         // Apply global query filters for multi-tenancy
         if (_currentLeagueId.HasValue)
