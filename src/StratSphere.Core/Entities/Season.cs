@@ -52,8 +52,9 @@ public class Season : TenantEntity
 /// </summary>
 public class StandingsEntry : TenantEntity
 {
-
-    public string? Division { get; set; }
+    public Division? Division { get; set; }
+    public Guid? DivisionId { get; set; }
+    public string? DivisionName { get; set; }
     public int? DivisionRank { get; set; }
     public decimal? GamesBack { get; set; }
     public int? Last10Losses { get; set; }

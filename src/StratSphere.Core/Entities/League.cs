@@ -20,6 +20,9 @@ public class League : BaseEntity
     public ICollection<Season> Seasons { get; set; } = new List<Season>();
     public string Slug { get; set; } = string.Empty; // URL-friendly identifier
     public LeagueStatus Status { get; set; } = LeagueStatus.Setup;
+
+    // League structure
+    public ICollection<Subleague> Subleagues { get; set; } = new List<Subleague>();
     public ICollection<Team> Teams { get; set; } = new List<Team>();
     public bool UseDH { get; set; } = true;
 }

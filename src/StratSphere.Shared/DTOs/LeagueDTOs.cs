@@ -54,21 +54,61 @@ public record LeagueSummaryResponse(
     int TeamCount
 );
 
+// Subleague DTOs
+public record CreateSubleagueRequest(
+    string Name,
+    string? Abbreviation
+);
+
+public record UpdateSubleagueRequest(
+    string? Name,
+    string? Abbreviation
+);
+
+public record SubleagueResponse(
+    Guid Id,
+    string Name,
+    string? Abbreviation,
+    int DivisionCount
+);
+
+// Division DTOs
+public record CreateDivisionRequest(
+    string Name,
+    string? Abbreviation
+);
+
+public record UpdateDivisionRequest(
+    string? Name,
+    string? Abbreviation
+);
+
+public record DivisionResponse(
+    Guid Id,
+    string Name,
+    string? Abbreviation,
+    int TeamCount
+);
+
 // Team DTOs
 public record CreateTeamRequest(
     string Name,
     string Abbreviation,
     string? City,
-    string? Division,
-    string? Conference
+    string? Conference,
+    Guid? SubleagueId,
+    Guid? DivisionId,
+    string? DivisionName
 );
 
 public record UpdateTeamRequest(
     string? Name,
     string? Abbreviation,
     string? City,
-    string? Division,
     string? Conference,
+    Guid? SubleagueId,
+    Guid? DivisionId,
+    string? DivisionName,
     string? LogoUrl
 );
 
@@ -78,7 +118,10 @@ public record TeamResponse(
     string Abbreviation,
     string? City,
     string? LogoUrl,
-    string? Division,
+    Guid? SubleagueId,
+    string? SubleagueName,
+    Guid? DivisionId,
+    string? DivisionName,
     string? Conference,
     Guid OwnerId,
     string OwnerName,
@@ -109,7 +152,8 @@ public record UserResponse(
     string Email,
     string Username,
     string DisplayName,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    Guid? LastVisitedLeagueId = null
 );
 
 // League Member DTOs

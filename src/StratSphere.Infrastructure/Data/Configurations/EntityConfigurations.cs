@@ -4,18 +4,89 @@ using StratSphere.Core.Entities;
 
 namespace StratSphere.Infrastructure.Data.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class DivisionConfiguration : IEntityTypeConfiguration<Division>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<Division> builder)
     {
-        builder.HasKey(u => u.Id);
-        builder.Property(u => u.Email).IsRequired().HasMaxLength(256);
-        builder.Property(u => u.Username).IsRequired().HasMaxLength(50);
-        builder.Property(u => u.DisplayName).IsRequired().HasMaxLength(100);
-        builder.Property(u => u.PasswordHash).IsRequired();
+        builder.HasKey(d => d.Id);
+        builder.Property(d => d.Name).IsRequired().HasMaxLength(100);
+        builder.Property(d => d.Abbreviation).HasMaxLength(20);
 
-        builder.HasIndex(u => u.Email).IsUnique();
-        builder.HasIndex(u => u.Username).IsUnique();
+        builder.HasOne(d => d.League)
+            .WithMany()
+            .HasForeignKey(d => d.LeagueId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(d => d.Subleague)
+            .WithMany(sl => sl.Divisions)
+            .HasForeignKey(d => d.SubleagueId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(d => new { d.LeagueId, d.SubleagueId, d.Name }).IsUnique();
+    }
+}
+
+public class DraftConfiguration : IEntityTypeConfiguration<Draft>
+{
+    public void Configure(EntityTypeBuilder<Draft> builder)
+    {
+        builder.HasKey(d => d.Id);
+        builder.Property(d => d.Name).IsRequired().HasMaxLength(100);
+
+        builder.HasOne(d => d.League)
+            .WithMany(l => l.Drafts)
+            .HasForeignKey(d => d.LeagueId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class DraftPickConfiguration : IEntityTypeConfiguration<DraftPick>
+{
+    public void Configure(EntityTypeBuilder<DraftPick> builder)
+    {
+        builder.HasKey(dp => dp.Id);
+
+        builder.HasOne(dp => dp.Draft)
+            .WithMany(d => d.Picks)
+            .HasForeignKey(dp => dp.DraftId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(dp => dp.Team)
+            .WithMany(t => t.DraftPicks)
+            .HasForeignKey(dp => dp.TeamId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(dp => dp.Player)
+            .WithMany(p => p.DraftSelections)
+            .HasForeignKey(dp => dp.PlayerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(dp => new { dp.DraftId, dp.OverallPickNumber }).IsUnique();
+    }
+}
+
+public class GameResultConfiguration : IEntityTypeConfiguration<GameResult>
+{
+    public void Configure(EntityTypeBuilder<GameResult> builder)
+    {
+        builder.HasKey(g => g.Id);
+        builder.Property(g => g.PlayoffRound).HasMaxLength(50);
+        builder.Property(g => g.Notes).HasMaxLength(500);
+
+        builder.HasOne(g => g.Season)
+            .WithMany(s => s.Games)
+            .HasForeignKey(g => g.SeasonId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(g => g.HomeTeam)
+            .WithMany(t => t.HomeGames)
+            .HasForeignKey(g => g.HomeTeamId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(g => g.AwayTeam)
+            .WithMany(t => t.AwayGames)
+            .HasForeignKey(g => g.AwayTeamId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
 
@@ -49,32 +120,6 @@ public class LeagueMemberConfiguration : IEntityTypeConfiguration<LeagueMember>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(lm => new { lm.LeagueId, lm.UserId }).IsUnique();
-    }
-}
-
-public class TeamConfiguration : IEntityTypeConfiguration<Team>
-{
-    public void Configure(EntityTypeBuilder<Team> builder)
-    {
-        builder.HasKey(t => t.Id);
-        builder.Property(t => t.Name).IsRequired().HasMaxLength(100);
-        builder.Property(t => t.Abbreviation).IsRequired().HasMaxLength(5);
-        builder.Property(t => t.City).HasMaxLength(50);
-        builder.Property(t => t.Division).HasMaxLength(50);
-        builder.Property(t => t.Conference).HasMaxLength(50);
-
-        builder.HasOne(t => t.League)
-            .WithMany(l => l.Teams)
-            .HasForeignKey(t => t.LeagueId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(t => t.Owner)
-            .WithMany(u => u.Teams)
-            .HasForeignKey(t => t.OwnerId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasIndex(t => new { t.LeagueId, t.Name }).IsUnique();
-        builder.HasIndex(t => new { t.LeagueId, t.Abbreviation }).IsUnique();
     }
 }
 
@@ -128,110 +173,6 @@ public class RosterEntryConfiguration : IEntityTypeConfiguration<RosterEntry>
     }
 }
 
-public class DraftConfiguration : IEntityTypeConfiguration<Draft>
-{
-    public void Configure(EntityTypeBuilder<Draft> builder)
-    {
-        builder.HasKey(d => d.Id);
-        builder.Property(d => d.Name).IsRequired().HasMaxLength(100);
-
-        builder.HasOne(d => d.League)
-            .WithMany(l => l.Drafts)
-            .HasForeignKey(d => d.LeagueId)
-            .OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public class DraftPickConfiguration : IEntityTypeConfiguration<DraftPick>
-{
-    public void Configure(EntityTypeBuilder<DraftPick> builder)
-    {
-        builder.HasKey(dp => dp.Id);
-
-        builder.HasOne(dp => dp.Draft)
-            .WithMany(d => d.Picks)
-            .HasForeignKey(dp => dp.DraftId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(dp => dp.Team)
-            .WithMany(t => t.DraftPicks)
-            .HasForeignKey(dp => dp.TeamId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(dp => dp.Player)
-            .WithMany(p => p.DraftSelections)
-            .HasForeignKey(dp => dp.PlayerId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasIndex(dp => new { dp.DraftId, dp.OverallPickNumber }).IsUnique();
-    }
-}
-
-public class SeasonConfiguration : IEntityTypeConfiguration<Season>
-{
-    public void Configure(EntityTypeBuilder<Season> builder)
-    {
-        builder.HasKey(s => s.Id);
-        builder.Property(s => s.Name).IsRequired().HasMaxLength(50);
-
-        builder.HasOne(s => s.League)
-            .WithMany(l => l.Seasons)
-            .HasForeignKey(s => s.LeagueId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasIndex(s => new { s.LeagueId, s.Year }).IsUnique();
-    }
-}
-
-public class GameResultConfiguration : IEntityTypeConfiguration<GameResult>
-{
-    public void Configure(EntityTypeBuilder<GameResult> builder)
-    {
-        builder.HasKey(g => g.Id);
-        builder.Property(g => g.PlayoffRound).HasMaxLength(50);
-        builder.Property(g => g.Notes).HasMaxLength(500);
-
-        builder.HasOne(g => g.Season)
-            .WithMany(s => s.Games)
-            .HasForeignKey(g => g.SeasonId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(g => g.HomeTeam)
-            .WithMany(t => t.HomeGames)
-            .HasForeignKey(g => g.HomeTeamId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(g => g.AwayTeam)
-            .WithMany(t => t.AwayGames)
-            .HasForeignKey(g => g.AwayTeamId)
-            .OnDelete(DeleteBehavior.Restrict);
-    }
-}
-
-public class StandingsEntryConfiguration : IEntityTypeConfiguration<StandingsEntry>
-{
-    public void Configure(EntityTypeBuilder<StandingsEntry> builder)
-    {
-        builder.HasKey(s => s.Id);
-        builder.Property(s => s.WinningPercentage).HasPrecision(5, 3);
-        builder.Property(s => s.GamesBack).HasPrecision(5, 1);
-        builder.Property(s => s.Streak).HasMaxLength(10);
-        builder.Property(s => s.Division).HasMaxLength(50);
-
-        builder.HasOne(s => s.Season)
-            .WithMany(se => se.Standings)
-            .HasForeignKey(s => s.SeasonId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(s => s.Team)
-            .WithMany(t => t.Standings)
-            .HasForeignKey(s => s.TeamId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasIndex(s => new { s.SeasonId, s.TeamId }).IsUnique();
-    }
-}
-
 public class ScoutingReportConfiguration : IEntityTypeConfiguration<ScoutingReport>
 {
     public void Configure(EntityTypeBuilder<ScoutingReport> builder)
@@ -253,5 +194,123 @@ public class ScoutingReportConfiguration : IEntityTypeConfiguration<ScoutingRepo
             .WithMany()
             .HasForeignKey(s => s.ScoutedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public class SeasonConfiguration : IEntityTypeConfiguration<Season>
+{
+    public void Configure(EntityTypeBuilder<Season> builder)
+    {
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Name).IsRequired().HasMaxLength(50);
+
+        builder.HasOne(s => s.League)
+            .WithMany(l => l.Seasons)
+            .HasForeignKey(s => s.LeagueId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(s => new { s.LeagueId, s.Year }).IsUnique();
+    }
+}
+
+public class StandingsEntryConfiguration : IEntityTypeConfiguration<StandingsEntry>
+{
+    public void Configure(EntityTypeBuilder<StandingsEntry> builder)
+    {
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.WinningPercentage).HasPrecision(5, 3);
+        builder.Property(s => s.GamesBack).HasPrecision(5, 1);
+        builder.Property(s => s.Streak).HasMaxLength(10);
+        builder.Property(s => s.DivisionName).HasMaxLength(50);
+
+        builder.HasOne(s => s.Division)
+            .WithMany()
+            .HasForeignKey(s => s.DivisionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(s => s.Season)
+            .WithMany(se => se.Standings)
+            .HasForeignKey(s => s.SeasonId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(s => s.Team)
+            .WithMany(t => t.Standings)
+            .HasForeignKey(s => s.TeamId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(s => new { s.SeasonId, s.TeamId }).IsUnique();
+    }
+}
+
+public class SubleagueConfiguration : IEntityTypeConfiguration<Subleague>
+{
+    public void Configure(EntityTypeBuilder<Subleague> builder)
+    {
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Name).IsRequired().HasMaxLength(100);
+        builder.Property(s => s.Abbreviation).HasMaxLength(20);
+
+        builder.HasOne(s => s.League)
+            .WithMany(l => l.Subleagues)
+            .HasForeignKey(s => s.LeagueId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(s => new { s.LeagueId, s.Name }).IsUnique();
+    }
+}
+
+public class TeamConfiguration : IEntityTypeConfiguration<Team>
+{
+    public void Configure(EntityTypeBuilder<Team> builder)
+    {
+        builder.HasKey(t => t.Id);
+        builder.Property(t => t.Name).IsRequired().HasMaxLength(100);
+        builder.Property(t => t.Abbreviation).IsRequired().HasMaxLength(5);
+        builder.Property(t => t.City).HasMaxLength(50);
+        builder.Property(t => t.DivisionName).HasMaxLength(50);
+        builder.Property(t => t.Conference).HasMaxLength(50);
+
+        builder.HasOne(t => t.League)
+            .WithMany(l => l.Teams)
+            .HasForeignKey(t => t.LeagueId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(t => t.Subleague)
+            .WithMany(sl => sl.Teams)
+            .HasForeignKey(t => t.SubleagueId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(t => t.Division)
+            .WithMany(d => d.Teams)
+            .HasForeignKey(t => t.DivisionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(t => t.Owner)
+            .WithMany(u => u.Teams)
+            .HasForeignKey(t => t.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(t => new { t.LeagueId, t.Name }).IsUnique();
+        builder.HasIndex(t => new { t.LeagueId, t.Abbreviation }).IsUnique();
+    }
+}
+
+public class UserConfiguration : IEntityTypeConfiguration<User>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
+    {
+        builder.HasKey(u => u.Id);
+        builder.Property(u => u.Email).IsRequired().HasMaxLength(256);
+        builder.Property(u => u.Username).IsRequired().HasMaxLength(50);
+        builder.Property(u => u.DisplayName).IsRequired().HasMaxLength(100);
+        builder.Property(u => u.PasswordHash).IsRequired();
+
+        builder.HasOne(u => u.LastVisitedLeague)
+            .WithMany()
+            .HasForeignKey(u => u.LastVisitedLeagueId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(u => u.Email).IsUnique();
+        builder.HasIndex(u => u.Username).IsUnique();
     }
 }

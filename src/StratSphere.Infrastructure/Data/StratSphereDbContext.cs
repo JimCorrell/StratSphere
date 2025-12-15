@@ -23,14 +23,24 @@ public class StratSphereDbContext : DbContext
     {
         _currentLeagueId = tenantProvider.GetCurrentLeagueId();
     }
+    public DbSet<Division> Divisions => Set<Division>();
     public DbSet<DraftOrder> DraftOrders => Set<DraftOrder>();
     public DbSet<DraftPick> DraftPicks => Set<DraftPick>();
 
     // Draft
     public DbSet<Draft> Drafts => Set<Draft>();
     public DbSet<GameResult> GameResults => Set<GameResult>();
+
+    // MLB historical data
     public DbSet<LeagueMember> LeagueMembers => Set<LeagueMember>();
     public DbSet<League> Leagues => Set<League>();
+    public DbSet<MlbAllstar> MlbAllstars => Set<MlbAllstar>();
+    public DbSet<MlbBatting> MlbBattings => Set<MlbBatting>();
+    public DbSet<MlbFielding> MlbFieldings => Set<MlbFielding>();
+    public DbSet<MlbHallOfFame> MlbHallOfFames => Set<MlbHallOfFame>();
+    public DbSet<MlbPeople> MlbPeople => Set<MlbPeople>();
+    public DbSet<MlbPitching> MlbPitchings => Set<MlbPitching>();
+    public DbSet<MlbTeam> MlbTeams => Set<MlbTeam>();
     public DbSet<PlayerStats> PlayerStats => Set<PlayerStats>();
 
     // Player data (shared across leagues)
@@ -43,6 +53,11 @@ public class StratSphereDbContext : DbContext
     // Season/Standings
     public DbSet<Season> Seasons => Set<Season>();
     public DbSet<StandingsEntry> StandingsEntries => Set<StandingsEntry>();
+    public DbSet<StratPlayer> StratPlayers => Set<StratPlayer>();
+
+    // Strat-O-Matic league data (separate from MLB historical data)
+    public DbSet<StratTeam> StratTeams => Set<StratTeam>();
+    public DbSet<Subleague> Subleagues => Set<Subleague>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
 
@@ -82,6 +97,12 @@ public class StratSphereDbContext : DbContext
             modelBuilder.Entity<Season>().HasQueryFilter(s => s.LeagueId == _currentLeagueId);
             modelBuilder.Entity<GameResult>().HasQueryFilter(g => g.LeagueId == _currentLeagueId);
             modelBuilder.Entity<StandingsEntry>().HasQueryFilter(s => s.LeagueId == _currentLeagueId);
+            modelBuilder.Entity<Subleague>().HasQueryFilter(s => s.LeagueId == _currentLeagueId);
+            modelBuilder.Entity<Division>().HasQueryFilter(d => d.LeagueId == _currentLeagueId);
+
+            // Strat-O-Matic league data filters
+            modelBuilder.Entity<StratTeam>().HasQueryFilter(st => st.LeagueId == _currentLeagueId);
+            modelBuilder.Entity<StratPlayer>().HasQueryFilter(sp => sp.LeagueId == _currentLeagueId);
         }
     }
 

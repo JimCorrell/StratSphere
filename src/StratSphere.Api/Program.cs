@@ -6,6 +6,8 @@ using Microsoft.OpenApi.Models;
 using StratSphere.Api.Hubs;
 using StratSphere.Api.Middleware;
 using StratSphere.Infrastructure.Data;
+using StratSphere.Infrastructure.Data.Seeders;
+using StratSphere.Infrastructure.Repositories;
 using StratSphere.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,13 +45,23 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Database
+// Database - PostgreSQL
 builder.Services.AddDbContext<StratSphereDbContext>(options =>
-    options.UseSqlServer(
+    options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("StratSphere.Infrastructure")
     )
 );
+
+// Player Repository
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+
+// Database Seeders
+builder.Services.AddScoped<IPlayerSeeder, PlayerSeeder>();
+builder.Services.AddScoped<IUserSeeder, UserSeeder>();
+
+// MLB Import Service
+builder.Services.AddScoped<IMlbImportService, MlbImportService>();
 
 // Multi-tenancy
 builder.Services.AddScoped<ITenantProvider, TenantProvider>();
@@ -124,6 +136,21 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Initialize databases
+using (var scope = app.Services.CreateScope())
+{
+    var playerSeeder = scope.ServiceProvider.GetRequiredService<IPlayerSeeder>();
+    var userSeeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
+
+    await playerSeeder.InitializeDatabaseAsync();
+    await userSeeder.SeedDefaultUsersAsync();
+
+    if (app.Environment.IsDevelopment())
+    {
+        await playerSeeder.SeedSamplePlayersAsync();
+    }
+}
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())

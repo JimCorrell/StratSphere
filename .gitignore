@@ -1,0 +1,44 @@
+# Global ignores for StratSphere repo (root)
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor/IDE settings (uncomment if you prefer to commit workspace settings)
+.vscode/
+.idea/
+
+# Visual Studio/VS for Mac
+.vs/
+*.user
+*.suo
+
+# .NET build artifacts
+**/bin/
+**/obj/
+# Test results
+TestResult*/
+
+# NuGet
+*.nupkg
+# Old-style packages folder (rare)
+packages/
+
+# Logs
+*.log
+
+# Environment files (keep secrets out of VCS)
+.env
+.env.*
+
+# Node (root-level if present)
+node_modules/
+
+# Python cache (if any tooling/scripts exist)
+__pycache__/
+*.pyc
+
+# Temporary files
+*.tmp
+*.temp

@@ -14,7 +14,7 @@ A multi-tenant SaaS platform for Strat-o-matic baseball league management. Host 
 ## Tech Stack
 
 - **.NET 8** - ASP.NET Core Web API
-- **Entity Framework Core 8** - SQL Server with multi-tenant query filters
+- **Entity Framework Core 8** - PostgreSQL with multi-tenant query filters
 - **SignalR** - Real-time draft updates
 - **JWT Authentication** - Secure API access with role-based authorization
 - **Vanilla JS + Bootstrap 5** - Lightweight frontend UI
@@ -48,7 +48,7 @@ StratSphere/
 ### Prerequisites
 
 - .NET 8 SDK
-- SQL Server (LocalDB, Express, or full instance)
+- PostgreSQL (Docker, Homebrew, or managed service)
 - IDE (Visual Studio 2022, Rider, or VS Code)
 
 ### Setup
@@ -61,25 +61,40 @@ StratSphere/
    dotnet restore
    ```
 
-2. **Configure the database connection**
+2. **Start PostgreSQL**
+
+   **Docker** (recommended):
+
+   ```bash
+   docker run --name stratsphere-db \
+     -e POSTGRES_USER=postgres \
+     -e POSTGRES_PASSWORD=postgres \
+     -e POSTGRES_DB=stratsphere \
+     -p 5432:5432 \
+     -d postgres:latest
+   ```
+
+   **Homebrew** (macOS):
+
+   ```bash
+   brew install postgresql
+   brew services start postgresql
+   createdb stratsphere
+   ```
+
+3. **Configure database connection**
 
    Update `src/StratSphere.Api/appsettings.json`:
 
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "Server=localhost;Database=StratSphere;Trusted_Connection=True;TrustServerCertificate=True;"
+       "DefaultConnection": "Host=localhost;Database=stratsphere;Username=postgres;Password=postgres;Port=5432"
      }
    }
    ```
 
-3. **Create and apply migrations**
-
-   ```bash
-   cd src/StratSphere.Infrastructure
-   dotnet ef migrations add InitialCreate --startup-project ../StratSphere.Api
-   dotnet ef database update --startup-project ../StratSphere.Api
-   ```
+   For production, update the connection string accordingly and ensure SSL is enabled.
 
 4. **Run the API**
 
@@ -88,11 +103,28 @@ StratSphere/
    dotnet run
    ```
 
+   The app automatically applies migrations and seeds sample data (5 Hall of Famers) on first run.
+
 5. **Access the application**
 
-   - **Frontend**: Navigate to `httpcd ..
-   ://localhost:5151`
+   - **Frontend**: Navigate to `http://localhost:5151`
    - **Swagger UI**: Navigate to `http://localhost:5151/swagger` to explore the API
+   - **Player Database**: See `DATABASE.md` for player lookup endpoints
+
+## Database Architecture
+
+StratSphere uses a **unified PostgreSQL database** for all data—league management, tenant isolation, and historical player statistics.
+
+- **Single Database (PostgreSQL)**: All operational and reference data
+- **Multi-tenant Design**: Automatic query filtering by LeagueId
+- **Lahman Integration**: Historical player data seeded at startup
+
+See [`DATABASE.md`](./DATABASE.md) for:
+
+- Configuration options
+- Migration instructions
+- Lahman data import guide
+- Performance tuning
 
 ## Key Features Usage
 

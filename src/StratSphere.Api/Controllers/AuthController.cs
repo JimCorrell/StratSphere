@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
             return NotFound();
         }
 
-        return Ok(new UserResponse(user.Id, user.Email, user.Username, user.DisplayName, user.CreatedAt));
+        return Ok(new UserResponse(user.Id, user.Email, user.Username, user.DisplayName, user.CreatedAt, user.LastVisitedLeagueId));
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public class AuthController : ControllerBase
         return Ok(new AuthResponse(
             token,
             DateTime.UtcNow.AddDays(1),
-            new UserResponse(user.Id, user.Email, user.Username, user.DisplayName, user.CreatedAt)
+            new UserResponse(user.Id, user.Email, user.Username, user.DisplayName, user.CreatedAt, user.LastVisitedLeagueId)
         ));
     }
 
@@ -186,7 +186,52 @@ public class AuthController : ControllerBase
         return Ok(new AuthResponse(
             token,
             DateTime.UtcNow.AddDays(1),
-            new UserResponse(user.Id, user.Email, user.Username, user.DisplayName, user.CreatedAt)
+            new UserResponse(user.Id, user.Email, user.Username, user.DisplayName, user.CreatedAt, user.LastVisitedLeagueId)
         ));
     }
+
+    /// <summary>
+    /// Set the user's last visited league.
+    /// </summary>
+    [HttpPost("me/last-visited-league/{leagueId:guid}")]
+    [Authorize]
+    public async Task<ActionResult> SetLastVisitedLeague(Guid leagueId)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var league = await _context.Leagues.FindAsync(leagueId);
+        if (league == null)
+        {
+            return NotFound("League not found");
+        }
+
+        // Verify user has access to this league (admin or member)
+        if (!user.IsAdmin)
+        {
+            var isMember = await _context.LeagueMembers
+                .AnyAsync(m => m.UserId == userId && m.LeagueId == leagueId && m.IsActive);
+            if (!isMember)
+            {
+                return Forbid();
+            }
+        }
+
+        user.LastVisitedLeagueId = leagueId;
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("User {UserId} set last visited league to {LeagueId}", userId, leagueId);
+
+        return NoContent();
+    }
 }
+

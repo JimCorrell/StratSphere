@@ -128,14 +128,39 @@ public class TeamsController : ControllerBase
             return NotFound("Owner user not found");
         }
 
+        Subleague? subleague = null;
+        Division? division = null;
+
+        if (request.DivisionId.HasValue)
+        {
+            division = await _context.Divisions
+                .Include(d => d.Subleague)
+                .FirstOrDefaultAsync(d => d.Id == request.DivisionId.Value && d.LeagueId == leagueId);
+            if (division == null)
+            {
+                return BadRequest("Division not found in this league");
+            }
+            subleague = division.Subleague;
+        }
+        else if (request.SubleagueId.HasValue)
+        {
+            subleague = await _context.Subleagues.FirstOrDefaultAsync(sl => sl.Id == request.SubleagueId.Value && sl.LeagueId == leagueId);
+            if (subleague == null)
+            {
+                return BadRequest("Subleague not found in this league");
+            }
+        }
+
         var team = new Team
         {
             LeagueId = leagueId,
             Name = request.Name,
             Abbreviation = request.Abbreviation.ToUpper(),
             City = request.City,
-            Division = request.Division,
             Conference = request.Conference,
+            SubleagueId = subleague?.Id,
+            DivisionId = division?.Id,
+            DivisionName = request.DivisionName ?? division?.Name,
             OwnerId = ownerId
         };
 
@@ -151,7 +176,10 @@ public class TeamsController : ControllerBase
             team.Abbreviation,
             team.City,
             team.LogoUrl,
-            team.Division,
+            team.SubleagueId,
+            subleague?.Name,
+            team.DivisionId,
+            team.DivisionName,
             team.Conference,
             team.OwnerId,
             owner.DisplayName,
@@ -222,6 +250,8 @@ public class TeamsController : ControllerBase
     {
         var team = await _context.Teams
             .Include(t => t.Owner)
+            .Include(t => t.Subleague)
+            .Include(t => t.Division)
             .Include(t => t.Roster)
             .Where(t => t.LeagueId == leagueId && t.Id == teamId)
             .Select(t => new TeamResponse(
@@ -230,7 +260,10 @@ public class TeamsController : ControllerBase
                 t.Abbreviation,
                 t.City,
                 t.LogoUrl,
-                t.Division,
+                t.SubleagueId,
+                t.Subleague != null ? t.Subleague.Name : null,
+                t.DivisionId,
+                t.DivisionName ?? (t.Division != null ? t.Division.Name : null),
                 t.Conference,
                 t.OwnerId,
                 t.Owner.DisplayName,
@@ -254,6 +287,8 @@ public class TeamsController : ControllerBase
     {
         var teams = await _context.Teams
             .Include(t => t.Owner)
+            .Include(t => t.Subleague)
+            .Include(t => t.Division)
             .Include(t => t.Roster)
             .Where(t => t.LeagueId == leagueId)
             .Select(t => new TeamResponse(
@@ -262,7 +297,10 @@ public class TeamsController : ControllerBase
                 t.Abbreviation,
                 t.City,
                 t.LogoUrl,
-                t.Division,
+                t.SubleagueId,
+                t.Subleague != null ? t.Subleague.Name : null,
+                t.DivisionId,
+                t.DivisionName ?? (t.Division != null ? t.Division.Name : null),
                 t.Conference,
                 t.OwnerId,
                 t.Owner.DisplayName,
@@ -314,8 +352,34 @@ public class TeamsController : ControllerBase
         }
 
         if (request.City != null) team.City = request.City;
-        if (request.Division != null) team.Division = request.Division;
         if (request.Conference != null) team.Conference = request.Conference;
+        if (request.DivisionName != null) team.DivisionName = request.DivisionName;
+
+        if (request.SubleagueId.HasValue)
+        {
+            var subleague = await _context.Subleagues.FirstOrDefaultAsync(sl => sl.Id == request.SubleagueId.Value && sl.LeagueId == leagueId);
+            if (subleague == null)
+            {
+                return BadRequest("Subleague not found in this league");
+            }
+            team.SubleagueId = subleague.Id;
+        }
+
+        if (request.DivisionId.HasValue)
+        {
+            var division = await _context.Divisions
+                .Include(d => d.Subleague)
+                .FirstOrDefaultAsync(d => d.Id == request.DivisionId.Value && d.LeagueId == leagueId);
+            if (division == null)
+            {
+                return BadRequest("Division not found in this league");
+            }
+
+            team.DivisionId = division.Id;
+            team.SubleagueId = division.SubleagueId;
+            team.DivisionName = division.Name;
+        }
+
         if (request.LogoUrl != null) team.LogoUrl = request.LogoUrl;
 
         await _context.SaveChangesAsync();

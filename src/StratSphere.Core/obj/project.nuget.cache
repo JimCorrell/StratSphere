@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "kTYg7LxRIxo=",
+  "dgSpecHash": "dSLvu2aC+GQ=",
   "success": true,
   "projectFilePath": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Core/StratSphere.Core.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/jimcorrell/.nuget/packages/microsoft.netcore.app.ref/8.0.12/microsoft.netcore.app.ref.8.0.12.nupkg.sha512",
+    "/Users/jimcorrell/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.12/microsoft.aspnetcore.app.ref.8.0.12.nupkg.sha512"
+  ],
   "logs": []
 }

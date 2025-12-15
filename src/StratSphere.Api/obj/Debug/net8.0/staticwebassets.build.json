@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "YJ4sds58pFYem2A5EJDvvCKZEMhLOlIxZ3BpBBxgQkM=",
+  "Hash": "YtLkrKaMhWVanmP/8tJK9lK1dmEY+Sn7kQdOdKz+Vq8=",
   "Source": "StratSphere.Api",
   "BasePath": "_content/StratSphere.Api",
   "Mode": "Default",
@@ -22,15 +22,17 @@
       "SourceType": "Discovered",
       "ContentRoot": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/",
       "BasePath": "_content/StratSphere.Api",
-      "RelativePath": "css/app.css",
+      "RelativePath": "css/app#[.{fingerprint}]?.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeBehavior": "",
       "AssetMergeSource": "",
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
+      "Fingerprint": "x5pza3q2km",
+      "Integrity": "JcA5pOp44mxHK1QcRddXEfGAaI8yG4x+d4ZEwrf9Rm8=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/app.css"
@@ -41,15 +43,17 @@
       "SourceType": "Discovered",
       "ContentRoot": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/",
       "BasePath": "_content/StratSphere.Api",
-      "RelativePath": "index.html",
+      "RelativePath": "index#[.{fingerprint}]?.html",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeBehavior": "",
       "AssetMergeSource": "",
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
+      "Fingerprint": "t4xoeelx7w",
+      "Integrity": "vRNHCqu8tjMeUs07y1cs/+MKIX/dX3iCWtmcUM/IfSw=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/index.html"
@@ -60,15 +64,17 @@
       "SourceType": "Discovered",
       "ContentRoot": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/",
       "BasePath": "_content/StratSphere.Api",
-      "RelativePath": "js/api.js",
+      "RelativePath": "js/api#[.{fingerprint}]?.js",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeBehavior": "",
       "AssetMergeSource": "",
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
+      "Fingerprint": "olwzd8iylx",
+      "Integrity": "NIM3KIpvqVqabaC9o3dEtuTJOPJvTQJ+DYjgo2qFb2Y=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/api.js"
@@ -79,15 +85,17 @@
       "SourceType": "Discovered",
       "ContentRoot": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/",
       "BasePath": "_content/StratSphere.Api",
-      "RelativePath": "js/app.js",
+      "RelativePath": "js/app#[.{fingerprint}]?.js",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeBehavior": "",
       "AssetMergeSource": "",
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
+      "Fingerprint": "btf36sq2df",
+      "Integrity": "MbdMn7Jj8cLgDjzYqaA65F7+P2CoetWo71z8/mXCncQ=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/app.js"
@@ -98,18 +106,432 @@
       "SourceType": "Discovered",
       "ContentRoot": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/",
       "BasePath": "_content/StratSphere.Api",
-      "RelativePath": "js/auth.js",
+      "RelativePath": "js/auth#[.{fingerprint}]?.js",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeBehavior": "",
       "AssetMergeSource": "",
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
+      "Fingerprint": "gqb5sww42m",
+      "Integrity": "qOZKsKmmgW4ex23jQsKqhvWwjFSWm2wTr/jqBofCJEg=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/auth.js"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "css/app.css",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/css/app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4447"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JcA5pOp44mxHK1QcRddXEfGAaI8yG4x+d4ZEwrf9Rm8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-JcA5pOp44mxHK1QcRddXEfGAaI8yG4x+d4ZEwrf9Rm8="
+        }
+      ]
+    },
+    {
+      "Route": "css/app.x5pza3q2km.css",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/css/app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4447"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JcA5pOp44mxHK1QcRddXEfGAaI8yG4x+d4ZEwrf9Rm8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "x5pza3q2km"
+        },
+        {
+          "Name": "label",
+          "Value": "css/app.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-JcA5pOp44mxHK1QcRddXEfGAaI8yG4x+d4ZEwrf9Rm8="
+        }
+      ]
+    },
+    {
+      "Route": "index.html",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/index.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8594"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"vRNHCqu8tjMeUs07y1cs/+MKIX/dX3iCWtmcUM/IfSw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-vRNHCqu8tjMeUs07y1cs/+MKIX/dX3iCWtmcUM/IfSw="
+        }
+      ]
+    },
+    {
+      "Route": "index.t4xoeelx7w.html",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/index.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8594"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"vRNHCqu8tjMeUs07y1cs/+MKIX/dX3iCWtmcUM/IfSw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "t4xoeelx7w"
+        },
+        {
+          "Name": "label",
+          "Value": "index.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-vRNHCqu8tjMeUs07y1cs/+MKIX/dX3iCWtmcUM/IfSw="
+        }
+      ]
+    },
+    {
+      "Route": "js/api.js",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/js/api.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6286"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"NIM3KIpvqVqabaC9o3dEtuTJOPJvTQJ+DYjgo2qFb2Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-NIM3KIpvqVqabaC9o3dEtuTJOPJvTQJ+DYjgo2qFb2Y="
+        }
+      ]
+    },
+    {
+      "Route": "js/api.olwzd8iylx.js",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/js/api.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6286"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"NIM3KIpvqVqabaC9o3dEtuTJOPJvTQJ+DYjgo2qFb2Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "olwzd8iylx"
+        },
+        {
+          "Name": "label",
+          "Value": "js/api.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-NIM3KIpvqVqabaC9o3dEtuTJOPJvTQJ+DYjgo2qFb2Y="
+        }
+      ]
+    },
+    {
+      "Route": "js/app.btf36sq2df.js",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/js/app.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "25111"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"MbdMn7Jj8cLgDjzYqaA65F7+P2CoetWo71z8/mXCncQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "btf36sq2df"
+        },
+        {
+          "Name": "label",
+          "Value": "js/app.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-MbdMn7Jj8cLgDjzYqaA65F7+P2CoetWo71z8/mXCncQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/app.js",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/js/app.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "25111"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"MbdMn7Jj8cLgDjzYqaA65F7+P2CoetWo71z8/mXCncQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-MbdMn7Jj8cLgDjzYqaA65F7+P2CoetWo71z8/mXCncQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/auth.gqb5sww42m.js",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/js/auth.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5753"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"qOZKsKmmgW4ex23jQsKqhvWwjFSWm2wTr/jqBofCJEg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gqb5sww42m"
+        },
+        {
+          "Name": "label",
+          "Value": "js/auth.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-qOZKsKmmgW4ex23jQsKqhvWwjFSWm2wTr/jqBofCJEg="
+        }
+      ]
+    },
+    {
+      "Route": "js/auth.js",
+      "AssetFile": "/Users/jimcorrell/Development/neho/StratSphere/src/StratSphere.Api/wwwroot/js/auth.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5753"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"qOZKsKmmgW4ex23jQsKqhvWwjFSWm2wTr/jqBofCJEg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 05 Dec 2025 19:07:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-qOZKsKmmgW4ex23jQsKqhvWwjFSWm2wTr/jqBofCJEg="
+        }
+      ]
     }
   ]
 }
