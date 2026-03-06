@@ -73,6 +73,9 @@ app.MapControllerRoute("league-create",     "league/create",     new { controlle
 app.MapControllerRoute("league-join",       "league/join",       new { controller = "League", action = "Join" });
 app.MapControllerRoute("league-not-member", "league/not-member", new { controller = "League", action = "NotMember" });
 
+// Team detail needs an explicit route so the GUID lands in {id}, not {action}
+app.MapControllerRoute("team-detail", "league/{slug}/team/{id:guid}", new { controller = "Team", action = "Detail" });
+
 app.MapControllerRoute(
     name: "league",
     pattern: "league/{slug}/{controller=League}/{action=Detail}/{id?}");

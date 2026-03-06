@@ -106,7 +106,8 @@ public class LeagueController(
                 City = t.City,
                 Name = t.Name,
                 Abbreviation = t.Abbreviation,
-                ManagerName = t.User.DisplayName
+                ManagerName = t.User.DisplayName,
+                IsOwner = t.UserId == userId
             })
         };
 

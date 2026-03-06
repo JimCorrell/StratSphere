@@ -1,0 +1,36 @@
+@model Stratsphere.Web.Models.ViewModels.Team.TeamDetailViewModel
+@{ ViewData["Title"] = $"{Model.City} {Model.Name}"; Layout = "_Layout"; }
+
+<div class="container" style="padding: 3rem 1rem;">
+
+    <div style="margin-bottom:1.5rem;">
+        <a href="/league/@Model.LeagueSlug"
+           style="font-size:0.8125rem; color:var(--text-muted); text-decoration:none;">
+            ← @Model.LeagueName
+        </a>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;">
+        <div>
+            <h1 style="color:var(--green-deep); margin:0 0 0.25rem;">
+                @Model.City @Model.Name
+            </h1>
+            <p style="color:var(--text-muted); margin:0; font-size:0.9rem; letter-spacing:0.05em; text-transform:uppercase;">
+                @Model.Abbreviation
+            </p>
+        </div>
+        @if (Model.IsOwner)
+        {
+            <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--amber);">
+                Your team
+            </span>
+        }
+    </div>
+
+    <div style="background:var(--cream); border:1px solid var(--border); border-radius:8px; padding:2rem;">
+        <p style="color:var(--text-muted); margin:0; text-align:center;">
+            Roster management coming soon.
+        </p>
+    </div>
+
+</div>

@@ -23,7 +23,7 @@
         <div style="display:flex; flex-direction:column; gap:0.75rem;">
             @foreach (var league in Model.Leagues)
             {
-                <a asp-route="league" asp-route-slug="@league.Slug"
+                <a href="/league/@league.Slug"
                    style="display:flex; align-items:center; justify-content:space-between; padding:1.25rem 1.5rem;
                           background:var(--cream); border:1px solid var(--border); border-radius:8px;
                           text-decoration:none; color:inherit;">

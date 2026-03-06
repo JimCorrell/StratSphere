@@ -17,7 +17,7 @@ namespace Stratsphere.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -631,8 +631,14 @@ namespace Stratsphere.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset>("AcquiredAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("CardId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("DroppedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("SeasonId")
                         .HasColumnType("uuid");
@@ -653,8 +659,7 @@ namespace Stratsphere.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.HasIndex("SeasonId", "CardId")
-                        .IsUnique();
+                    b.HasIndex("SeasonId", "CardId");
 
                     b.ToTable("roster_slots", (string)null);
                 });
@@ -1137,7 +1142,7 @@ namespace Stratsphere.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Season", null)
+                    b.HasOne("Stratsphere.Core.Entities.Season", "Season")
                         .WithMany("Teams")
                         .HasForeignKey("SeasonId");
 
@@ -1148,6 +1153,8 @@ namespace Stratsphere.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("League");
+
+                    b.Navigation("Season");
 
                     b.Navigation("User");
                 });

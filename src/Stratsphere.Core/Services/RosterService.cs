@@ -11,7 +11,7 @@ public class RosterService(IRosterRepository rosterRepo, IPlayerCardRepository c
         // Get or create the shared card definition
         var card = await cardRepo.GetOrCreateAsync(lahmanPlayerId, cardYear, position);
 
-        // Enforce uniqueness: a card can only be on one team per season
+        // Enforce uniqueness: a card can only be on one team per season at a time
         if (await rosterRepo.CardIsRosteredInSeasonAsync(card.Id, seasonId))
             throw new InvalidOperationException(
                 $"This card ({lahmanPlayerId} {cardYear}) is already on a roster this season.");
@@ -22,7 +22,8 @@ public class RosterService(IRosterRepository rosterRepo, IPlayerCardRepository c
             TeamId = teamId,
             SeasonId = seasonId,
             CardId = card.Id,
-            SlotType = "active"
+            SlotType = "active",
+            AcquiredAt = DateTimeOffset.UtcNow
         };
 
         await rosterRepo.AddAsync(slot);
@@ -30,9 +31,13 @@ public class RosterService(IRosterRepository rosterRepo, IPlayerCardRepository c
         return slot;
     }
 
-    public async Task RemoveCardFromRosterAsync(Guid slotId)
+    /// <summary>
+    /// Drops a card from a roster (soft delete). Use for trades and releases.
+    /// The slot is retained as trade/release history for the season.
+    /// </summary>
+    public async Task DropCardFromRosterAsync(Guid slotId)
     {
-        await rosterRepo.RemoveAsync(slotId);
+        await rosterRepo.DropAsync(slotId);
         await rosterRepo.SaveChangesAsync();
     }
 }

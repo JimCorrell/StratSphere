@@ -9,19 +9,19 @@ public class RosterRepository(StratosphereDbContext db) : IRosterRepository
     public async Task<IEnumerable<RosterSlot>> GetByTeamAndSeasonAsync(Guid teamId, Guid seasonId) =>
         await db.RosterSlots
             .Include(r => r.Card)
-            .Where(r => r.TeamId == teamId && r.SeasonId == seasonId)
+            .Where(r => r.TeamId == teamId && r.SeasonId == seasonId && r.DroppedAt == null)
             .OrderBy(r => r.Card.Position)
             .ToListAsync();
 
     public Task<bool> CardIsRosteredInSeasonAsync(Guid cardId, Guid seasonId) =>
-        db.RosterSlots.AnyAsync(r => r.CardId == cardId && r.SeasonId == seasonId);
+        db.RosterSlots.AnyAsync(r => r.CardId == cardId && r.SeasonId == seasonId && r.DroppedAt == null);
 
     public async Task AddAsync(RosterSlot slot) => await db.RosterSlots.AddAsync(slot);
 
-    public async Task RemoveAsync(Guid slotId)
+    public async Task DropAsync(Guid slotId)
     {
         var slot = await db.RosterSlots.FindAsync(slotId);
-        if (slot is not null) db.RosterSlots.Remove(slot);
+        if (slot is not null) slot.DroppedAt = DateTimeOffset.UtcNow;
     }
 
     public Task SaveChangesAsync() => db.SaveChangesAsync();

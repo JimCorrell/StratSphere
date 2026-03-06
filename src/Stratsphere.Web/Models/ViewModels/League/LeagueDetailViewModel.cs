@@ -24,5 +24,6 @@ public class LeagueDetailViewModel
         public string Name { get; set; } = string.Empty;
         public string Abbreviation { get; set; } = string.Empty;
         public string ManagerName { get; set; } = string.Empty;
+        public bool IsOwner { get; set; }
     }
 }

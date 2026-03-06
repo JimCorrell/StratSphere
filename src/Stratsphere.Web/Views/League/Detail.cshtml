@@ -69,14 +69,24 @@
             <div style="display:flex; flex-direction:column; gap:0.5rem;">
                 @foreach (var team in Model.Teams)
                 {
-                    <div style="display:flex; align-items:center; justify-content:space-between;
-                                padding:0.75rem 1rem; background:var(--cream); border:1px solid var(--border); border-radius:6px;">
+                    <a href="/league/@Model.Slug/team/@team.Id"
+                       style="display:flex; align-items:center; justify-content:space-between;
+                              padding:0.75rem 1rem; background:var(--cream);
+                              border:1px solid @(team.IsOwner ? "var(--amber)" : "var(--border)");
+                              border-radius:6px; text-decoration:none; color:inherit;">
                         <div>
                             <span style="font-weight:600; color:var(--green-deep);">@team.City @team.Name</span>
                             <span style="margin-left:0.5rem; font-size:0.8rem; color:var(--text-muted);">(@team.Abbreviation)</span>
                         </div>
-                        <span style="font-size:0.8125rem; color:var(--text-muted);">@team.ManagerName</span>
-                    </div>
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <span style="font-size:0.8125rem; color:var(--text-muted);">@team.ManagerName</span>
+                            @if (team.IsOwner)
+                            {
+                                <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.06em;
+                                             text-transform:uppercase; color:var(--amber);">Your team</span>
+                            }
+                        </div>
+                    </a>
                 }
             </div>
         }
