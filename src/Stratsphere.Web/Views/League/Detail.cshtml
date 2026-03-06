@@ -1,0 +1,85 @@
+@model Stratsphere.Web.Models.ViewModels.League.LeagueDetailViewModel
+@{ ViewData["Title"] = Model.Name; Layout = "_Layout"; }
+
+<div style="background:var(--green-deep); border-bottom:3px solid var(--amber); padding:2rem 0;">
+    <div class="container">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+            <div>
+                <p style="font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+                           color:var(--amber-light); margin-bottom:0.4rem;">League</p>
+                <h1 style="color:var(--cream); margin:0; font-size:2rem;">@Model.Name</h1>
+                <p style="color:rgba(247,242,232,0.5); margin:0.3rem 0 0; font-size:0.875rem;">
+                    slug: @Model.Slug &middot; @Model.Status
+                </p>
+            </div>
+            @if (!Model.HasTeam)
+            {
+                <a href="/league/@Model.Slug/team/create" class="btn btn-amber">+ Create my team</a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding:2.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start;">
+
+    <!-- Members -->
+    <div>
+        <h2 style="font-size:1rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+                   color:var(--green-deep); margin-bottom:1rem;">Members (@Model.Members.Count())</h2>
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            @foreach (var member in Model.Members)
+            {
+                <div style="display:flex; align-items:center; justify-content:space-between;
+                            padding:0.75rem 1rem; background:var(--cream); border:1px solid var(--border); border-radius:6px;">
+                    <span style="font-weight:500;">@member.DisplayName</span>
+                    <span style="font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;
+                                 color:@(member.Role == "Commissioner" ? "var(--amber)" : "var(--text-muted)");">
+                        @member.Role
+                    </span>
+                </div>
+            }
+        </div>
+
+        @if (Model.IsCommissioner)
+        {
+            <div style="margin-top:1rem; padding:0.875rem 1rem; background:var(--cream);
+                        border:1px dashed var(--border); border-radius:6px;">
+                <p style="font-size:0.8125rem; color:var(--text-muted); margin:0 0 0.4rem;">
+                    Share this slug to invite managers:
+                </p>
+                <code style="font-size:0.875rem; color:var(--green-deep); font-weight:600;">@Model.Slug</code>
+            </div>
+        }
+    </div>
+
+    <!-- Teams -->
+    <div>
+        <h2 style="font-size:1rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+                   color:var(--green-deep); margin-bottom:1rem;">Teams (@Model.Teams.Count())</h2>
+
+        @if (!Model.Teams.Any())
+        {
+            <div style="padding:1.5rem; background:var(--cream); border:1px solid var(--border);
+                        border-radius:6px; text-align:center; color:var(--text-muted); font-size:0.875rem;">
+                No teams yet. Members need to create their teams.
+            </div>
+        }
+        else
+        {
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                @foreach (var team in Model.Teams)
+                {
+                    <div style="display:flex; align-items:center; justify-content:space-between;
+                                padding:0.75rem 1rem; background:var(--cream); border:1px solid var(--border); border-radius:6px;">
+                        <div>
+                            <span style="font-weight:600; color:var(--green-deep);">@team.City @team.Name</span>
+                            <span style="margin-left:0.5rem; font-size:0.8rem; color:var(--text-muted);">(@team.Abbreviation)</span>
+                        </div>
+                        <span style="font-size:0.8125rem; color:var(--text-muted);">@team.ManagerName</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+</div>

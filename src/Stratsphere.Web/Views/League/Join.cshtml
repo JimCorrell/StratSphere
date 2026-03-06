@@ -1,0 +1,44 @@
+@model Stratsphere.Web.Models.ViewModels.League.JoinLeagueViewModel
+@{ ViewData["Title"] = "Join League"; Layout = "_Layout"; }
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            <h2 class="auth-title">Join a League</h2>
+            <p class="auth-subtitle">Enter the league slug shared by the commissioner.</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-error">
+                <span>⚠</span>
+                <div asp-validation-summary="ModelOnly"></div>
+            </div>
+        }
+
+        <form asp-action="Join" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="Slug" class="form-label">League Slug</label>
+                <input asp-for="Slug" class="form-control"
+                       placeholder="e.g. retro-1986-league" autocomplete="off" autofocus />
+                <span asp-validation-for="Slug" class="text-muted" style="font-size:0.8rem"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full btn-lg mt-2">
+                Join league
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <a asp-controller="League" asp-action="Create">Create a new league instead</a>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

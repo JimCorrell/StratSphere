@@ -67,6 +67,12 @@ app.UseAuthorization();
 app.UseMiddleware<LeagueContextMiddleware>();
 
 // ── Routes ────────────────────────────────────────────────────────────────────
+// Explicit league management routes must come before the slug route
+app.MapControllerRoute("league-index",      "league",            new { controller = "League", action = "Index" });
+app.MapControllerRoute("league-create",     "league/create",     new { controller = "League", action = "Create" });
+app.MapControllerRoute("league-join",       "league/join",       new { controller = "League", action = "Join" });
+app.MapControllerRoute("league-not-member", "league/not-member", new { controller = "League", action = "NotMember" });
+
 app.MapControllerRoute(
     name: "league",
     pattern: "league/{slug}/{controller=League}/{action=Detail}/{id?}");

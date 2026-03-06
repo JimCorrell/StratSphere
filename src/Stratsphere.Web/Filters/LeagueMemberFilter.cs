@@ -38,7 +38,7 @@ public class LeagueMemberAttribute : Attribute, IAsyncActionFilter
         var membership = league.Members.FirstOrDefault(m => m.UserId == userId);
         if (membership is null)
         {
-            context.Result = new ForbidResult();
+            context.Result = new RedirectResult($"/league/not-member?slug={league.Slug}");
             return;
         }
 

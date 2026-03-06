@@ -10,10 +10,14 @@ public class LeagueRepository(StratosphereDbContext db) : ILeagueRepository
         db.Leagues.Include(l => l.Members).FirstOrDefaultAsync(l => l.Id == id);
 
     public Task<League?> GetBySlugAsync(string slug) =>
-        db.Leagues.Include(l => l.Members).FirstOrDefaultAsync(l => l.Slug == slug);
+        db.Leagues
+            .Include(l => l.Members).ThenInclude(m => m.User)
+            .Include(l => l.Teams).ThenInclude(t => t.User)
+            .FirstOrDefaultAsync(l => l.Slug == slug);
 
     public async Task<IEnumerable<League>> GetByUserIdAsync(Guid userId) =>
         await db.Leagues
+            .Include(l => l.Members)
             .Where(l => l.Members.Any(m => m.UserId == userId))
             .OrderBy(l => l.Name)
             .ToListAsync();
