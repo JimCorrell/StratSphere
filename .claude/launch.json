@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Stratsphere.Web",
+      "name": "StratSphere.Web",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/Stratsphere.Web", "--launch-profile", "http"],
+      "runtimeArgs": ["run", "--project", "src/StratSphere.Web", "--launch-profile", "http"],
       "port": 5039
     }
   ]

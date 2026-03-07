@@ -1,4 +1,4 @@
-namespace Stratsphere.Core.Entities;
+namespace StratSphere.Core.Entities;
 
 /// <summary>
 /// Represents a Strat-O-Matic card: one real player in one real MLB season.

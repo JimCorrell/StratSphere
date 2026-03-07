@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Data.Repositories;
+namespace StratSphere.Data.Repositories;
 
-public class PlayerCardRepository(StratosphereDbContext db) : IPlayerCardRepository
+public class PlayerCardRepository(StratSphereDbContext db) : IPlayerCardRepository
 {
     public Task<PlayerCard?> GetByIdAsync(Guid id) =>
         db.PlayerCards.FirstOrDefaultAsync(c => c.Id == id);

@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Enums;
-using Stratsphere.Web.Middleware;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Enums;
+using StratSphere.Web.Middleware;
 using System.Security.Claims;
 
-namespace Stratsphere.Web.Filters;
+namespace StratSphere.Web.Filters;
 
 /// <summary>
 /// Action filter that enforces league membership for league-scoped routes.

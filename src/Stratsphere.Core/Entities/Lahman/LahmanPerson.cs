@@ -1,4 +1,4 @@
-namespace Stratsphere.Core.Entities.Lahman;
+namespace StratSphere.Core.Entities.Lahman;
 
 /// <summary>Read-only. Maps to lahman.people. Never modified by the app.</summary>
 public class LahmanPerson

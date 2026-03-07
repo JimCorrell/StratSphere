@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Entities.Lahman;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Entities.Lahman;
 
-namespace Stratsphere.Data;
+namespace StratSphere.Data;
 
-public class StratosphereDbContext(DbContextOptions<StratosphereDbContext> options)
+public class StratSphereDbContext(DbContextOptions<StratSphereDbContext> options)
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
     // ── App tables (public schema) ────────────────────────────────────────────
@@ -30,6 +30,6 @@ public class StratosphereDbContext(DbContextOptions<StratosphereDbContext> optio
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ApplyConfigurationsFromAssembly(typeof(StratosphereDbContext).Assembly);
+        builder.ApplyConfigurationsFromAssembly(typeof(StratSphereDbContext).Assembly);
     }
 }

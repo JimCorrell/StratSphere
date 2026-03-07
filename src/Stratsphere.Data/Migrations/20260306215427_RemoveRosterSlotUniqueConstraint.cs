@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Stratsphere.Data.Migrations
+namespace StratSphere.Data.Migrations
 {
     /// <inheritdoc />
     public partial class RemoveRosterSlotUniqueConstraint : Migration

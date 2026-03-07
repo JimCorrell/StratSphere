@@ -1,4 +1,4 @@
-namespace Stratsphere.Web.Models.ViewModels.League;
+namespace StratSphere.Web.Models.ViewModels.League;
 
 public class LeagueDetailViewModel
 {
@@ -10,6 +10,7 @@ public class LeagueDetailViewModel
     public bool HasTeam { get; set; }
     public IEnumerable<MemberRow> Members { get; set; } = [];
     public IEnumerable<TeamRow> Teams { get; set; } = [];
+    public IEnumerable<SeasonRow> Seasons { get; set; } = [];
 
     public class MemberRow
     {
@@ -23,7 +24,16 @@ public class LeagueDetailViewModel
         public string City { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Abbreviation { get; set; } = string.Empty;
-        public string ManagerName { get; set; } = string.Empty;
+        public string? ManagerName { get; set; }
         public bool IsOwner { get; set; }
+        public bool IsClaimed { get; set; }
+    }
+
+    public class SeasonRow
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int CardYear { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,4 @@
-namespace Stratsphere.Core.Entities;
+namespace StratSphere.Core.Entities;
 
 public class League
 {

@@ -1,21 +1,17 @@
-@model Stratsphere.Web.Models.ViewModels.League.LeagueDetailViewModel
+@model StratSphere.Web.Models.ViewModels.League.LeagueDetailViewModel
 @{ ViewData["Title"] = Model.Name; Layout = "_Layout"; }
 
-<div style="background:var(--green-deep); border-bottom:3px solid var(--amber); padding:2rem 0;">
+<div style="background:var(--panel); border-bottom:3px solid var(--amber); padding:2rem 0;">
     <div class="container">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
             <div>
                 <p style="font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
                            color:var(--amber-light); margin-bottom:0.4rem;">League</p>
                 <h1 style="color:var(--cream); margin:0; font-size:2rem;">@Model.Name</h1>
-                <p style="color:rgba(247,242,232,0.5); margin:0.3rem 0 0; font-size:0.875rem;">
+                <p style="color:rgba(226,232,240,0.5); margin:0.3rem 0 0; font-size:0.875rem;">
                     slug: @Model.Slug &middot; @Model.Status
                 </p>
             </div>
-            @if (!Model.HasTeam)
-            {
-                <a href="/league/@Model.Slug/team/create" class="btn btn-amber">+ Create my team</a>
-            }
         </div>
     </div>
 </div>
@@ -25,12 +21,12 @@
     <!-- Members -->
     <div>
         <h2 style="font-size:1rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
-                   color:var(--green-deep); margin-bottom:1rem;">Members (@Model.Members.Count())</h2>
+                   color:var(--text); margin-bottom:1rem;">Members (@Model.Members.Count())</h2>
         <div style="display:flex; flex-direction:column; gap:0.5rem;">
             @foreach (var member in Model.Members)
             {
                 <div style="display:flex; align-items:center; justify-content:space-between;
-                            padding:0.75rem 1rem; background:var(--cream); border:1px solid var(--border); border-radius:6px;">
+                            padding:0.75rem 1rem; background:var(--panel); border:1px solid var(--border); border-radius:6px;">
                     <span style="font-weight:500;">@member.DisplayName</span>
                     <span style="font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;
                                  color:@(member.Role == "Commissioner" ? "var(--amber)" : "var(--text-muted)");">
@@ -42,26 +38,41 @@
 
         @if (Model.IsCommissioner)
         {
-            <div style="margin-top:1rem; padding:0.875rem 1rem; background:var(--cream);
+            <div style="margin-top:1rem; padding:0.875rem 1rem; background:var(--panel);
                         border:1px dashed var(--border); border-radius:6px;">
                 <p style="font-size:0.8125rem; color:var(--text-muted); margin:0 0 0.4rem;">
                     Share this slug to invite managers:
                 </p>
-                <code style="font-size:0.875rem; color:var(--green-deep); font-weight:600;">@Model.Slug</code>
+                <code style="font-size:0.875rem; color:var(--text); font-weight:600;">@Model.Slug</code>
             </div>
         }
     </div>
 
     <!-- Teams -->
     <div>
-        <h2 style="font-size:1rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
-                   color:var(--green-deep); margin-bottom:1rem;">Teams (@Model.Teams.Count())</h2>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+            <h2 style="font-size:1rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+                       color:var(--text); margin:0;">Teams (@Model.Teams.Count())</h2>
+            @if (Model.IsCommissioner)
+            {
+                <a href="/league/@Model.Slug/team/create" class="btn btn-primary" style="font-size:0.8125rem; padding:0.4rem 0.875rem;">
+                    + New Team
+                </a>
+            }
+        </div>
 
         @if (!Model.Teams.Any())
         {
-            <div style="padding:1.5rem; background:var(--cream); border:1px solid var(--border);
+            <div style="padding:1.5rem; background:var(--panel); border:1px solid var(--border);
                         border-radius:6px; text-align:center; color:var(--text-muted); font-size:0.875rem;">
-                No teams yet. Members need to create their teams.
+                @if (Model.IsCommissioner)
+                {
+                    <span>No teams yet. Create teams for managers to claim.</span>
+                }
+                else
+                {
+                    <span>No teams yet. Ask the commissioner to create them.</span>
+                }
             </div>
         }
         else
@@ -69,27 +80,94 @@
             <div style="display:flex; flex-direction:column; gap:0.5rem;">
                 @foreach (var team in Model.Teams)
                 {
-                    <a href="/league/@Model.Slug/team/@team.Id"
-                       style="display:flex; align-items:center; justify-content:space-between;
-                              padding:0.75rem 1rem; background:var(--cream);
-                              border:1px solid @(team.IsOwner ? "var(--amber)" : "var(--border)");
-                              border-radius:6px; text-decoration:none; color:inherit;">
-                        <div>
-                            <span style="font-weight:600; color:var(--green-deep);">@team.City @team.Name</span>
-                            <span style="margin-left:0.5rem; font-size:0.8rem; color:var(--text-muted);">(@team.Abbreviation)</span>
-                        </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between;
+                                padding:0.75rem 1rem; background:var(--panel);
+                                border:1px solid @(team.IsOwner ? "var(--amber)" : "var(--border)");
+                                border-radius:6px;">
+                        <a href="/league/@Model.Slug/team/@team.Id"
+                           style="display:flex; align-items:center; gap:0.5rem; text-decoration:none; color:inherit; flex:1;">
+                            <span style="font-weight:600; color:var(--text);">@team.City @team.Name</span>
+                            <span style="font-size:0.8rem; color:var(--text-muted);">(@team.Abbreviation)</span>
+                        </a>
                         <div style="display:flex; align-items:center; gap:0.75rem;">
-                            <span style="font-size:0.8125rem; color:var(--text-muted);">@team.ManagerName</span>
-                            @if (team.IsOwner)
+                            @if (team.IsClaimed)
                             {
-                                <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.06em;
-                                             text-transform:uppercase; color:var(--amber);">Your team</span>
+                                <span style="font-size:0.8125rem; color:var(--text-muted);">@team.ManagerName</span>
+                                @if (team.IsOwner)
+                                {
+                                    <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.06em;
+                                                 text-transform:uppercase; color:var(--amber);">Your team</span>
+                                }
+                            }
+                            else if (!Model.HasTeam)
+                            {
+                                <form asp-controller="Team" asp-action="Claim" asp-route-id="@team.Id" method="post" style="margin:0;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-ghost" style="font-size:0.75rem; padding:0.25rem 0.625rem;">
+                                        Claim
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em;
+                                             text-transform:uppercase; color:var(--text-subtle);">Unclaimed</span>
                             }
                         </div>
-                    </a>
+                    </div>
                 }
             </div>
         }
     </div>
 
+</div>
+
+<!-- Seasons -->
+<div class="container" style="padding:0 1rem 2.5rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+        <h2 style="font-size:1rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+                   color:var(--text); margin:0;">Seasons (@Model.Seasons.Count())</h2>
+        @if (Model.IsCommissioner)
+        {
+            <a href="/league/@Model.Slug/Season/Create" class="btn btn-primary" style="font-size:0.8125rem; padding:0.4rem 0.875rem;">
+                + New Season
+            </a>
+        }
+    </div>
+
+    @if (!Model.Seasons.Any())
+    {
+        <div style="padding:1.5rem; background:var(--panel); border:1px solid var(--border);
+                    border-radius:6px; text-align:center; color:var(--text-muted); font-size:0.875rem;">
+            @if (Model.IsCommissioner)
+            {
+                <span>No seasons yet. Create one to start managing rosters.</span>
+            }
+            else
+            {
+                <span>No seasons created yet. Ask the commissioner to set one up.</span>
+            }
+        </div>
+    }
+    else
+    {
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            @foreach (var season in Model.Seasons)
+            {
+                <a href="/league/@Model.Slug/season/@season.Id"
+                   style="display:flex; align-items:center; justify-content:space-between;
+                          padding:0.875rem 1rem; background:var(--panel); border:1px solid var(--border);
+                          border-radius:6px; text-decoration:none; color:inherit;">
+                    <div>
+                        <span style="font-weight:600; color:var(--text);">@season.Name</span>
+                        <span style="margin-left:0.75rem; font-size:0.8rem; color:var(--text-muted);">@season.CardYear cards</span>
+                    </div>
+                    <span style="font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;
+                                 color:@(season.Status == "Active" ? "var(--grass)" : season.Status == "Completed" ? "var(--text-muted)" : "var(--accent)");">
+                        @season.Status
+                    </span>
+                </a>
+            }
+        </div>
+    }
 </div>

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Data.Repositories;
+namespace StratSphere.Data.Repositories;
 
-public class RosterRepository(StratosphereDbContext db) : IRosterRepository
+public class RosterRepository(StratSphereDbContext db) : IRosterRepository
 {
     public async Task<IEnumerable<RosterSlot>> GetByTeamAndSeasonAsync(Guid teamId, Guid seasonId) =>
         await db.RosterSlots
@@ -18,9 +18,9 @@ public class RosterRepository(StratosphereDbContext db) : IRosterRepository
 
     public async Task AddAsync(RosterSlot slot) => await db.RosterSlots.AddAsync(slot);
 
-    public async Task DropAsync(Guid slotId)
+    public async Task DropAsync(Guid slotId, Guid teamId)
     {
-        var slot = await db.RosterSlots.FindAsync(slotId);
+        var slot = await db.RosterSlots.FirstOrDefaultAsync(r => r.Id == slotId && r.TeamId == teamId);
         if (slot is not null) slot.DroppedAt = DateTimeOffset.UtcNow;
     }
 

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Data.Repositories;
+namespace StratSphere.Data.Repositories;
 
-public class TeamRepository(StratosphereDbContext db) : ITeamRepository
+public class TeamRepository(StratSphereDbContext db) : ITeamRepository
 {
     public Task<Team?> GetByIdAsync(Guid id) =>
         db.Teams.Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
@@ -20,4 +20,14 @@ public class TeamRepository(StratosphereDbContext db) : ITeamRepository
 
     public async Task AddAsync(Team team) => await db.Teams.AddAsync(team);
     public Task SaveChangesAsync() => db.SaveChangesAsync();
+
+    public async Task<bool> ClaimAsync(Guid teamId, Guid userId, Guid leagueId)
+    {
+        var team = await db.Teams.FirstOrDefaultAsync(t =>
+            t.Id == teamId && t.LeagueId == leagueId && t.UserId == null);
+        if (team is null) return false;
+        team.UserId = userId;
+        await db.SaveChangesAsync();
+        return true;
+    }
 }

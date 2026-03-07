@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Stratsphere.Web.Models.ViewModels.Team;
+namespace StratSphere.Web.Models.ViewModels.Team;
 
 public class CreateTeamViewModel
 {

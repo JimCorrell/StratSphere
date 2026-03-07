@@ -1,8 +1,8 @@
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Enums;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Enums;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Core.Services;
+namespace StratSphere.Core.Services;
 
 public class LeagueService(ILeagueRepository leagueRepo)
 {

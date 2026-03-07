@@ -1,6 +1,6 @@
-using Stratsphere.Core.Entities.Lahman;
+using StratSphere.Core.Entities.Lahman;
 
-namespace Stratsphere.Core.Interfaces;
+namespace StratSphere.Core.Interfaces;
 
 public interface ILahmanRepository
 {

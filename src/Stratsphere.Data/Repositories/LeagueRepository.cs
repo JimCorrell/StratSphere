@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Data.Repositories;
+namespace StratSphere.Data.Repositories;
 
-public class LeagueRepository(StratosphereDbContext db) : ILeagueRepository
+public class LeagueRepository(StratSphereDbContext db) : ILeagueRepository
 {
     public Task<League?> GetByIdAsync(Guid id) =>
         db.Leagues.Include(l => l.Members).FirstOrDefaultAsync(l => l.Id == id);
@@ -13,6 +13,7 @@ public class LeagueRepository(StratosphereDbContext db) : ILeagueRepository
         db.Leagues
             .Include(l => l.Members).ThenInclude(m => m.User)
             .Include(l => l.Teams).ThenInclude(t => t.User)
+            .Include(l => l.Seasons)
             .FirstOrDefaultAsync(l => l.Slug == slug);
 
     public async Task<IEnumerable<League>> GetByUserIdAsync(Guid userId) =>

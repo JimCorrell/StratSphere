@@ -1,7 +1,7 @@
 using System.Data;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using Stratsphere.DataImport.Importers;
+using StratSphere.DataImport.Importers;
 
 // ── Config ────────────────────────────────────────────────────────────────────
 var config = new ConfigurationBuilder()
@@ -13,7 +13,7 @@ var config = new ConfigurationBuilder()
 var sourceDir  = config["source"]     ?? throw new Exception("--source <path> is required");
 var connString = config["connection"] ?? throw new Exception("--connection <connstr> is required");
 
-Console.WriteLine($"Stratsphere DataImport");
+Console.WriteLine($"StratSphere DataImport");
 Console.WriteLine($"Source : {sourceDir}");
 Console.WriteLine($"Target : {connString.Split(';').FirstOrDefault()}");
 Console.WriteLine();

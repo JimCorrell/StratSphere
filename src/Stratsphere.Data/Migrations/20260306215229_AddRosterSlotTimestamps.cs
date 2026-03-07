@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Stratsphere.Data.Migrations
+namespace StratSphere.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddRosterSlotTimestamps : Migration

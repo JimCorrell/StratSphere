@@ -1,16 +1,16 @@
-@model Stratsphere.Web.Models.ViewModels.League.LeagueIndexViewModel
+@model StratSphere.Web.Models.ViewModels.League.LeagueIndexViewModel
 @{ ViewData["Title"] = "My Leagues"; Layout = "_Layout"; }
 
 <div class="container" style="padding: 3rem 1rem;">
 
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;">
-        <h1 style="color:var(--green-deep); margin:0;">My Leagues</h1>
+        <h1 style="color:var(--text); margin:0;">My Leagues</h1>
         <a asp-controller="League" asp-action="Create" class="btn btn-amber">+ New League</a>
     </div>
 
     @if (!Model.Leagues.Any())
     {
-        <div style="padding:3rem 2rem; background:var(--cream); border:1px solid var(--border); border-radius:8px; text-align:center;">
+        <div style="padding:3rem 2rem; background:var(--panel); border:1px solid var(--border); border-radius:8px; text-align:center;">
             <p style="color:var(--text-muted); margin-bottom:1.25rem;">You're not in any leagues yet.</p>
             <a asp-controller="League" asp-action="Create" class="btn btn-amber">Create a league</a>
             <a asp-controller="League" asp-action="Join" class="btn btn-outline" style="margin-left:0.5rem;">Join a league</a>
@@ -23,10 +23,10 @@
             {
                 <a href="/league/@league.Slug"
                    style="display:flex; align-items:center; justify-content:space-between; padding:1.25rem 1.5rem;
-                          background:var(--cream); border:1px solid var(--border); border-radius:8px;
+                          background:var(--panel); border:1px solid var(--border); border-radius:8px;
                           text-decoration:none; color:inherit; transition:border-color 0.15s;">
                     <div>
-                        <div style="font-size:1.1rem; font-weight:600; color:var(--green-deep);">@league.Name</div>
+                        <div style="font-size:1.1rem; font-weight:600; color:var(--text);">@league.Name</div>
                         <div style="font-size:0.8125rem; color:var(--text-muted); margin-top:0.2rem;">
                             @league.MemberCount member@(league.MemberCount == 1 ? "" : "s") &middot; @league.Status
                         </div>

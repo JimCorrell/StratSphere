@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities.Lahman;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities.Lahman;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Data.Repositories;
+namespace StratSphere.Data.Repositories;
 
-public class LahmanRepository(StratosphereDbContext db) : ILahmanRepository
+public class LahmanRepository(StratSphereDbContext db) : ILahmanRepository
 {
     public Task<LahmanPerson?> GetPersonAsync(string playerId) =>
         db.LahmanPeople.AsNoTracking().FirstOrDefaultAsync(p => p.PlayerId == playerId);

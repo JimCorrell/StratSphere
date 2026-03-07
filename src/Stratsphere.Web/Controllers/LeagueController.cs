@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Enums;
-using Stratsphere.Core.Interfaces;
-using Stratsphere.Core.Services;
-using Stratsphere.Web.Filters;
-using Stratsphere.Web.Middleware;
-using Stratsphere.Web.Models.ViewModels.League;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Enums;
+using StratSphere.Core.Interfaces;
+using StratSphere.Core.Services;
+using StratSphere.Web.Filters;
+using StratSphere.Web.Middleware;
+using StratSphere.Web.Models.ViewModels.League;
 using System.Security.Claims;
 
-namespace Stratsphere.Web.Controllers;
+namespace StratSphere.Web.Controllers;
 
 [Authorize]
 public class LeagueController(
@@ -106,9 +106,20 @@ public class LeagueController(
                 City = t.City,
                 Name = t.Name,
                 Abbreviation = t.Abbreviation,
-                ManagerName = t.User.DisplayName,
-                IsOwner = t.UserId == userId
-            })
+                ManagerName = t.User?.DisplayName,
+                IsOwner = t.UserId == userId,
+                IsClaimed = t.UserId.HasValue
+            }),
+            Seasons = league.Seasons
+                .OrderByDescending(s => s.CardYear)
+                .ThenBy(s => s.Name)
+                .Select(s => new LeagueDetailViewModel.SeasonRow
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    CardYear = s.CardYear,
+                    Status = s.Status.ToString()
+                })
         };
 
         return View(model);

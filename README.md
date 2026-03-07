@@ -1,74 +1,112 @@
-# Stratsphere
+# StratSphere
 
 A multi-tenant web platform for hosting Strat-O-Matic baseball simulation leagues.
 
 ## Tech Stack
-- ASP.NET Core 8 MVC
+- ASP.NET Core 10 MVC
 - PostgreSQL 16 (two schemas: `public` for app data, `lahman` for historical stats)
-- Entity Framework Core 8 + Npgsql
+- Entity Framework Core 9 + Npgsql
 - ASP.NET Core Identity
 - Lahman Baseball Database (v2025)
 
+---
+
 ## Getting Started
 
-### 1. Prerequisites
-- .NET 8 SDK
-- PostgreSQL 16
-- (Optional) pgAdmin or psql
+### Prerequisites
+- .NET 10 SDK
+- PostgreSQL 16 (macOS: [Postgres.app](https://postgresapp.com/) recommended)
 
-### 2. Restore packages
+### 1. Clone and restore packages
 ```bash
+git clone <repo>
+cd StratSphere
 dotnet restore
 ```
 
-### 3. Configure database connection
-Edit `src/Stratsphere.Web/appsettings.Development.json`:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=stratsphere_dev;Username=postgres;Password=YOUR_PASSWORD"
-  }
-}
+### 2. Create the database
+```bash
+psql -U postgres -c "CREATE DATABASE stratsphere_dev;"
 ```
 
-### 4. Run EF Core migrations (creates public schema tables)
+Or with Postgres.app (no password, local superuser):
+```bash
+/Applications/Postgres.app/Contents/Versions/latest/bin/psql -c "CREATE DATABASE stratsphere_dev;"
+```
+
+### 3. Configure the connection string via user secrets
+
+The connection string is stored in user secrets — **not** in `appsettings.json`.
+
 ```bash
 cd src/Stratsphere.Web
-dotnet ef migrations add InitialCreate --project ../Stratsphere.Data
-dotnet ef database update
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
+  "Host=localhost;Port=5432;Database=stratsphere_dev;Username=YOUR_USER;Password=YOUR_PASSWORD"
 ```
 
-### 5. Import Lahman data (creates lahman schema tables)
-Download the latest Lahman CSVs from https://sabr.org/lahman-database/
+If using Postgres.app with your OS user as superuser (no password):
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
+  "Host=localhost;Port=5432;Database=stratsphere_dev;Username=$(whoami)"
+```
+
+### 4. Apply EF Core migrations
+```bash
+# From solution root
+~/.dotnet/tools/dotnet-ef database update \
+  --project src/Stratsphere.Data \
+  --startup-project src/Stratsphere.Web
+```
+
+### 5. Import Lahman data
+
+Download the Lahman CSV files from [Sean Lahman's site](http://www.seanlahman.com/baseball-archive/statistics/) or SABR.
 
 ```bash
-cd tools/Stratsphere.DataImport
+cd tools/StratSphere.DataImport
 dotnet run -- \
   --source /path/to/lahman-csvs \
-  --connection "Host=localhost;Port=5432;Database=stratsphere_dev;Username=postgres;Password=YOUR_PASSWORD"
+  --connection "Host=localhost;Port=5432;Database=stratsphere_dev;Username=YOUR_USER"
 ```
+
+This is safe to re-run — it truncates and reloads the `lahman` schema only. It does not touch app data in the `public` schema.
 
 ### 6. Run the app
 ```bash
-cd src/Stratsphere.Web
-dotnet run
+dotnet run --project src/Stratsphere.Web --launch-profile http
+# App runs at http://localhost:5039
 ```
+
+---
 
 ## Project Structure
 ```
 src/
-  Stratsphere.Core/       Domain entities, interfaces, services
-  Stratsphere.Data/       EF Core DbContext, repositories, migrations
-  Stratsphere.Web/        ASP.NET Core MVC app
+  StratSphere.Core/       Domain entities, interfaces, services
+  StratSphere.Data/       EF Core DbContext, repositories, migrations
+  StratSphere.Web/        ASP.NET Core MVC app (controllers, views, filters)
 tools/
-  Stratsphere.DataImport/ CLI tool: Lahman CSV -> PostgreSQL
+  StratSphere.DataImport/ CLI tool: Lahman CSV → PostgreSQL (lahman schema)
 tests/
-  Stratsphere.Tests/      xUnit tests
+  StratSphere.Tests/      xUnit tests
 ```
+
+---
+
+## League Setup Workflow
+
+1. A user **registers** and **creates a league** — they become the commissioner.
+2. The commissioner **creates teams** (city, name, abbreviation) for the league.
+3. Other users **join the league** via its slug, then **claim an unclaimed team**.
+4. The commissioner **creates a season** with a card year (e.g. 1986) — this determines which Lahman player cards are available.
+5. Commissioners and team managers **build rosters** via the team detail page — live typeahead search against the Lahman database.
+6. The commissioner **enters game scores** — standings update automatically.
+
+---
 
 ## Database Overview
 ```
-public schema   App tables (leagues, teams, rosters, standings, sim stats...)
+public schema   App tables (leagues, teams, seasons, rosters, standings)
 lahman schema   Read-only Lahman data (people, batting, pitching, fielding)
 ```
 

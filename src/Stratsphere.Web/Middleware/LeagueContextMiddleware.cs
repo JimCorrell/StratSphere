@@ -1,6 +1,6 @@
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Web.Middleware;
+namespace StratSphere.Web.Middleware;
 
 /// <summary>
 /// Resolves the active league from the route slug and attaches it to HttpContext.Items.

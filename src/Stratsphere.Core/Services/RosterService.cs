@@ -1,7 +1,7 @@
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Core.Services;
+namespace StratSphere.Core.Services;
 
 public class RosterService(IRosterRepository rosterRepo, IPlayerCardRepository cardRepo)
 {
@@ -35,9 +35,9 @@ public class RosterService(IRosterRepository rosterRepo, IPlayerCardRepository c
     /// Drops a card from a roster (soft delete). Use for trades and releases.
     /// The slot is retained as trade/release history for the season.
     /// </summary>
-    public async Task DropCardFromRosterAsync(Guid slotId)
+    public async Task DropCardFromRosterAsync(Guid slotId, Guid teamId)
     {
-        await rosterRepo.DropAsync(slotId);
+        await rosterRepo.DropAsync(slotId, teamId);
         await rosterRepo.SaveChangesAsync();
     }
 }
