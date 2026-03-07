@@ -1,0 +1,62 @@
+@model StratSphere.Web.Models.ViewModels.Season.CreateSeasonViewModel
+@{
+    var slug = Context.Request.RouteValues["slug"]?.ToString() ?? "";
+    ViewData["Title"] = "Create Season";
+    Layout = "_Layout";
+}
+
+<div class="container" style="padding: 3rem 1rem; max-width: 560px;">
+
+    <div style="margin-bottom:1.5rem;">
+        <a href="/league/@slug"
+           style="font-size:0.8125rem; color:var(--text-muted); text-decoration:none;">
+            ← Back to league
+        </a>
+    </div>
+
+    <h1 style="color:var(--text); margin:0 0 0.25rem;">Create Season</h1>
+    <p style="color:var(--text-muted); margin:0 0 2rem; font-size:0.9rem;">
+        Seasons set the card year used for all rosters in this league.
+    </p>
+
+    <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:2rem;">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-error mb-2">
+                <div asp-validation-summary="ModelOnly"></div>
+            </div>
+        }
+
+        <form asp-controller="Season" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="Name" class="form-label">Season Name</label>
+                <input asp-for="Name" class="form-control" placeholder="e.g. 1986 Season" />
+                <span asp-validation-for="Name" class="text-muted" style="font-size:0.8rem;"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CardYear" class="form-label">Card Year</label>
+                <input asp-for="CardYear" type="number" class="form-control"
+                       min="1871" max="2025" placeholder="e.g. 1986" />
+                <span asp-validation-for="CardYear" class="text-muted" style="font-size:0.8rem;"></span>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin:0.4rem 0 0;">
+                    Determines which Lahman season stats are used for player cards.
+                </p>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary">Create season</button>
+                <a href="/league/@slug" class="btn btn-ghost">Cancel</a>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

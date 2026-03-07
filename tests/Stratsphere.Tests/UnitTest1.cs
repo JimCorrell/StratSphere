@@ -1,4 +1,4 @@
-namespace Stratsphere.Tests;
+namespace StratSphere.Tests;
 
 public class UnitTest1
 {

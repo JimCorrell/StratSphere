@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Data.Repositories;
+namespace StratSphere.Data.Repositories;
 
-public class StandingsRepository(StratosphereDbContext db) : IStandingsRepository
+public class StandingsRepository(StratSphereDbContext db) : IStandingsRepository
 {
     public async Task<IEnumerable<Standings>> GetBySeasonIdAsync(Guid seasonId) =>
         await db.Standings

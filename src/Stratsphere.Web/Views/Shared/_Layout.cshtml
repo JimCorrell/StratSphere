@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Stratsphere" : "Stratsphere")</title>
+    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} — StratSphere" : "StratSphere")</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -13,7 +13,7 @@
 <nav class="navbar">
     <a asp-controller="Home" asp-action="Index" class="navbar-brand">
         <span class="brand-dot"></span>
-        Stratsphere
+        StratSphere
     </a>
 
     <ul class="navbar-nav">
@@ -26,7 +26,7 @@
             <li>
                 <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-ghost" style="font-size:0.875rem;padding:0.4rem 0.75rem;color:rgba(247,242,232,0.6)">
+                    <button type="submit" class="btn btn-ghost" style="font-size:0.875rem;padding:0.4rem 0.75rem;color:rgba(226,232,240,0.6)">
                         Sign out
                     </button>
                 </form>
@@ -45,7 +45,7 @@
 </div>
 
 <footer class="site-footer">
-    &copy; @DateTime.Now.Year Stratsphere &mdash; Built for Strat-O-Matic leagues
+    &copy; @DateTime.Now.Year StratSphere &mdash; Built for Strat-O-Matic leagues
 </footer>
 
 <script src="~/js/site.js" asp-append-version="true"></script>

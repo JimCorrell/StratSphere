@@ -1,6 +1,6 @@
-using Stratsphere.Core.Enums;
+using StratSphere.Core.Enums;
 
-namespace Stratsphere.Core.Entities;
+namespace StratSphere.Core.Entities;
 
 public class LeagueMember
 {

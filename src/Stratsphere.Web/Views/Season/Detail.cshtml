@@ -1,0 +1,28 @@
+@model StratSphere.Web.Models.ViewModels.Season.SeasonDetailViewModel
+@{ ViewData["Title"] = Model.Name; Layout = "_Layout"; }
+
+<div style="background:var(--panel); border-bottom:3px solid var(--amber); padding:2rem 0;">
+    <div class="container">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+            <div>
+                <p style="font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+                           color:var(--amber-light); margin-bottom:0.4rem;">
+                    <a href="/league/@Model.LeagueSlug" style="color:var(--amber-light); text-decoration:none;">@Model.LeagueName</a>
+                    &rsaquo; Season
+                </p>
+                <h1 style="color:var(--cream); margin:0; font-size:2rem;">@Model.Name</h1>
+                <p style="color:rgba(226,232,240,0.5); margin:0.3rem 0 0; font-size:0.875rem;">
+                    @Model.CardYear card year &middot; @Model.Status
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding:2.5rem 1rem;">
+
+    <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:2rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">
+        Roster management coming soon.
+    </div>
+
+</div>

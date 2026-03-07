@@ -1,25 +1,47 @@
-/* ── Stratsphere Design System ────────────────────────────────────────────── */
+/* ── StratSphere Design System ────────────────────────────────────────────── */
 /* Aesthetic: Classic ballpark scoreboard meets modern web                      */
-/* Palette: deep green / cream / amber / charcoal                               */
+/* Palette: midnight navy / slate panels / baseball grass / blue accent / gold  */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
 
 :root {
-  --green-deep:    #0f2318;
-  --green-mid:     #1a3a2a;
-  --green-light:   #2a5a40;
-  --green-subtle:  #e8f0eb;
-  --cream:         #f7f2e8;
-  --cream-dark:    #ede5d4;
-  --amber:         #c8973a;
-  --amber-light:   #e8b85a;
-  --amber-muted:   #f0dba8;
-  --charcoal:      #1c1c1c;
-  --charcoal-mid:  #3a3a3a;
-  --charcoal-soft: #6a6a6a;
-  --white:         #ffffff;
-  --red-error:     #c0392b;
-  --red-subtle:    #fdf2f2;
+  /* ── Core dark palette ──────────────────────────────────────────────────── */
+  --bg:            #0F172A;   /* page background */
+  --panel:         #1E293B;   /* cards, panels */
+  --panel-raised:  #243447;   /* slightly elevated surface */
+  --border:        #334155;   /* subtle borders */
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --text:          #E2E8F0;   /* primary text */
+  --text-muted:    #94A3B8;   /* secondary / muted text */
+  --text-subtle:   #64748B;   /* very muted */
+
+  /* ── Accents ─────────────────────────────────────────────────────────────── */
+  --accent:        #3B82F6;   /* primary blue — links, focus, interactive */
+  --accent-hover:  #60A5FA;   /* lighter blue on hover */
+  --grass:         #15803D;   /* baseball grass green — primary actions */
+  --grass-light:   #16A34A;   /* lighter grass for hover */
+  --highlight:     #FACC15;   /* amber/gold highlight */
+  --highlight-soft: #FDE68A;  /* lighter highlight */
+
+  /* ── Status ──────────────────────────────────────────────────────────────── */
+  --red-error:     #F87171;
+  --red-subtle:    #1F1010;
+
+  /* ── Legacy aliases (keep for CSS rules below) ──────────────────────────── */
+  --green-deep:    #0F172A;
+  --green-mid:     #15803D;
+  --green-light:   #16A34A;
+  --green-subtle:  #1A3D2E;
+  --cream:         #E2E8F0;
+  --cream-dark:    #334155;
+  --amber:         #FACC15;
+  --amber-light:   #FDE68A;
+  --amber-muted:   #1E293B;
+  --charcoal:      #E2E8F0;
+  --charcoal-mid:  #CBD5E1;
+  --charcoal-soft: #94A3B8;
+  --white:         #1E293B;
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'Source Sans 3', 'Helvetica Neue', sans-serif;
@@ -27,9 +49,9 @@
   --radius-sm:  4px;
   --radius-md:  8px;
   --radius-lg:  12px;
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.12);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
-  --shadow-lg:  0 8px 32px rgba(0,0,0,0.14);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.30);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,0.50);
 }
 
 /* ── Reset & Base ─────────────────────────────────────────────────────────── */
@@ -40,8 +62,8 @@ html { font-size: 16px; -webkit-font-smoothing: antialiased; }
 body {
   font-family: var(--font-body);
   font-weight: 400;
-  color: var(--charcoal);
-  background: var(--cream);
+  color: var(--text);
+  background: var(--bg);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -52,7 +74,7 @@ h1, h2, h3, h4, h5 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.2;
-  color: var(--green-deep);
+  color: var(--text);
 }
 
 h1 { font-size: 2.5rem; }
@@ -61,13 +83,13 @@ h3 { font-size: 1.375rem; }
 
 p { line-height: 1.65; color: var(--charcoal-mid); }
 
-a { color: var(--green-light); text-decoration: none; transition: color 0.15s; }
-a:hover { color: var(--amber); }
+a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
+a:hover { color: var(--accent-hover); }
 
 /* ── Navigation ───────────────────────────────────────────────────────────── */
 .navbar {
-  background: var(--green-deep);
-  border-bottom: 3px solid var(--amber);
+  background: var(--panel);
+  border-bottom: 3px solid var(--highlight);
   padding: 0 2rem;
   height: 64px;
   display: flex;
@@ -76,26 +98,26 @@ a:hover { color: var(--amber); }
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
 }
 
 .navbar-brand {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--cream) !important;
+  color: var(--text) !important;
   letter-spacing: -0.02em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.navbar-brand:hover { color: var(--amber-light) !important; }
+.navbar-brand:hover { color: var(--highlight-soft) !important; }
 
 .navbar-brand .brand-dot {
   width: 8px;
   height: 8px;
-  background: var(--amber);
+  background: var(--highlight);
   border-radius: 50%;
   display: inline-block;
 }
@@ -108,7 +130,7 @@ a:hover { color: var(--amber); }
 }
 
 .navbar-nav .nav-link {
-  color: rgba(247,242,232,0.75);
+  color: rgba(226,232,240,0.65);
   font-size: 0.875rem;
   font-weight: 500;
   padding: 0.5rem 0.875rem;
@@ -119,18 +141,18 @@ a:hover { color: var(--amber); }
 }
 
 .navbar-nav .nav-link:hover {
-  color: var(--cream);
-  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
 }
 
 .navbar-nav .nav-link.active {
-  color: var(--amber-light);
+  color: var(--highlight-soft);
 }
 
 .navbar-divider {
   width: 1px;
   height: 20px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
   margin: 0 0.5rem;
 }
 
@@ -162,31 +184,31 @@ a:hover { color: var(--amber); }
   align-items: center;
   justify-content: center;
   padding: 3rem 1.5rem;
-  background: var(--cream);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
 }
 
-/* Field texture background */
+/* Subtle field-line texture */
 .auth-wrapper::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(15,35,24,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 70%),
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 39px,
-      rgba(15,35,24,0.04) 39px,
-      rgba(15,35,24,0.04) 40px
+      rgba(255,255,255,0.015) 39px,
+      rgba(255,255,255,0.015) 40px
     );
   pointer-events: none;
 }
 
 .auth-card {
-  background: var(--white);
-  border: 1px solid var(--cream-dark);
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 2.5rem;
   width: 100%;
@@ -200,7 +222,7 @@ a:hover { color: var(--amber); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--green-mid), var(--amber));
+  background: linear-gradient(90deg, var(--grass), var(--highlight));
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
@@ -212,7 +234,7 @@ a:hover { color: var(--amber); }
 .auth-logo-mark {
   width: 52px;
   height: 52px;
-  background: var(--green-deep);
+  background: var(--grass);
   border-radius: 12px;
   display: inline-flex;
   align-items: center;
@@ -224,13 +246,13 @@ a:hover { color: var(--amber); }
 
 .auth-title {
   font-size: 1.625rem;
-  color: var(--green-deep);
+  color: var(--text);
   margin-bottom: 0.25rem;
 }
 
 .auth-subtitle {
   font-size: 0.9rem;
-  color: var(--charcoal-soft);
+  color: var(--text-muted);
   font-weight: 400;
 }
 
@@ -245,7 +267,7 @@ a:hover { color: var(--amber); }
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--charcoal-mid);
+  color: var(--text-muted);
   margin-bottom: 0.4rem;
 }
 
@@ -254,9 +276,9 @@ a:hover { color: var(--amber); }
   padding: 0.625rem 0.875rem;
   font-family: var(--font-body);
   font-size: 0.9375rem;
-  color: var(--charcoal);
-  background: var(--white);
-  border: 1.5px solid var(--cream-dark);
+  color: var(--text);
+  background: var(--panel-raised);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   transition: all 0.15s;
   outline: none;
@@ -264,11 +286,11 @@ a:hover { color: var(--amber); }
 }
 
 .form-control:focus {
-  border-color: var(--green-light);
-  box-shadow: 0 0 0 3px rgba(42,90,64,0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.20);
 }
 
-.form-control::placeholder { color: #b0a898; }
+.form-control::placeholder { color: var(--text-subtle); }
 
 .form-check {
   display: flex;
@@ -279,13 +301,13 @@ a:hover { color: var(--amber); }
 .form-check-input {
   width: 16px;
   height: 16px;
-  accent-color: var(--green-light);
+  accent-color: var(--grass);
   cursor: pointer;
 }
 
 .form-check-label {
   font-size: 0.875rem;
-  color: var(--charcoal-soft);
+  color: var(--text-muted);
   cursor: pointer;
 }
 
@@ -309,51 +331,51 @@ a:hover { color: var(--amber); }
 }
 
 .btn-primary {
-  background: var(--green-mid);
-  color: var(--cream);
-  box-shadow: 0 2px 8px rgba(15,35,24,0.25);
+  background: var(--grass);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(21,128,61,0.35);
 }
 
 .btn-primary:hover {
-  background: var(--green-light);
-  color: var(--cream);
+  background: var(--grass-light);
+  color: var(--text);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15,35,24,0.3);
+  box-shadow: 0 4px 12px rgba(21,128,61,0.45);
 }
 
 .btn-primary:active { transform: translateY(0); }
 
 .btn-outline {
   background: transparent;
-  color: var(--green-mid);
-  border: 1.5px solid var(--green-mid);
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
 }
 
 .btn-outline:hover {
-  background: var(--green-subtle);
-  color: var(--green-deep);
+  background: rgba(59,130,246,0.10);
+  color: var(--accent-hover);
 }
 
 .btn-amber {
-  background: var(--amber);
-  color: var(--white);
-  box-shadow: 0 2px 8px rgba(200,151,58,0.3);
+  background: var(--highlight);
+  color: var(--bg);
+  box-shadow: 0 2px 8px rgba(250,204,21,0.30);
 }
 
 .btn-amber:hover {
-  background: var(--amber-light);
-  color: var(--white);
+  background: var(--highlight-soft);
+  color: var(--bg);
   transform: translateY(-1px);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--charcoal-soft);
+  color: var(--text-muted);
 }
 
 .btn-ghost:hover {
-  background: var(--cream-dark);
-  color: var(--charcoal);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
 }
 
 .btn-full { width: 100%; }
@@ -376,14 +398,14 @@ a:hover { color: var(--amber); }
 
 .alert-error {
   background: var(--red-subtle);
-  border: 1px solid #f5c6c2;
+  border: 1px solid rgba(248,113,113,0.25);
   color: var(--red-error);
 }
 
 .alert-success {
-  background: var(--green-subtle);
-  border: 1px solid #c4dbc9;
-  color: var(--green-mid);
+  background: #0D2818;
+  border: 1px solid rgba(21,128,61,0.4);
+  color: var(--grass-light);
 }
 
 .validation-summary-errors ul { list-style: none; }
@@ -394,7 +416,7 @@ a:hover { color: var(--amber); }
   align-items: center;
   gap: 0.75rem;
   margin: 1.5rem 0;
-  color: var(--charcoal-soft);
+  color: var(--text-muted);
   font-size: 0.8125rem;
 }
 
@@ -403,27 +425,28 @@ a:hover { color: var(--amber); }
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--cream-dark);
+  background: var(--border);
 }
 
 .auth-footer {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.875rem;
-  color: var(--charcoal-soft);
+  color: var(--text-muted);
 }
 
 .auth-footer a {
-  color: var(--green-light);
+  color: var(--accent);
   font-weight: 600;
 }
 
-.auth-footer a:hover { color: var(--amber); }
+.auth-footer a:hover { color: var(--accent-hover); }
 
 /* ── Profile ──────────────────────────────────────────────────────────────── */
 .profile-header {
-  background: var(--green-deep);
-  color: var(--cream);
+  background: var(--panel);
+  border-bottom: 3px solid var(--highlight);
+  color: var(--text);
   padding: 3rem 0 2rem;
   margin-bottom: 2rem;
 }
@@ -431,8 +454,8 @@ a:hover { color: var(--amber); }
 .profile-avatar {
   width: 72px;
   height: 72px;
-  background: var(--green-light);
-  border: 3px solid var(--amber);
+  background: var(--grass);
+  border: 3px solid var(--highlight);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -440,20 +463,20 @@ a:hover { color: var(--amber); }
   font-family: var(--font-display);
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--cream);
+  color: var(--text);
   margin-bottom: 1rem;
 }
 
 .profile-name {
   font-family: var(--font-display);
   font-size: 2rem;
-  color: var(--cream);
+  color: var(--text);
   margin-bottom: 0.25rem;
 }
 
 .profile-meta {
   font-size: 0.875rem;
-  color: rgba(247,242,232,0.65);
+  color: rgba(226,232,240,0.55);
 }
 
 .stat-chips {
@@ -464,30 +487,30 @@ a:hover { color: var(--amber); }
 }
 
 .stat-chip {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
   border-radius: 20px;
   padding: 0.375rem 0.875rem;
   font-size: 0.8125rem;
-  color: rgba(247,242,232,0.85);
+  color: rgba(226,232,240,0.80);
 }
 
 .stat-chip strong {
-  color: var(--amber-light);
+  color: var(--highlight-soft);
   font-weight: 600;
 }
 
 /* ── Cards ────────────────────────────────────────────────────────────────── */
 .card {
-  background: var(--white);
-  border: 1px solid var(--cream-dark);
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
 
 .card-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--cream-dark);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -502,18 +525,18 @@ a:hover { color: var(--amber); }
 
 /* ── Footer ───────────────────────────────────────────────────────────────── */
 .site-footer {
-  background: var(--green-deep);
-  border-top: 2px solid var(--amber);
+  background: var(--panel);
+  border-top: 2px solid var(--highlight);
   padding: 1.25rem 2rem;
   text-align: center;
   font-size: 0.8125rem;
-  color: rgba(247,242,232,0.45);
+  color: rgba(226,232,240,0.40);
 }
 
 /* ── Utilities ────────────────────────────────────────────────────────────── */
-.text-muted { color: var(--charcoal-soft); }
-.text-amber { color: var(--amber); }
-.text-green { color: var(--green-light); }
+.text-muted { color: var(--text-muted); }
+.text-amber { color: var(--highlight); }
+.text-green { color: var(--grass); }
 .mt-1 { margin-top: 0.5rem; }
 .mt-2 { margin-top: 1rem; }
 .mt-3 { margin-top: 1.5rem; }

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stratsphere.Core.Interfaces;
-using Stratsphere.Web.Models.ViewModels.League;
+using StratSphere.Core.Interfaces;
+using StratSphere.Web.Models.ViewModels.League;
 using System.Security.Claims;
 
-namespace Stratsphere.Web.Controllers;
+namespace StratSphere.Web.Controllers;
 
 public class HomeController(ILeagueRepository leagueRepo) : Controller
 {

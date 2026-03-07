@@ -1,4 +1,4 @@
-namespace Stratsphere.Core.Entities.Lahman;
+namespace StratSphere.Core.Entities.Lahman;
 
 /// <summary>Read-only. Maps to lahman.pitching. One row per player per year per stint.</summary>
 public class LahmanPitching

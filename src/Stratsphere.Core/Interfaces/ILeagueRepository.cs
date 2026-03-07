@@ -1,6 +1,6 @@
-using Stratsphere.Core.Entities;
+using StratSphere.Core.Entities;
 
-namespace Stratsphere.Core.Interfaces;
+namespace StratSphere.Core.Interfaces;
 
 public interface ILeagueRepository
 {

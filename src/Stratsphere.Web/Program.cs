@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
-using Stratsphere.Core.Services;
-using Stratsphere.Data;
-using Stratsphere.Data.Repositories;
-using Stratsphere.Web.Middleware;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
+using StratSphere.Core.Services;
+using StratSphere.Data;
+using StratSphere.Data.Repositories;
+using StratSphere.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Database ──────────────────────────────────────────────────────────────────
-builder.Services.AddDbContext<StratosphereDbContext>(options =>
+builder.Services.AddDbContext<StratSphereDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
         npgsql => npgsql.MigrationsAssembly("Stratsphere.Data")));
 
@@ -22,7 +22,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
     options.Password.RequiredLength = 8;
     options.Password.RequireNonAlphanumeric = false;
 })
-.AddEntityFrameworkStores<StratosphereDbContext>()
+.AddEntityFrameworkStores<StratSphereDbContext>()
 .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -34,6 +34,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // ── Repositories ──────────────────────────────────────────────────────────────
 builder.Services.AddScoped<ILeagueRepository,     LeagueRepository>();
+builder.Services.AddScoped<ISeasonRepository,     SeasonRepository>();
 builder.Services.AddScoped<ITeamRepository,        TeamRepository>();
 builder.Services.AddScoped<IStandingsRepository,   StandingsRepository>();
 builder.Services.AddScoped<IRosterRepository,      RosterRepository>();
@@ -73,8 +74,9 @@ app.MapControllerRoute("league-create",     "league/create",     new { controlle
 app.MapControllerRoute("league-join",       "league/join",       new { controller = "League", action = "Join" });
 app.MapControllerRoute("league-not-member", "league/not-member", new { controller = "League", action = "NotMember" });
 
-// Team detail needs an explicit route so the GUID lands in {id}, not {action}
-app.MapControllerRoute("team-detail", "league/{slug}/team/{id:guid}", new { controller = "Team", action = "Detail" });
+// Detail routes with GUIDs need explicit routes so the GUID lands in {id}, not {action}
+app.MapControllerRoute("team-detail",   "league/{slug}/team/{id:guid}",   new { controller = "Team",   action = "Detail" });
+app.MapControllerRoute("season-detail", "league/{slug}/season/{id:guid}", new { controller = "Season", action = "Detail" });
 
 app.MapControllerRoute(
     name: "league",

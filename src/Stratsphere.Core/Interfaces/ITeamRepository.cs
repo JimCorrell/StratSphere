@@ -1,6 +1,6 @@
-using Stratsphere.Core.Entities;
+using StratSphere.Core.Entities;
 
-namespace Stratsphere.Core.Interfaces;
+namespace StratSphere.Core.Interfaces;
 
 public interface ITeamRepository
 {
@@ -9,4 +9,5 @@ public interface ITeamRepository
     Task<Team?> GetByUserAndLeagueAsync(Guid userId, Guid leagueId);
     Task AddAsync(Team team);
     Task SaveChangesAsync();
+    Task<bool> ClaimAsync(Guid teamId, Guid userId, Guid leagueId);
 }

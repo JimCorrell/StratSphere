@@ -1,36 +1,246 @@
-@model Stratsphere.Web.Models.ViewModels.Team.TeamDetailViewModel
+@model StratSphere.Web.Models.ViewModels.Team.TeamDetailViewModel
 @{ ViewData["Title"] = $"{Model.City} {Model.Name}"; Layout = "_Layout"; }
 
-<div class="container" style="padding: 3rem 1rem;">
-
-    <div style="margin-bottom:1.5rem;">
-        <a href="/league/@Model.LeagueSlug"
-           style="font-size:0.8125rem; color:var(--text-muted); text-decoration:none;">
-            ← @Model.LeagueName
-        </a>
-    </div>
-
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;">
-        <div>
-            <h1 style="color:var(--green-deep); margin:0 0 0.25rem;">
-                @Model.City @Model.Name
-            </h1>
-            <p style="color:var(--text-muted); margin:0; font-size:0.9rem; letter-spacing:0.05em; text-transform:uppercase;">
-                @Model.Abbreviation
-            </p>
+<div style="background:var(--panel); border-bottom:3px solid var(--amber); padding:2rem 0;">
+    <div class="container">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+            <div>
+                <p style="font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+                           color:var(--amber-light); margin-bottom:0.4rem;">
+                    <a href="/league/@Model.LeagueSlug" style="color:var(--amber-light); text-decoration:none;">@Model.LeagueName</a>
+                    &rsaquo; Team
+                </p>
+                <h1 style="color:var(--cream); margin:0; font-size:2rem;">@Model.City @Model.Name</h1>
+                <p style="color:rgba(226,232,240,0.5); margin:0.3rem 0 0; font-size:0.875rem;">
+                    @Model.Abbreviation
+                </p>
+            </div>
+            @if (Model.IsOwner)
+            {
+                <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--amber);">
+                    Your team
+                </span>
+            }
+            else if (Model.IsClaimed)
+            {
+                <span style="font-size:0.875rem; color:var(--text-muted);">@Model.OwnerName</span>
+            }
+            else
+            {
+                <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-subtle);">
+                    Unclaimed
+                </span>
+            }
         </div>
-        @if (Model.IsOwner)
-        {
-            <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--amber);">
-                Your team
-            </span>
-        }
     </div>
+</div>
 
-    <div style="background:var(--cream); border:1px solid var(--border); border-radius:8px; padding:2rem;">
-        <p style="color:var(--text-muted); margin:0; text-align:center;">
-            Roster management coming soon.
-        </p>
-    </div>
+<div class="container" style="padding:2.5rem 1rem;">
+
+    @if (!Model.Seasons.Any())
+    {
+        <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:2rem; text-align:center; color:var(--text-muted);">
+            No seasons created yet. Ask the commissioner to create a season before managing rosters.
+        </div>
+    }
+    else
+    {
+        <!-- Season tabs -->
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem;">
+            @foreach (var season in Model.Seasons)
+            {
+                var isActive = Model.SelectedSeason?.Id == season.Id;
+                <a href="/league/@Model.LeagueSlug/team/@Model.Id?seasonId=@season.Id"
+                   style="padding:0.4rem 1rem; border-radius:20px; font-size:0.8125rem; font-weight:600;
+                          text-decoration:none; border:1px solid @(isActive ? "var(--accent)" : "var(--border)");
+                          background:@(isActive ? "var(--accent)" : "transparent");
+                          color:@(isActive ? "var(--cream)" : "var(--text-muted)");">
+                    @season.Name
+                </a>
+            }
+        </div>
+
+        @if (Model.SelectedSeason is not null)
+        {
+            <!-- Add player search (managers + commissioner only) -->
+            @if (Model.CanManage)
+            {
+                <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:1.5rem;">
+                    <h3 style="color:var(--text); margin:0 0 1rem; font-size:0.9rem; font-weight:700;
+                               text-transform:uppercase; letter-spacing:0.06em;">Add Player</h3>
+                    <div style="position:relative;">
+                        <input id="playerSearch" type="text" autocomplete="off"
+                               placeholder="Search by name (e.g. Roger Clemens)…"
+                               class="form-control"
+                               data-team-id="@Model.Id"
+                               data-season-id="@Model.SelectedSeason.Id"
+                               data-card-year="@Model.SelectedSeason.CardYear"
+                               data-league-slug="@Model.LeagueSlug" />
+                        <div id="searchResults" style="display:none; position:absolute; top:100%; left:0; right:0;
+                                                       background:var(--panel-raised); border:1px solid var(--border);
+                                                       border-radius:0 0 6px 6px; z-index:100; max-height:280px; overflow-y:auto;">
+                        </div>
+                    </div>
+
+                    <!-- Hidden add form, submitted by JS when user picks a result -->
+                    <form id="addPlayerForm" asp-controller="Roster" asp-action="AddPlayer" method="post" style="display:none;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="TeamId" id="fp_teamId" />
+                        <input type="hidden" name="SeasonId" id="fp_seasonId" />
+                        <input type="hidden" name="LahmanPlayerId" id="fp_lahmanId" />
+                        <input type="hidden" name="CardYear" id="fp_cardYear" />
+                        <input type="hidden" name="Position" id="fp_position" />
+                    </form>
+                </div>
+            }
+
+            <!-- Roster table -->
+            <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+                <div style="padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+                    <h3 style="color:var(--text); margin:0; font-size:0.9rem; font-weight:700;
+                               text-transform:uppercase; letter-spacing:0.06em;">
+                        @Model.SelectedSeason.Name Roster
+                        @if (Model.Roster.Any())
+                        {
+                            <span style="font-weight:400; color:var(--text-muted); font-size:0.8rem; text-transform:none; letter-spacing:0;">
+                                — @Model.Roster.Count() players
+                            </span>
+                        }
+                    </h3>
+                </div>
+
+                @if (!Model.Roster.Any())
+                {
+                    <div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:0.875rem;">
+                        @if (Model.CanManage)
+                        {
+                            <span>No players yet. Search above to add your first card.</span>
+                        }
+                        else
+                        {
+                            <span>No players on the roster yet.</span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <th style="padding:0.6rem 1.25rem; text-align:left; font-size:0.7rem; font-weight:700;
+                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Player</th>
+                                <th style="padding:0.6rem 0.75rem; text-align:left; font-size:0.7rem; font-weight:700;
+                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Pos</th>
+                                <th style="padding:0.6rem 0.75rem; text-align:left; font-size:0.7rem; font-weight:700;
+                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Year</th>
+                                <th style="padding:0.6rem 0.75rem; text-align:right; font-size:0.7rem; font-weight:700;
+                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Stats</th>
+                                @if (Model.CanManage)
+                                {
+                                    <th style="padding:0.6rem 1.25rem; width:60px;"></th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in Model.Roster.OrderBy(r => r.Position).ThenBy(r => r.PlayerName))
+                            {
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:0.75rem 1.25rem; font-weight:500; color:var(--text);">@row.PlayerName</td>
+                                    <td style="padding:0.75rem 0.75rem; font-size:0.8rem; font-weight:600; color:var(--accent);">@row.Position</td>
+                                    <td style="padding:0.75rem 0.75rem; font-size:0.8rem; color:var(--text-muted);">@row.CardYear</td>
+                                    <td style="padding:0.75rem 0.75rem; text-align:right; font-size:0.8rem; color:var(--text-muted); font-variant-numeric:tabular-nums;">@row.StatLine</td>
+                                    @if (Model.CanManage)
+                                    {
+                                        <td style="padding:0.75rem 1.25rem; text-align:right;">
+                                            <form asp-controller="Roster" asp-action="Drop" method="post" style="margin:0;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="slotId" value="@row.SlotId" />
+                                                <input type="hidden" name="teamId" value="@Model.Id" />
+                                                <input type="hidden" name="seasonId" value="@Model.SelectedSeason.Id" />
+                                                <button type="submit" class="btn btn-ghost"
+                                                        style="font-size:0.7rem; padding:0.2rem 0.5rem; color:var(--red-error);">
+                                                    Drop
+                                                </button>
+                                            </form>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    }
 
 </div>
+
+@if (Model.CanManage && Model.SelectedSeason is not null)
+{
+    @section Scripts {
+        <script>
+        (function () {
+            const input    = document.getElementById('playerSearch');
+            const results  = document.getElementById('searchResults');
+            const form     = document.getElementById('addPlayerForm');
+            const teamId   = input.dataset.teamId;
+            const seasonId = input.dataset.seasonId;
+            const cardYear = input.dataset.cardYear;
+            const slug     = input.dataset.leagueSlug;
+
+            let debounce;
+
+            input.addEventListener('input', function () {
+                clearTimeout(debounce);
+                const q = input.value.trim();
+                if (q.length < 2) { results.style.display = 'none'; return; }
+                debounce = setTimeout(() => fetchResults(q), 300);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!input.contains(e.target) && !results.contains(e.target))
+                    results.style.display = 'none';
+            });
+
+            async function fetchResults(q) {
+                const url = `/league/${slug}/Roster/SearchCards?teamId=${teamId}&year=${cardYear}&q=${encodeURIComponent(q)}`;
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    renderResults(data);
+                } catch { results.style.display = 'none'; }
+            }
+
+            function renderResults(players) {
+                if (!players.length) {
+                    results.innerHTML = '<div style="padding:0.75rem 1rem; color:var(--text-muted); font-size:0.875rem;">No players found.</div>';
+                    results.style.display = 'block';
+                    return;
+                }
+                results.innerHTML = players.map(p => `
+                    <button type="button"
+                        data-id="${p.lahmanPlayerId}" data-pos="${p.position}" data-year="${p.cardYear}"
+                        onclick="selectPlayer(this)"
+                        style="display:flex; align-items:center; justify-content:space-between; width:100%; padding:0.625rem 1rem; background:none; border:none; border-bottom:1px solid var(--border); color:var(--text); cursor:pointer; text-align:left; font-size:0.875rem;"
+                        onmouseover="this.style.background='var(--border)'"
+                        onmouseout="this.style.background='none'">
+                        <span style="font-weight:500;">${p.name}</span>
+                        <span style="font-size:0.75rem; color:var(--accent); font-weight:600;">${p.position}</span>
+                    </button>`).join('');
+                results.style.display = 'block';
+            }
+
+            window.selectPlayer = function (btn) {
+                document.getElementById('fp_teamId').value    = teamId;
+                document.getElementById('fp_seasonId').value  = seasonId;
+                document.getElementById('fp_lahmanId').value  = btn.dataset.id;
+                document.getElementById('fp_cardYear').value  = btn.dataset.year;
+                document.getElementById('fp_position').value  = btn.dataset.pos;
+                results.style.display = 'none';
+                input.value = '';
+                form.submit();
+            };
+        })();
+        </script>
+    }
+}

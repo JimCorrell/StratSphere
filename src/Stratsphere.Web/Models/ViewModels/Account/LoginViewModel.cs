@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Stratsphere.Web.Models.ViewModels.Account;
+namespace StratSphere.Web.Models.ViewModels.Account;
 
 public class LoginViewModel
 {

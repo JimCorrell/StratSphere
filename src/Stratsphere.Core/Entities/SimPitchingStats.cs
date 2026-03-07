@@ -1,4 +1,4 @@
-namespace Stratsphere.Core.Entities;
+namespace StratSphere.Core.Entities;
 
 /// <summary>
 /// Accumulated pitching stats for a PlayerCard within a specific league season.

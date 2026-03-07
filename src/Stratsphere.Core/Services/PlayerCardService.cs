@@ -1,8 +1,8 @@
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Entities.Lahman;
-using Stratsphere.Core.Interfaces;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Entities.Lahman;
+using StratSphere.Core.Interfaces;
 
-namespace Stratsphere.Core.Services;
+namespace StratSphere.Core.Services;
 
 public class PlayerCardStats
 {

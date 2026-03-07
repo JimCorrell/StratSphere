@@ -5,19 +5,19 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2FB16EA8-8C56-4CD2-AEDE-693FCCFC630E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stratsphere.Core", "src\Stratsphere.Core\Stratsphere.Core.csproj", "{B7138E01-8752-422F-A22A-02EC5CD5CE97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratSphere.Core", "src\StratSphere.Core\StratSphere.Core.csproj", "{B7138E01-8752-422F-A22A-02EC5CD5CE97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stratsphere.Data", "src\Stratsphere.Data\Stratsphere.Data.csproj", "{6F31FD29-E344-4B9C-82B2-96FF79463175}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratSphere.Data", "src\StratSphere.Data\StratSphere.Data.csproj", "{6F31FD29-E344-4B9C-82B2-96FF79463175}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stratsphere.Web", "src\Stratsphere.Web\Stratsphere.Web.csproj", "{885F417D-6FAD-490A-B5DE-FCE47945FD98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratSphere.Web", "src\StratSphere.Web\StratSphere.Web.csproj", "{885F417D-6FAD-490A-B5DE-FCE47945FD98}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{2760FD93-34A1-4035-8BC7-58F280823B8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stratsphere.DataImport", "tools\Stratsphere.DataImport\Stratsphere.DataImport.csproj", "{B170FB29-1D4E-4193-B198-159B130644AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratSphere.DataImport", "tools\StratSphere.DataImport\StratSphere.DataImport.csproj", "{B170FB29-1D4E-4193-B198-159B130644AF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B326BC38-018F-4C21-A092-D20407CCC37C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stratsphere.Tests", "tests\Stratsphere.Tests\Stratsphere.Tests.csproj", "{1848DD53-AEAD-4B5B-911B-8F02D8C8C709}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratSphere.Tests", "tests\StratSphere.Tests\StratSphere.Tests.csproj", "{1848DD53-AEAD-4B5B-911B-8F02D8C8C709}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

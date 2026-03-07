@@ -1,2 +1,2 @@
-namespace Stratsphere.Core.Enums;
+namespace StratSphere.Core.Enums;
 public enum LeagueRole { Commissioner, Manager }

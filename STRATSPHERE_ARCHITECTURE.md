@@ -1,8 +1,8 @@
-# Stratsphere — Project Architecture
+# StratSphere — Project Architecture
 
 ## Overview
 A multi-tenant web platform for hosting Strat-O-Matic baseball simulation leagues.
-Built on **ASP.NET Core 8 MVC** + **PostgreSQL** + **HTML/CSS/JS**.
+Built on **ASP.NET Core 10 MVC** + **PostgreSQL 16** + **HTML/CSS/Vanilla JS**.
 Player data sourced from the **Lahman Baseball Database (v2025)**.
 
 ---
@@ -11,29 +11,28 @@ Player data sourced from the **Lahman Baseball Database (v2025)**.
 
 | Layer | Technology |
 |---|---|
-| Backend Framework | ASP.NET Core 8 (MVC) |
-| Auth | ASP.NET Core Identity |
-| ORM | Entity Framework Core 8 (Npgsql) |
+| Backend Framework | ASP.NET Core 10 (MVC, net10.0) |
+| Auth | ASP.NET Core Identity 9 |
+| ORM | Entity Framework Core 9 (Npgsql 9) |
 | Database | PostgreSQL 16 |
 | Frontend | Razor Views + Vanilla JS |
-| Styling | Bootstrap 5 + custom CSS |
-| Charts/Stats | Chart.js |
-| Player Data | Lahman Baseball Database (CSV import) |
+| Styling | Custom CSS (dark theme, CSS variables) |
+| Player Data | Lahman Baseball Database v2025 (CSV import) |
 
 ---
 
 ## Solution Structure
 
 ```
-Stratsphere.sln
+StratSphere.sln
 ├── src/
-│   ├── Stratsphere.Web/              # ASP.NET Core MVC — entry point
-│   ├── Stratsphere.Core/             # Domain entities, interfaces, services
-│   └── Stratsphere.Data/             # EF Core DbContext, repositories, migrations
+│   ├── StratSphere.Web/              # ASP.NET Core MVC — entry point
+│   ├── StratSphere.Core/             # Domain entities, interfaces, services
+│   └── StratSphere.Data/             # EF Core DbContext, repositories, migrations
 ├── tools/
-│   └── Stratsphere.DataImport/       # CLI: import Lahman CSVs -> PostgreSQL
+│   └── StratSphere.DataImport/       # CLI: import Lahman CSVs -> PostgreSQL
 └── tests/
-    └── Stratsphere.Tests/
+    └── StratSphere.Tests/
 ```
 
 ---
@@ -320,7 +319,7 @@ CREATE TABLE public.standings (
 
 ---
 
-## Core Entities (Stratsphere.Core)
+## Core Entities (StratSphere.Core)
 
 ```
 Entities/
@@ -414,35 +413,102 @@ The player detail page shows both stat contexts side-by-side:
 
 | Feature | Status |
 |---|---|
-| User registration & login | V1 |
-| Create / join leagues | V1 |
-| League dashboard | V1 |
-| Team management | V1 |
-| Standings (by season) | V1 |
-| Team rosters (view + manage) | V1 |
-| Player search + card selection (Lahman) | V1 |
-| Player profile: historical stats | V1 |
-| Player profile: sim stats (current league) | V1 |
-| Score entry -> standings update | V1 |
-| DataImport CLI (Lahman CSV -> PostgreSQL) | V1 |
-| Per-game box score entry + sim stat tracking | V2 |
+| User registration & login | ✅ Done |
+| Create / join leagues | ✅ Done |
+| League dashboard | ✅ Done |
+| Season management (commissioner creates, sets card year) | ✅ Done |
+| Team management (commissioner creates, managers claim) | ✅ Done |
+| Player search — Lahman AJAX typeahead | ✅ Done |
+| Roster management — add/drop cards per season | ✅ Done |
+| DataImport CLI (Lahman CSV → PostgreSQL) | ✅ Done |
+| Score entry → standings update | 🔲 Next |
+| Standings page (per season) | 🔲 Next |
+| Player profile: historical stats | 🔲 Next |
+| Player profile: sim stats (league-scoped) | 🔲 Next |
+| Season status transitions (setup → active → complete) | 🔲 Next |
+| Per-game box score entry + individual sim stat tracking | V2 |
 | Draft system | V2 |
 | Trade system | V2 |
 | Career sim stats across seasons | V2 |
 
 ---
 
+## Next Steps — V1 Completion
+
+Items are ordered by dependency. Each builds on the previous.
+
+### 1. Score Entry + Standings
+
+**Goal:** Commissioner enters a game result; standings auto-update.
+
+- `StandingsService.RecordGameResult(gameId)` exists — needs a UI to call it.
+- `GameController` (or `SeasonController`): `POST RecordResult(Guid gameId, int homeScore, int awayScore)`
+  - Updates `games` row (`home_score`, `away_score`, `status = completed`)
+  - Calls `StandingsService` to recalculate W/L/RS/RA for both teams
+- Season detail view: editable schedule table with score inputs
+- Standings table on season/league detail page: Rank | Team | W | L | PCT | RS | RA | Streak
+
+**Key consideration:** No schedule generator yet — for V1, the commissioner can create games manually or import a schedule. A simple `POST CreateGame(homeTeamId, awayTeamId, gameDate)` is sufficient.
+
+---
+
+### 2. Standings Page
+
+**Goal:** Any league member can view the current standings for a season.
+
+- `GET /league/{slug}/season/{id}` — season detail with standings table + recent scores
+- Standings sorted by PCT descending, then RS-RA differential as tiebreaker
+- `SeasonController.Detail(Guid id)` — load standings via `IStandingsRepository.GetBySeasonIdAsync`
+
+---
+
+### 3. Season Status Transitions
+
+**Goal:** Prevent roster adds/score entry in wrong season states.
+
+States: `setup` → `active` → `completed`
+
+- Commissioner action: "Open Season" button on season detail (setup → active)
+- "Close Season" button (active → completed)
+- `RosterController.AddPlayer` should check `season.Status == "active"` (or allow setup too — decide)
+- Score entry only allowed when `status == "active"`
+
+---
+
+### 4. Player Profile Page
+
+**Goal:** Show a card's historical (Lahman) and simulated (league-scoped) stats side-by-side.
+
+- Route: `GET /league/{slug}/player/{lahmanPlayerId}/{cardYear}`
+- `PlayerCardService.GetCardStatsAsync(lahmanPlayerId, cardYear, seasonId)` — already exists
+- View: two stat blocks
+  - **Historical** — from `lahman.batting` / `lahman.pitching` for the card year
+  - **This League** — from `sim_batting_stats` / `sim_pitching_stats` for the current season
+- Link from roster table: player name → player profile
+
+---
+
+### 5. Sim Stat Initialization
+
+**Goal:** When a player card is added to a roster, ensure a `sim_batting_stats` or `sim_pitching_stats` row exists at zero so the player profile page always has a sim stat row.
+
+- `RosterService.AddCardToRosterAsync` should call `SimStatsService.EnsureRowExistsAsync(cardId, seasonId, teamId)` after creating the slot
+- `SimStatsService` needs `EnsureRowExistsAsync` — INSERT ON CONFLICT DO NOTHING
+
+---
+
 ## Recommended Build Order
 
-1. **Scaffold solution** — projects, NuGet packages, EF + Identity
-2. **DataImport CLI** — import Lahman CSVs into `lahman` schema
-3. **EF Core setup** — public schema migrations; read-only lahman entity config
-4. **Auth** — register/login
-5. **League + Team CRUD**
-6. **Player search API** — typeahead against `lahman.people` + `lahman.batting/pitching`
-7. **Roster management** — add player cards to a team; `sim_batting/pitching_stats` rows created at 0
-8. **Standings** — score entry -> `StandingsService` recalc
-9. **Player profile** — side-by-side historical (Lahman) + sim (league-scoped) stats
+1. ✅ Scaffold solution, DataImport CLI, EF Core, Auth
+2. ✅ League + Team CRUD
+3. ✅ Season management
+4. ✅ Player search (Lahman AJAX typeahead)
+5. ✅ Roster management (add/drop per season)
+6. Season status transitions (setup → active)
+7. Score entry + standings recalc
+8. Standings page
+9. Sim stat initialization on roster add
+10. Player profile page (historical + sim stats)
 
 ---
 
@@ -452,7 +518,7 @@ The player detail page shows both stat contexts side-by-side:
 # Download latest Lahman CSVs (v2025, 1871-2025) from:
 # https://sabr.org/lahman-database/
 
-cd tools/Stratsphere.DataImport
+cd tools/StratSphere.DataImport
 dotnet run -- \
   --source /path/to/lahman-csvs \
   --connection "Host=localhost;Database=stratsphere;Username=...;Password=..."

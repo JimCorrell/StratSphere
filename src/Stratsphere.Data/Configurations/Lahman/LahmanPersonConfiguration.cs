@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Stratsphere.Core.Entities.Lahman;
+using StratSphere.Core.Entities.Lahman;
 
-namespace Stratsphere.Data.Configurations.Lahman;
+namespace StratSphere.Data.Configurations.Lahman;
 
 /// <summary>
 /// Maps to the lahman schema. Read-only — excluded from migrations.

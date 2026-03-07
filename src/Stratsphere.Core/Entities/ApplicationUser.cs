@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Stratsphere.Core.Entities;
+namespace StratSphere.Core.Entities;
 
 public class ApplicationUser : IdentityUser<Guid>
 {

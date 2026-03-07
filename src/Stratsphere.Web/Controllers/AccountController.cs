@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Stratsphere.Core.Entities;
-using Stratsphere.Core.Interfaces;
-using Stratsphere.Web.Models.ViewModels.Account;
+using StratSphere.Core.Entities;
+using StratSphere.Core.Interfaces;
+using StratSphere.Web.Models.ViewModels.Account;
 using System.Security.Claims;
 
-namespace Stratsphere.Web.Controllers;
+namespace StratSphere.Web.Controllers;
 
 public class AccountController(
     UserManager<ApplicationUser> userManager,

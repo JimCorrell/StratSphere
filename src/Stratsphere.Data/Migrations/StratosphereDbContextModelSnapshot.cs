@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Stratsphere.Data;
+using StratSphere.Data;
 
 #nullable disable
 
-namespace Stratsphere.Data.Migrations
+namespace StratSphere.Data.Migrations
 {
-    [DbContext(typeof(StratosphereDbContext))]
-    partial class StratosphereDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(StratSphereDbContext))]
+    partial class StratSphereDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -152,7 +152,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -227,7 +227,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Game", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Game", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -267,7 +267,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("games", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Lahman.LahmanBatting", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Lahman.LahmanBatting", b =>
                 {
                     b.Property<string>("PlayerId")
                         .HasMaxLength(9)
@@ -348,7 +348,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("batting", "lahman");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Lahman.LahmanFielding", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Lahman.LahmanFielding", b =>
                 {
                     b.Property<string>("PlayerId")
                         .HasMaxLength(9)
@@ -402,7 +402,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("fielding", "lahman");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Lahman.LahmanPerson", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Lahman.LahmanPerson", b =>
                 {
                     b.Property<string>("PlayerId")
                         .HasMaxLength(9)
@@ -464,7 +464,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("people", "lahman");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Lahman.LahmanPitching", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Lahman.LahmanPitching", b =>
                 {
                     b.Property<string>("PlayerId")
                         .HasMaxLength(9)
@@ -536,7 +536,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("pitching", "lahman");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.League", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.League", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -575,7 +575,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("leagues", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.LeagueMember", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.LeagueMember", b =>
                 {
                     b.Property<Guid>("LeagueId")
                         .HasColumnType("uuid");
@@ -598,7 +598,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("league_members", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.PlayerCard", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.PlayerCard", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -625,7 +625,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("player_cards", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.RosterSlot", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.RosterSlot", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -664,7 +664,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("roster_slots", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Season", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Season", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -699,7 +699,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("seasons", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.SimBattingStats", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.SimBattingStats", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -768,7 +768,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("sim_batting_stats", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.SimPitchingStats", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.SimPitchingStats", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -828,7 +828,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("sim_pitching_stats", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Standings", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Standings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -871,7 +871,7 @@ namespace Stratsphere.Data.Migrations
                     b.ToTable("standings", (string)null);
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Team", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Team", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -901,7 +901,7 @@ namespace Stratsphere.Data.Migrations
                     b.Property<Guid?>("SeasonId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -926,7 +926,7 @@ namespace Stratsphere.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.ApplicationUser", null)
+                    b.HasOne("StratSphere.Core.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -935,7 +935,7 @@ namespace Stratsphere.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.ApplicationUser", null)
+                    b.HasOne("StratSphere.Core.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -950,7 +950,7 @@ namespace Stratsphere.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.ApplicationUser", null)
+                    b.HasOne("StratSphere.Core.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -959,28 +959,28 @@ namespace Stratsphere.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.ApplicationUser", null)
+                    b.HasOne("StratSphere.Core.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Game", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Game", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.Team", "AwayTeam")
+                    b.HasOne("StratSphere.Core.Entities.Team", "AwayTeam")
                         .WithMany()
                         .HasForeignKey("AwayTeamId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Team", "HomeTeam")
+                    b.HasOne("StratSphere.Core.Entities.Team", "HomeTeam")
                         .WithMany()
                         .HasForeignKey("HomeTeamId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Season", "Season")
+                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
                         .WithMany("Games")
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -993,9 +993,9 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Season");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.League", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.League", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.ApplicationUser", "Commissioner")
+                    b.HasOne("StratSphere.Core.Entities.ApplicationUser", "Commissioner")
                         .WithMany()
                         .HasForeignKey("CommissionerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1004,15 +1004,15 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Commissioner");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.LeagueMember", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.LeagueMember", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.League", "League")
+                    b.HasOne("StratSphere.Core.Entities.League", "League")
                         .WithMany("Members")
                         .HasForeignKey("LeagueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.ApplicationUser", "User")
+                    b.HasOne("StratSphere.Core.Entities.ApplicationUser", "User")
                         .WithMany("LeagueMemberships")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1023,21 +1023,21 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.RosterSlot", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.RosterSlot", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.PlayerCard", "Card")
+                    b.HasOne("StratSphere.Core.Entities.PlayerCard", "Card")
                         .WithMany("RosterSlots")
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Season", "Season")
+                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
                         .WithMany("RosterSlots")
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Team", "Team")
+                    b.HasOne("StratSphere.Core.Entities.Team", "Team")
                         .WithMany("RosterSlots")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1050,9 +1050,9 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Season", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Season", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.League", "League")
+                    b.HasOne("StratSphere.Core.Entities.League", "League")
                         .WithMany("Seasons")
                         .HasForeignKey("LeagueId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1061,21 +1061,21 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("League");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.SimBattingStats", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.SimBattingStats", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.PlayerCard", "Card")
+                    b.HasOne("StratSphere.Core.Entities.PlayerCard", "Card")
                         .WithMany("SimBattingStats")
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Season", "Season")
+                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
                         .WithMany()
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Team", "Team")
+                    b.HasOne("StratSphere.Core.Entities.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1088,21 +1088,21 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.SimPitchingStats", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.SimPitchingStats", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.PlayerCard", "Card")
+                    b.HasOne("StratSphere.Core.Entities.PlayerCard", "Card")
                         .WithMany("SimPitchingStats")
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Season", "Season")
+                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
                         .WithMany()
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Team", "Team")
+                    b.HasOne("StratSphere.Core.Entities.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1115,15 +1115,15 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Standings", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Standings", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.Season", "Season")
+                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
                         .WithMany("Standings")
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Team", "Team")
+                    b.HasOne("StratSphere.Core.Entities.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1134,23 +1134,21 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Team", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Team", b =>
                 {
-                    b.HasOne("Stratsphere.Core.Entities.League", "League")
+                    b.HasOne("StratSphere.Core.Entities.League", "League")
                         .WithMany("Teams")
                         .HasForeignKey("LeagueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stratsphere.Core.Entities.Season", "Season")
+                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
                         .WithMany("Teams")
                         .HasForeignKey("SeasonId");
 
-                    b.HasOne("Stratsphere.Core.Entities.ApplicationUser", "User")
+                    b.HasOne("StratSphere.Core.Entities.ApplicationUser", "User")
                         .WithMany("Teams")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("League");
 
@@ -1159,14 +1157,14 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("LeagueMemberships");
 
                     b.Navigation("Teams");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.League", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.League", b =>
                 {
                     b.Navigation("Members");
 
@@ -1175,7 +1173,7 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Teams");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.PlayerCard", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.PlayerCard", b =>
                 {
                     b.Navigation("RosterSlots");
 
@@ -1184,7 +1182,7 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("SimPitchingStats");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Season", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Season", b =>
                 {
                     b.Navigation("Games");
 
@@ -1195,7 +1193,7 @@ namespace Stratsphere.Data.Migrations
                     b.Navigation("Teams");
                 });
 
-            modelBuilder.Entity("Stratsphere.Core.Entities.Team", b =>
+            modelBuilder.Entity("StratSphere.Core.Entities.Team", b =>
                 {
                     b.Navigation("RosterSlots");
                 });

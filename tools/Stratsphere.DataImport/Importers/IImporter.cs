@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace Stratsphere.DataImport.Importers;
+namespace StratSphere.DataImport.Importers;
 
 public interface IImporter
 {

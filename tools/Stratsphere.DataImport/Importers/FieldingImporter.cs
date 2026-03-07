@@ -3,7 +3,7 @@ using CsvHelper.Configuration;
 using Npgsql;
 using System.Globalization;
 
-namespace Stratsphere.DataImport.Importers;
+namespace StratSphere.DataImport.Importers;
 
 public class FieldingImporter : IImporter
 {
