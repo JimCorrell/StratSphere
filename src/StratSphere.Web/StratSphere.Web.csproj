@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stratsphere.Core\Stratsphere.Core.csproj" />
-    <ProjectReference Include="..\Stratsphere.Data\Stratsphere.Data.csproj" />
+    <ProjectReference Include="../StratSphere.Core/StratSphere.Core.csproj" />
+    <ProjectReference Include="../StratSphere.Data/StratSphere.Data.csproj" />
   </ItemGroup>
 </Project>

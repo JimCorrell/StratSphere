@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Stratsphere.Core\Stratsphere.Core.csproj" />
-    <ProjectReference Include="..\..\src\Stratsphere.Data\Stratsphere.Data.csproj" />
+    <ProjectReference Include="../../src/StratSphere.Core/StratSphere.Core.csproj" />
+    <ProjectReference Include="../../src/StratSphere.Data/StratSphere.Data.csproj" />
   </ItemGroup>
 </Project>

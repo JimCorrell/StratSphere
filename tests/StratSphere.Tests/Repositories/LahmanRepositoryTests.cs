@@ -220,7 +220,7 @@ public class LahmanRepositoryTests : IDisposable
             Pitching("gibsobo01", 1968, g: 34, gs: 34));
         await _db.SaveChangesAsync();
 
-        var results = (await _sut.SearchCardsAsync("a", null, pitchersOnly: true)).ToList();
+        var results = (await _sut.SearchCardsAsync("o", null, pitchersOnly: true)).ToList();
 
         Assert.Equal(2, results.Count);
     }

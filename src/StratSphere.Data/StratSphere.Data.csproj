@@ -13,6 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stratsphere.Core\Stratsphere.Core.csproj" />
+    <ProjectReference Include="../StratSphere.Core/StratSphere.Core.csproj" />
   </ItemGroup>
 </Project>
