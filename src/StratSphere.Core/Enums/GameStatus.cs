@@ -1,2 +1,2 @@
 namespace StratSphere.Core.Enums;
-public enum GameStatus { Scheduled, Completed, Postponed }
+public enum GameStatus { Unscheduled, Scheduled, Completed, Postponed }
