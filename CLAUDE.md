@@ -10,6 +10,8 @@
 | 2026-03 | `PlayerCard.GetOrCreateAsync` catches `DbUpdateException` + re-fetches | Optimistic concurrency for duplicate card insert; avoids serializable transaction |
 | 2026-03 | `MigrateAsync()` on startup | Single-instance deploy; idempotent; no separate migration step in deployment |
 | 2026-03 | Tests use EF InMemory; no real DB in CI | Business logic covered; real Postgres integration deferred |
+| 2026-03 | CI/CD split into `ci.yml` (build/test/coverage) and `cd.yml` (Docker/Trivy) | CI runs on PRs and feature branches; CD runs on main push and version tags only |
+| 2026-03 | Codecov via `coverlet.collector` + `codecov-action@v4`; token in `CODECOV_TOKEN` secret | XPlat Code Coverage format; `fail_ci_if_error: true` |
 
 ---
 
