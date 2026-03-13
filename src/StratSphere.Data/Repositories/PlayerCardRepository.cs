@@ -28,6 +28,20 @@ public class PlayerCardRepository(StratSphereDbContext db) : IPlayerCardReposito
             Position = position
         };
         db.PlayerCards.Add(card);
+
+        try
+        {
+            await db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // A concurrent request created the same card — detach and re-fetch
+            db.Entry(card).State = EntityState.Detached;
+            card = await GetByLahmanAsync(lahmanPlayerId, cardYear, position)
+                ?? throw new InvalidOperationException(
+                    $"Failed to create or retrieve player card ({lahmanPlayerId}, {cardYear}, {position}).");
+        }
+
         return card;
     }
 

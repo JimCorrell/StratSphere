@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StratSphere.Core.Entities;
+using StratSphere.Core.Enums;
 
 namespace StratSphere.Data.Configurations;
 
@@ -13,7 +14,12 @@ public class LeagueConfiguration : IEntityTypeConfiguration<League>
         b.Property(x => x.Name).HasMaxLength(100).IsRequired();
         b.Property(x => x.Slug).HasMaxLength(60).IsRequired();
         b.HasIndex(x => x.Slug).IsUnique();
-        b.Property(x => x.Status).HasMaxLength(20).HasDefaultValue("setup");
+        b.Property(x => x.Status)
+            .HasMaxLength(20)
+            .HasDefaultValueSql("'Setup'")
+            .HasConversion(
+                v => v.ToString(),
+                v => Enum.Parse<LeagueStatus>(v, ignoreCase: true));
 
         b.HasOne(x => x.Commissioner)
          .WithMany()

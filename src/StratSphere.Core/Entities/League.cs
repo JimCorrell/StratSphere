@@ -1,3 +1,5 @@
+using StratSphere.Core.Enums;
+
 namespace StratSphere.Core.Entities;
 
 public class League
@@ -6,7 +8,7 @@ public class League
     public string Name { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
     public Guid CommissionerId { get; set; }
-    public string Status { get; set; } = "setup";
+    public LeagueStatus Status { get; set; } = LeagueStatus.Setup;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ApplicationUser Commissioner { get; set; } = null!;

@@ -30,7 +30,7 @@ public class LeagueController(
             {
                 Name = l.Name,
                 Slug = l.Slug,
-                Status = l.Status,
+                Status = l.Status.ToString(),
                 MemberCount = l.Members.Count,
                 Role = l.Members.FirstOrDefault(m => m.UserId == CurrentUserId)?.Role.ToString() ?? ""
             })
@@ -92,7 +92,7 @@ public class LeagueController(
             Id = league.Id,
             Name = league.Name,
             Slug = league.Slug,
-            Status = league.Status,
+            Status = league.Status.ToString(),
             IsCommissioner = league.CommissionerId == userId,
             HasTeam = league.Teams.Any(t => t.UserId == userId),
             Members = league.Members.Select(m => new LeagueDetailViewModel.MemberRow

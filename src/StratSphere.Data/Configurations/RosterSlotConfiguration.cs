@@ -12,9 +12,13 @@ public class RosterSlotConfiguration : IEntityTypeConfiguration<RosterSlot>
         b.HasKey(x => x.Id);
         b.Property(x => x.SlotType).HasMaxLength(20).HasDefaultValue("active");
 
-        // Index for lookups; uniqueness is enforced at the application layer
-        // (DroppedAt == null) so a player can be acquired multiple times per season (trades).
-        b.HasIndex(x => new { x.SeasonId, x.CardId });
+        // Partial unique index: a card can only be on one active roster per season.
+        // DroppedAt == null slots are unique; historical (dropped) slots are not constrained,
+        // allowing a card to be re-acquired after being dropped.
+        b.HasIndex(x => new { x.SeasonId, x.CardId })
+            .IsUnique()
+            .HasFilter("\"DroppedAt\" IS NULL")
+            .HasDatabaseName("IX_roster_slots_active_card_season");
 
         b.HasOne(x => x.Team).WithMany(x => x.RosterSlots).HasForeignKey(x => x.TeamId);
         b.HasOne(x => x.Season).WithMany(x => x.RosterSlots).HasForeignKey(x => x.SeasonId);

@@ -44,8 +44,9 @@
             <div class="form-group">
                 <label asp-for="Password" class="form-label">Password</label>
                 <input asp-for="Password" class="form-control" type="password"
-                       placeholder="Minimum 8 characters" autocomplete="new-password" />
+                       placeholder="Minimum 12 characters" autocomplete="new-password" />
                 <span asp-validation-for="Password" class="text-muted" style="font-size:0.8rem"></span>
+                <span class="text-muted" style="font-size:0.75rem">Must include uppercase, lowercase, a number, and a special character.</span>
             </div>
 
             <div class="form-group">

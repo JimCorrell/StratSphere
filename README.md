@@ -51,6 +51,8 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
 ```
 
 ### 4. Apply EF Core migrations
+
+Migrations run automatically on startup — no manual step required. If you want to run them manually (e.g. to inspect the SQL before applying):
 ```bash
 # From solution root
 ~/.dotnet/tools/dotnet-ef database update \

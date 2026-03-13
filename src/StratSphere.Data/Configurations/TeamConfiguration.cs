@@ -16,6 +16,5 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
 
         b.HasOne(x => x.League).WithMany(x => x.Teams).HasForeignKey(x => x.LeagueId);
         b.HasOne(x => x.User).WithMany(x => x.Teams).HasForeignKey(x => x.UserId).IsRequired(false);
-        b.HasOne(x => x.Season).WithMany(x => x.Teams).HasForeignKey(x => x.SeasonId);
     }
 }

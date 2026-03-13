@@ -97,37 +97,46 @@ public class TeamController(
         var selected = seasons.FirstOrDefault(s => s.Id == seasonId)
             ?? seasons.FirstOrDefault();
 
-        // Load roster for selected season
+        // Load roster for selected season — batch all Lahman lookups to avoid N+1
         var roster = new List<TeamDetailViewModel.RosterRow>();
         if (selected is not null)
         {
-            var slots = await rosterRepo.GetByTeamAndSeasonAsync(team.Id, selected.Id);
-            foreach (var slot in slots)
+            var slots = (await rosterRepo.GetByTeamAndSeasonAsync(team.Id, selected.Id)).ToList();
+            if (slots.Count > 0)
             {
-                var person = await lahmanRepo.GetPersonAsync(slot.Card.LahmanPlayerId);
-                if (person is null) continue;
+                var playerIds = slots.Select(s => s.Card.LahmanPlayerId).Distinct().ToList();
+                var years     = slots.Select(s => s.Card.CardYear).Distinct().ToList();
 
-                var isPitcher = slot.Card.Position is "SP" or "RP";
-                string statLine;
-                if (isPitcher)
-                {
-                    var p = await lahmanRepo.GetPitchingSeasonAsync(slot.Card.LahmanPlayerId, slot.Card.CardYear);
-                    statLine = p?.ERA.HasValue == true ? $"{p.ERA:F2} ERA" : "";
-                }
-                else
-                {
-                    var b = await lahmanRepo.GetBattingSeasonAsync(slot.Card.LahmanPlayerId, slot.Card.CardYear);
-                    statLine = b?.BA.HasValue == true ? $".{(int)(b.BA.Value * 1000):D3}" : "";
-                }
+                var people        = await lahmanRepo.GetPeopleAsync(playerIds);
+                var battingStats  = await lahmanRepo.GetBattingSeasonsAsync(playerIds, years);
+                var pitchingStats = await lahmanRepo.GetPitchingSeasonsAsync(playerIds, years);
 
-                roster.Add(new TeamDetailViewModel.RosterRow
+                foreach (var slot in slots)
                 {
-                    SlotId = slot.Id,
-                    PlayerName = person.FullName,
-                    Position = slot.Card.Position,
-                    CardYear = slot.Card.CardYear,
-                    StatLine = statLine
-                });
+                    if (!people.TryGetValue(slot.Card.LahmanPlayerId, out var person)) continue;
+
+                    var isPitcher = slot.Card.Position is "SP" or "RP";
+                    string statLine;
+                    if (isPitcher)
+                    {
+                        pitchingStats.TryGetValue((slot.Card.LahmanPlayerId, slot.Card.CardYear), out var p);
+                        statLine = p?.ERA.HasValue == true ? $"{p.ERA:F2} ERA" : "";
+                    }
+                    else
+                    {
+                        battingStats.TryGetValue((slot.Card.LahmanPlayerId, slot.Card.CardYear), out var b);
+                        statLine = b?.BA.HasValue == true ? $".{(int)(b.BA.Value * 1000):D3}" : "";
+                    }
+
+                    roster.Add(new TeamDetailViewModel.RosterRow
+                    {
+                        SlotId = slot.Id,
+                        PlayerName = person.FullName,
+                        Position = slot.Card.Position,
+                        CardYear = slot.Card.CardYear,
+                        StatLine = statLine
+                    });
+                }
             }
         }
 

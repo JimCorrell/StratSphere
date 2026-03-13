@@ -9,6 +9,15 @@ public class LahmanRepository(StratSphereDbContext db) : ILahmanRepository
     public Task<LahmanPerson?> GetPersonAsync(string playerId) =>
         db.LahmanPeople.AsNoTracking().FirstOrDefaultAsync(p => p.PlayerId == playerId);
 
+    public async Task<IReadOnlyDictionary<string, LahmanPerson>> GetPeopleAsync(IEnumerable<string> playerIds)
+    {
+        var ids = playerIds.ToList();
+        return await db.LahmanPeople
+            .AsNoTracking()
+            .Where(p => ids.Contains(p.PlayerId))
+            .ToDictionaryAsync(p => p.PlayerId);
+    }
+
     public async Task<IEnumerable<LahmanPerson>> SearchPeopleAsync(string query, int limit = 20)
     {
         var q = query.ToLower();
@@ -35,6 +44,19 @@ public class LahmanRepository(StratSphereDbContext db) : ILahmanRepository
             .Where(b => b.PlayerId == playerId && b.YearId == yearId && b.Stint == 1)
             .FirstOrDefaultAsync();
 
+    public async Task<IReadOnlyDictionary<(string PlayerId, int Year), LahmanBatting>> GetBattingSeasonsAsync(
+        IEnumerable<string> playerIds, IEnumerable<int> years)
+    {
+        var ids = playerIds.ToList();
+        var yearList = years.ToList();
+        var rows = await db.LahmanBatting
+            .AsNoTracking()
+            .Where(b => ids.Contains(b.PlayerId) && yearList.Contains(b.YearId) && b.Stint == 1)
+            .ToListAsync();
+        return rows.GroupBy(b => (b.PlayerId, b.YearId))
+                   .ToDictionary(g => g.Key, g => g.First());
+    }
+
     public async Task<IEnumerable<LahmanPitching>> GetPitchingAsync(string playerId) =>
         await db.LahmanPitching
             .AsNoTracking()
@@ -47,6 +69,19 @@ public class LahmanRepository(StratSphereDbContext db) : ILahmanRepository
             .AsNoTracking()
             .Where(p => p.PlayerId == playerId && p.YearId == yearId && p.Stint == 1)
             .FirstOrDefaultAsync();
+
+    public async Task<IReadOnlyDictionary<(string PlayerId, int Year), LahmanPitching>> GetPitchingSeasonsAsync(
+        IEnumerable<string> playerIds, IEnumerable<int> years)
+    {
+        var ids = playerIds.ToList();
+        var yearList = years.ToList();
+        var rows = await db.LahmanPitching
+            .AsNoTracking()
+            .Where(p => ids.Contains(p.PlayerId) && yearList.Contains(p.YearId) && p.Stint == 1)
+            .ToListAsync();
+        return rows.GroupBy(p => (p.PlayerId, p.YearId))
+                   .ToDictionary(g => g.Key, g => g.First());
+    }
 
     public async Task<IEnumerable<LahmanFielding>> GetFieldingSeasonAsync(string playerId, int yearId) =>
         await db.LahmanFielding
@@ -90,17 +125,16 @@ public class LahmanRepository(StratSphereDbContext db) : ILahmanRepository
                 .ToListAsync();
 
             // Primary position derived from fielding — fall back to "OF" if not found
-            var results = new List<(LahmanPerson, string)>();
-            foreach (var person in batters)
-            {
-                var pos = await db.LahmanFielding.AsNoTracking()
-                    .Where(f => f.PlayerId == person.PlayerId && (cardYear == null || f.YearId == cardYear))
-                    .OrderByDescending(f => f.G)
-                    .Select(f => f.Pos)
-                    .FirstOrDefaultAsync() ?? "OF";
-                results.Add((person, pos));
-            }
-            return results;
+            var batchPlayerIds = batters.Select(p => p.PlayerId).ToList();
+            var fieldingRows = await db.LahmanFielding
+                .AsNoTracking()
+                .Where(f => batchPlayerIds.Contains(f.PlayerId) && (cardYear == null || f.YearId == cardYear))
+                .ToListAsync();
+            var positionByPlayer = fieldingRows
+                .GroupBy(f => f.PlayerId)
+                .ToDictionary(g => g.Key, g => g.OrderByDescending(f => f.G).First().Pos);
+
+            return batters.Select(p => (p, positionByPlayer.GetValueOrDefault(p.PlayerId) ?? "OF"));
         }
     }
 }

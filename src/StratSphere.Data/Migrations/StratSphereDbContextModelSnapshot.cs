@@ -283,65 +283,80 @@ namespace StratSphere.Data.Migrations
                         .HasColumnName("stint");
 
                     b.Property<int?>("AB")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ab");
 
                     b.Property<int?>("BB")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bb");
 
                     b.Property<int?>("CS")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("cs");
 
                     b.Property<int?>("Doubles")
                         .HasColumnType("integer")
                         .HasColumnName("doubles");
 
                     b.Property<int?>("G")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("g");
 
                     b.Property<int?>("GIDP")
                         .HasColumnType("integer")
                         .HasColumnName("g_idp");
 
                     b.Property<int?>("H")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("h");
 
                     b.Property<int?>("HBP")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("hbp");
 
                     b.Property<int?>("HR")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("hr");
 
                     b.Property<int?>("IBB")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ibb");
 
                     b.Property<string>("LgId")
                         .HasColumnType("text")
                         .HasColumnName("lg_id");
 
                     b.Property<int?>("R")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("r");
 
                     b.Property<int?>("RBI")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("rbi");
 
                     b.Property<int?>("SB")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sb");
 
                     b.Property<int?>("SF")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sf");
 
                     b.Property<int?>("SH")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sh");
 
                     b.Property<int?>("SO")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("so");
 
                     b.Property<string>("TeamId")
                         .HasColumnType("text")
                         .HasColumnName("team_id");
 
                     b.Property<int?>("Triples")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("triples");
 
                     b.HasKey("PlayerId", "YearId", "Stint");
 
@@ -368,19 +383,24 @@ namespace StratSphere.Data.Migrations
                         .HasColumnName("pos");
 
                     b.Property<int?>("A")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("a");
 
                     b.Property<int?>("DP")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dp");
 
                     b.Property<int?>("E")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("e");
 
                     b.Property<int?>("G")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("g");
 
                     b.Property<int?>("GS")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("gs");
 
                     b.Property<int?>("InnOuts")
                         .HasColumnType("integer")
@@ -391,7 +411,8 @@ namespace StratSphere.Data.Migrations
                         .HasColumnName("lg_id");
 
                     b.Property<int?>("PO")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("po");
 
                     b.Property<string>("TeamId")
                         .HasColumnType("text")
@@ -480,56 +501,68 @@ namespace StratSphere.Data.Migrations
                         .HasColumnName("stint");
 
                     b.Property<int?>("BB")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bb");
 
                     b.Property<int?>("CG")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("cg");
 
                     b.Property<int?>("ER")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("er");
 
                     b.Property<decimal?>("ERAStored")
                         .HasColumnType("numeric")
                         .HasColumnName("era");
 
                     b.Property<int?>("G")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("g");
 
                     b.Property<int?>("GS")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("gs");
 
                     b.Property<int?>("H")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("h");
 
                     b.Property<int?>("HR")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("hr");
 
                     b.Property<int?>("IPOuts")
                         .HasColumnType("integer")
                         .HasColumnName("ip_outs");
 
                     b.Property<int?>("L")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("l");
 
                     b.Property<string>("LgId")
                         .HasColumnType("text")
                         .HasColumnName("lg_id");
 
                     b.Property<int?>("SHO")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sho");
 
                     b.Property<int?>("SO")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("so");
 
                     b.Property<int?>("SV")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sv");
 
                     b.Property<string>("TeamId")
                         .HasColumnType("text")
                         .HasColumnName("team_id");
 
                     b.Property<int?>("W")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("w");
 
                     b.HasKey("PlayerId", "YearId", "Stint");
 
@@ -563,7 +596,7 @@ namespace StratSphere.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasDefaultValue("setup");
+                        .HasDefaultValueSql("'Setup'");
 
                     b.HasKey("Id");
 
@@ -659,7 +692,10 @@ namespace StratSphere.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.HasIndex("SeasonId", "CardId");
+                    b.HasIndex("SeasonId", "CardId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_roster_slots_active_card_season")
+                        .HasFilter("\"DroppedAt\" IS NULL");
 
                     b.ToTable("roster_slots", (string)null);
                 });
@@ -898,17 +934,12 @@ namespace StratSphere.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Guid?>("SeasonId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LeagueId");
-
-                    b.HasIndex("SeasonId");
 
                     b.HasIndex("UserId");
 
@@ -1142,17 +1173,11 @@ namespace StratSphere.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
-                        .WithMany("Teams")
-                        .HasForeignKey("SeasonId");
-
                     b.HasOne("StratSphere.Core.Entities.ApplicationUser", "User")
                         .WithMany("Teams")
                         .HasForeignKey("UserId");
 
                     b.Navigation("League");
-
-                    b.Navigation("Season");
 
                     b.Navigation("User");
                 });
@@ -1189,8 +1214,6 @@ namespace StratSphere.Data.Migrations
                     b.Navigation("RosterSlots");
 
                     b.Navigation("Standings");
-
-                    b.Navigation("Teams");
                 });
 
             modelBuilder.Entity("StratSphere.Core.Entities.Team", b =>

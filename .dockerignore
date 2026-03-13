@@ -2,7 +2,13 @@
 **/obj/
 **/.git/
 **/.vs/
+**/.vscode/
 **/.idea/
 **/node_modules/
+**/TestResults/
+tests/
+.github/
+docker-compose*.yml
+.claude/
 tools/Stratsphere.DataImport/lahman-csvs/
-.claude/settings.local.json
+**/*.md

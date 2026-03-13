@@ -16,7 +16,7 @@ public class LeagueService(ILeagueRepository leagueRepo)
             Name = name,
             Slug = slug,
             CommissionerId = commissionerId,
-            Status = "setup"
+            Status = LeagueStatus.Setup
         };
 
         league.Members.Add(new LeagueMember

@@ -45,7 +45,7 @@ public class LeagueServiceTests
 
         var result = await _sut.CreateLeagueAsync("Test League", Guid.NewGuid());
 
-        Assert.Equal("setup", result.Status);
+        Assert.Equal(LeagueStatus.Setup, result.Status);
     }
 
     [Fact]
@@ -152,5 +152,57 @@ public class LeagueServiceTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => _sut.JoinLeagueAsync(Guid.NewGuid(), Guid.NewGuid()));
+    }
+
+    // ── Slug edge cases ───────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task CreateLeagueAsync_SlugPreservesNumbers()
+    {
+        _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
+
+        var result = await _sut.CreateLeagueAsync("Season 2025", Guid.NewGuid());
+
+        Assert.Equal("season-2025", result.Slug);
+    }
+
+    [Fact]
+    public async Task CreateLeagueAsync_SlugStripsNonAsciiPunctuation()
+    {
+        // Accented vowels are letters (IsLetterOrDigit) — they pass through the filter.
+        // This test documents that behavior and verifies hyphens are still correct.
+        _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
+
+        var result = await _sut.CreateLeagueAsync("Les Étoiles", Guid.NewGuid());
+
+        // 'é' IsLetterOrDigit == true, so slug contains it
+        Assert.Equal("les-étoiles", result.Slug);
+    }
+
+    [Fact]
+    public async Task CreateLeagueAsync_SlugFromAllSpecialCharsProducesEmptyBase()
+    {
+        // A name made only of stripped chars (quotes, spaces-as-hyphens then non-alphanumeric)
+        // The slug logic strips everything; documents that an empty base slug is returned.
+        _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
+
+        var result = await _sut.CreateLeagueAsync("!@#$%^&*()", Guid.NewGuid());
+
+        Assert.Equal(string.Empty, result.Slug);
+    }
+
+    [Fact]
+    public async Task CreateLeagueAsync_SlugCollisionIncrementsContinuously()
+    {
+        // Verifies counter keeps incrementing beyond 2 if needed
+        _leagueRepoMock.SetupSequence(r => r.SlugExistsAsync(It.IsAny<string>()))
+            .ReturnsAsync(true)   // "test" exists
+            .ReturnsAsync(true)   // "test-1" exists
+            .ReturnsAsync(true)   // "test-2" exists
+            .ReturnsAsync(false); // "test-3" is free
+
+        var result = await _sut.CreateLeagueAsync("Test", Guid.NewGuid());
+
+        Assert.Equal("test-3", result.Slug);
     }
 }

@@ -5,11 +5,14 @@ namespace StratSphere.Core.Interfaces;
 public interface ILahmanRepository
 {
     Task<LahmanPerson?> GetPersonAsync(string playerId);
+    Task<IReadOnlyDictionary<string, LahmanPerson>> GetPeopleAsync(IEnumerable<string> playerIds);
     Task<IEnumerable<LahmanPerson>> SearchPeopleAsync(string query, int limit = 20);
     Task<IEnumerable<LahmanBatting>> GetBattingAsync(string playerId);
     Task<LahmanBatting?> GetBattingSeasonAsync(string playerId, int yearId);
+    Task<IReadOnlyDictionary<(string PlayerId, int Year), LahmanBatting>> GetBattingSeasonsAsync(IEnumerable<string> playerIds, IEnumerable<int> years);
     Task<IEnumerable<LahmanPitching>> GetPitchingAsync(string playerId);
     Task<LahmanPitching?> GetPitchingSeasonAsync(string playerId, int yearId);
+    Task<IReadOnlyDictionary<(string PlayerId, int Year), LahmanPitching>> GetPitchingSeasonsAsync(IEnumerable<string> playerIds, IEnumerable<int> years);
     Task<IEnumerable<LahmanFielding>> GetFieldingSeasonAsync(string playerId, int yearId);
 
     /// <summary>

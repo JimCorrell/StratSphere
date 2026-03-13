@@ -17,5 +17,10 @@ RUN dotnet publish "src/StratSphere.Web/StratSphere.Web.csproj" \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 EXPOSE 8080
-COPY --from=build /app/publish .ß
+
+# Run as non-root for security
+RUN adduser --disabled-password --gecos "" appuser
+USER appuser
+
+COPY --from=build --chown=appuser:appuser /app/publish .
 ENTRYPOINT ["dotnet", "StratSphere.Web.dll"]

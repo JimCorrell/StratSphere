@@ -13,7 +13,6 @@ public class Season
     public DateOnly? EndDate { get; set; }
 
     public League League { get; set; } = null!;
-    public ICollection<Team> Teams { get; set; } = [];
     public ICollection<Game> Games { get; set; } = [];
     public ICollection<Standings> Standings { get; set; } = [];
     public ICollection<RosterSlot> RosterSlots { get; set; } = [];
