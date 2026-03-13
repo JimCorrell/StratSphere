@@ -19,8 +19,8 @@ WORKDIR /app
 EXPOSE 8080
 
 # Run as non-root for security
-RUN adduser --disabled-password --gecos "" appuser
-USER appuser
+RUN useradd -u 10001 -m -s /usr/sbin/nologin appuser
+USER 10001
 
-COPY --from=build --chown=appuser:appuser /app/publish .
+COPY --from=build --chown=10001:10001 /app/publish .
 ENTRYPOINT ["dotnet", "StratSphere.Web.dll"]
