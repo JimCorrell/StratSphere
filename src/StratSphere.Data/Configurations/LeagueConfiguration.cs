@@ -14,6 +14,8 @@ public class LeagueConfiguration : IEntityTypeConfiguration<League>
         b.Property(x => x.Name).HasMaxLength(100).IsRequired();
         b.Property(x => x.Slug).HasMaxLength(60).IsRequired();
         b.HasIndex(x => x.Slug).IsUnique();
+        b.Property(x => x.Abbreviation).HasMaxLength(6).IsRequired();
+        b.HasIndex(x => x.Abbreviation).IsUnique();
         b.Property(x => x.Status)
             .HasMaxLength(20)
             .HasDefaultValueSql("'Setup'")

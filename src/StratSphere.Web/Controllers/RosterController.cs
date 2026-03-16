@@ -22,7 +22,7 @@ public class RosterController(
     private League ActiveLeague =>
         (HttpContext.Items[LeagueContextMiddleware.LeagueKey] as League)!;
 
-    // GET /league/{slug}/Roster/SearchCards?teamId=&year=&q=
+    // GET /league/{leagueAbbr}/Roster/SearchCards?teamId=&year=&q=
     public async Task<IActionResult> SearchCards(Guid teamId, int year, string q)
     {
         if (string.IsNullOrWhiteSpace(q) || q.Length < 2)
@@ -52,7 +52,7 @@ public class RosterController(
         return Json(results);
     }
 
-    // POST /league/{slug}/Roster/AddPlayer
+    // POST /league/{leagueAbbr}/Roster/AddPlayer
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> AddPlayer(AddPlayerViewModel model)
     {
@@ -76,12 +76,12 @@ public class RosterController(
             // Card already rostered — ignore silently, redirect back
         }
 
-        return Redirect($"/league/{league.Slug}/team/{model.TeamId}?seasonId={model.SeasonId}");
+        return Redirect($"/league/{league.Abbreviation}/season/{model.CardYear}/team/{team.Abbreviation}");
     }
 
-    // POST /league/{slug}/Roster/Drop
+    // POST /league/{leagueAbbr}/Roster/Drop
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Drop(Guid slotId, Guid teamId, Guid seasonId)
+    public async Task<IActionResult> Drop(Guid slotId, Guid teamId, Guid seasonId, int cardYear, string teamAbbr)
     {
         var league = ActiveLeague;
         var team = league.Teams.FirstOrDefault(t => t.Id == teamId);
@@ -94,7 +94,7 @@ public class RosterController(
 
         await rosterSvc.DropCardFromRosterAsync(slotId, teamId);
 
-        return Redirect($"/league/{league.Slug}/team/{teamId}?seasonId={seasonId}");
+        return Redirect($"/league/{league.Abbreviation}/season/{cardYear}/team/{teamAbbr}");
     }
 
     private bool CanManage(Team team, League league) =>

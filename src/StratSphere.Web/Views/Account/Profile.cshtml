@@ -22,6 +22,29 @@
         {
             <div class="alert alert-success mb-3">✓ @TempData["Success"]</div>
         }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-error mb-3">⚠ @TempData["Error"]</div>
+        }
+
+        @if (!Model.EmailConfirmed)
+        {
+            <div style="padding:1rem 1.25rem; background:rgba(251,191,36,0.08); border:1px solid var(--amber);
+                        border-radius:8px; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+                <div>
+                    <p style="font-weight:600; color:var(--amber); margin:0 0 0.25rem;">Email not confirmed</p>
+                    <p style="font-size:0.875rem; color:var(--text-muted); margin:0;">
+                        Confirm your email to create seasons in your leagues.
+                    </p>
+                </div>
+                <form asp-action="ResendConfirmation" method="post" style="margin:0;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-ghost" style="font-size:0.8125rem; border-color:var(--amber); color:var(--amber);">
+                        Resend confirmation
+                    </button>
+                </form>
+            </div>
+        }
 
         <div class="card">
             <div class="card-header">
@@ -46,9 +69,22 @@
 
                     <div class="form-group">
                         <label class="form-label">Email</label>
-                        <input type="text" class="form-control" value="@Model.Email"
-                               disabled style="background:var(--panel-raised);color:var(--text-subtle);" />
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <input type="text" class="form-control" value="@Model.Email"
+                                   disabled style="background:var(--panel-raised);color:var(--text-subtle);" />
+                            @if (Model.EmailConfirmed)
+                            {
+                                <span style="font-size:0.75rem; font-weight:600; color:var(--grass); white-space:nowrap;">✓ Confirmed</span>
+                            }
+                        </div>
                         <small class="text-muted">Email cannot be changed.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" type="tel"
+                               placeholder="e.g. 555-867-5309" />
+                        <span asp-validation-for="PhoneNumber" class="text-muted" style="font-size:0.8rem"></span>
                     </div>
 
                     <div class="d-flex gap-2 mt-3">

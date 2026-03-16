@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using StratSphere.Core.Entities;
 using StratSphere.Core.Enums;
 using StratSphere.Web.Filters;
@@ -15,9 +18,26 @@ public class LeagueMemberAttributeTests
 {
     // ── helpers ───────────────────────────────────────────────────────────────
 
-    private static (ActionExecutingContext context, DefaultHttpContext httpContext) MakeContext()
+    private static (ActionExecutingContext context, DefaultHttpContext httpContext) MakeContext(
+        Mock<UserManager<ApplicationUser>>? userManagerMock = null)
     {
-        var httpContext = new DefaultHttpContext();
+        var services = new ServiceCollection();
+        if (userManagerMock is not null)
+            services.AddSingleton(userManagerMock.Object);
+        else
+        {
+            var store = new Mock<IUserStore<ApplicationUser>>();
+            var um = new Mock<UserManager<ApplicationUser>>(
+                store.Object, null, null, null, null, null, null, null, null);
+            um.Setup(m => m.FindByIdAsync(It.IsAny<string>()))
+              .ReturnsAsync((ApplicationUser?)null);
+            services.AddSingleton(um.Object);
+        }
+
+        var httpContext = new DefaultHttpContext
+        {
+            RequestServices = services.BuildServiceProvider()
+        };
         var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
         var executingContext = new ActionExecutingContext(
             actionContext,
@@ -33,6 +53,7 @@ public class LeagueMemberAttributeTests
             Id = id ?? Guid.NewGuid(),
             Name = "Test",
             Slug = "test",
+            Abbreviation = "TL",
             CommissionerId = Guid.NewGuid(),
             Status = LeagueStatus.Setup
         };
@@ -49,6 +70,16 @@ public class LeagueMemberAttributeTests
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString())
         }, authenticationType: "Test"));
+
+    private static Mock<UserManager<ApplicationUser>> MakeUserManager(ApplicationUser? user = null)
+    {
+        var store = new Mock<IUserStore<ApplicationUser>>();
+        var um = new Mock<UserManager<ApplicationUser>>(
+            store.Object, null, null, null, null, null, null, null, null);
+        um.Setup(m => m.FindByIdAsync(It.IsAny<string>()))
+          .ReturnsAsync(user);
+        return um;
+    }
 
     // ── no league in context → 404 ────────────────────────────────────────────
 
@@ -84,10 +115,12 @@ public class LeagueMemberAttributeTests
     [Fact]
     public async Task OnActionExecution_RedirectsToNotMember_WhenUserIsNotMember()
     {
-        var (ctx, httpContext) = MakeContext();
+        var userId = Guid.NewGuid();
+        var um = MakeUserManager(new ApplicationUser { Id = userId, IsAdmin = false });
+        var (ctx, httpContext) = MakeContext(um);
         var league = MakeLeague();
         httpContext.Items[LeagueContextMiddleware.LeagueKey] = league;
-        httpContext.User = MakeUser(Guid.NewGuid()); // unknown user — not in league.Members
+        httpContext.User = MakeUser(userId); // not in league.Members
 
         await new LeagueMemberAttribute().OnActionExecutionAsync(ctx, MakeDelegate());
 
@@ -101,8 +134,9 @@ public class LeagueMemberAttributeTests
     [Fact]
     public async Task OnActionExecution_CallsNext_WhenUserIsMember()
     {
-        var (ctx, httpContext) = MakeContext();
         var userId = Guid.NewGuid();
+        var um = MakeUserManager(new ApplicationUser { Id = userId, IsAdmin = false });
+        var (ctx, httpContext) = MakeContext(um);
         var league = MakeLeague();
         league.Members.Add(new LeagueMember { LeagueId = league.Id, UserId = userId, Role = LeagueRole.Manager });
         httpContext.Items[LeagueContextMiddleware.LeagueKey] = league;
@@ -120,8 +154,9 @@ public class LeagueMemberAttributeTests
     [Fact]
     public async Task OnActionExecution_Returns403_WhenManagerOnCommissionerOnlyRoute()
     {
-        var (ctx, httpContext) = MakeContext();
         var userId = Guid.NewGuid();
+        var um = MakeUserManager(new ApplicationUser { Id = userId, IsAdmin = false });
+        var (ctx, httpContext) = MakeContext(um);
         var league = MakeLeague();
         league.Members.Add(new LeagueMember { LeagueId = league.Id, UserId = userId, Role = LeagueRole.Manager });
         httpContext.Items[LeagueContextMiddleware.LeagueKey] = league;
@@ -138,8 +173,9 @@ public class LeagueMemberAttributeTests
     [Fact]
     public async Task OnActionExecution_CallsNext_WhenCommissionerOnCommissionerOnlyRoute()
     {
-        var (ctx, httpContext) = MakeContext();
         var userId = Guid.NewGuid();
+        var um = MakeUserManager(new ApplicationUser { Id = userId, IsAdmin = false });
+        var (ctx, httpContext) = MakeContext(um);
         var league = MakeLeague();
         league.Members.Add(new LeagueMember { LeagueId = league.Id, UserId = userId, Role = LeagueRole.Commissioner });
         httpContext.Items[LeagueContextMiddleware.LeagueKey] = league;

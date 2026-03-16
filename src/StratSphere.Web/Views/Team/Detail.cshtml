@@ -7,7 +7,7 @@
             <div>
                 <p style="font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
                            color:var(--amber-light); margin-bottom:0.4rem;">
-                    <a href="/league/@Model.LeagueSlug" style="color:var(--amber-light); text-decoration:none;">@Model.LeagueName</a>
+                    <a href="/league/@Model.LeagueAbbreviation" style="color:var(--amber-light); text-decoration:none;">@Model.LeagueName</a>
                     &rsaquo; Team
                 </p>
                 <h1 style="color:var(--cream); margin:0; font-size:2rem;">@Model.City @Model.Name</h1>
@@ -50,7 +50,7 @@
             @foreach (var season in Model.Seasons)
             {
                 var isActive = Model.SelectedSeason?.Id == season.Id;
-                <a href="/league/@Model.LeagueSlug/team/@Model.Id?seasonId=@season.Id"
+                <a href="/league/@Model.LeagueAbbreviation/season/@season.CardYear/team/@Model.Abbreviation"
                    style="padding:0.4rem 1rem; border-radius:20px; font-size:0.8125rem; font-weight:600;
                           text-decoration:none; border:1px solid @(isActive ? "var(--accent)" : "var(--border)");
                           background:@(isActive ? "var(--accent)" : "transparent");
@@ -75,7 +75,7 @@
                                data-team-id="@Model.Id"
                                data-season-id="@Model.SelectedSeason.Id"
                                data-card-year="@Model.SelectedSeason.CardYear"
-                               data-league-slug="@Model.LeagueSlug" />
+                               data-league-abbr="@Model.LeagueAbbreviation" />
                         <div id="searchResults" style="display:none; position:absolute; top:100%; left:0; right:0;
                                                        background:var(--panel-raised); border:1px solid var(--border);
                                                        border-radius:0 0 6px 6px; z-index:100; max-height:280px; overflow-y:auto;">
@@ -157,6 +157,8 @@
                                                 <input type="hidden" name="slotId" value="@row.SlotId" />
                                                 <input type="hidden" name="teamId" value="@Model.Id" />
                                                 <input type="hidden" name="seasonId" value="@Model.SelectedSeason.Id" />
+                                                <input type="hidden" name="cardYear" value="@Model.SelectedSeason.CardYear" />
+                                                <input type="hidden" name="teamAbbr" value="@Model.Abbreviation" />
                                                 <button type="submit" class="btn btn-ghost"
                                                         style="font-size:0.7rem; padding:0.2rem 0.5rem; color:var(--red-error);">
                                                     Drop
@@ -186,7 +188,7 @@
             const teamId   = input.dataset.teamId;
             const seasonId = input.dataset.seasonId;
             const cardYear = input.dataset.cardYear;
-            const slug     = input.dataset.leagueSlug;
+            const abbr     = input.dataset.leagueAbbr;
 
             let debounce;
 
@@ -203,7 +205,7 @@
             });
 
             async function fetchResults(q) {
-                const url = `/league/${slug}/Roster/SearchCards?teamId=${teamId}&year=${cardYear}&q=${encodeURIComponent(q)}`;
+                const url = `/league/${abbr}/Roster/SearchCards?teamId=${teamId}&year=${cardYear}&q=${encodeURIComponent(q)}`;
                 try {
                     const res = await fetch(url);
                     const data = await res.json();

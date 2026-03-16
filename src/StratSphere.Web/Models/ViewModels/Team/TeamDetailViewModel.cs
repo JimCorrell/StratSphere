@@ -8,7 +8,7 @@ public class TeamDetailViewModel
     public string Abbreviation { get; set; } = "";
     public string? OwnerName { get; set; }
     public string LeagueName { get; set; } = "";
-    public string LeagueSlug { get; set; } = "";
+    public string LeagueAbbreviation { get; set; } = "";
     public bool IsOwner { get; set; }
     public bool IsClaimed { get; set; }
     public bool CanManage { get; set; }

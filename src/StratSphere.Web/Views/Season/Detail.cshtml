@@ -1,28 +1,125 @@
 @model StratSphere.Web.Models.ViewModels.Season.SeasonDetailViewModel
 @{ ViewData["Title"] = Model.Name; Layout = "_Layout"; }
 
+<!-- Header -->
 <div style="background:var(--panel); border-bottom:3px solid var(--amber); padding:2rem 0;">
     <div class="container">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
             <div>
                 <p style="font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
                            color:var(--amber-light); margin-bottom:0.4rem;">
-                    <a href="/league/@Model.LeagueSlug" style="color:var(--amber-light); text-decoration:none;">@Model.LeagueName</a>
+                    <a href="/league/@Model.LeagueAbbreviation" style="color:var(--amber-light); text-decoration:none;">@Model.LeagueName</a>
                     &rsaquo; Season
                 </p>
                 <h1 style="color:var(--cream); margin:0; font-size:2rem;">@Model.Name</h1>
                 <p style="color:rgba(226,232,240,0.5); margin:0.3rem 0 0; font-size:0.875rem;">
-                    @Model.CardYear card year &middot; @Model.Status
+                    @Model.CardYear card year &middot;
+                    <span style="font-weight:600; color:@(Model.Status == "Active" ? "var(--grass)" : Model.Status == "Completed" ? "rgba(226,232,240,0.4)" : "var(--accent)");">
+                        @Model.Status
+                    </span>
                 </p>
             </div>
+
+            @if (Model.IsCommissioner)
+            {
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    @if (Model.Status == "Setup")
+                    {
+                        <form action="/league/@Model.LeagueAbbreviation/season/@Model.CardYear/activate" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="return confirm('Activate this season? Rosters will be locked and standings will begin tracking.');">
+                                Activate Season
+                            </button>
+                        </form>
+                    }
+                    else if (Model.Status == "Active")
+                    {
+                        <form action="/league/@Model.LeagueAbbreviation/season/@Model.CardYear/complete" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-ghost"
+                                    style="border-color:var(--text-muted);"
+                                    onclick="return confirm('Mark this season as completed? This cannot be undone.');">
+                                Complete Season
+                            </button>
+                        </form>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>
 
 <div class="container" style="padding:2.5rem 1rem;">
 
-    <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:2rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">
-        Roster management coming soon.
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mb-3">✓ @TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error mb-3">⚠ @TempData["Error"]</div>
+    }
+
+    <!-- Teams + Rosters -->
+    <div>
+        <h2 style="font-size:1rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+                   color:var(--text); margin:0 0 1rem;">Teams &amp; Rosters</h2>
+
+        @if (!Model.Teams.Any())
+        {
+            <div style="padding:2rem; background:var(--panel); border:1px solid var(--border); border-radius:8px;
+                        text-align:center; color:var(--text-muted); font-size:0.875rem;">
+                No teams in this league yet.
+                @if (Model.IsCommissioner)
+                {
+                    <a href="/league/@Model.LeagueAbbreviation/team/create" style="color:var(--accent); margin-left:0.25rem;">Create teams.</a>
+                }
+            </div>
+        }
+        else
+        {
+            <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--border);">
+                        <th style="text-align:left; padding:0.625rem 0.75rem; color:var(--text-muted); font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Team</th>
+                        <th style="text-align:left; padding:0.625rem 0.75rem; color:var(--text-muted); font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Manager</th>
+                        <th style="text-align:center; padding:0.625rem 0.75rem; color:var(--text-muted); font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Players</th>
+                        <th style="text-align:right; padding:0.625rem 0.75rem;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var team in Model.Teams)
+                    {
+                        <tr style="border-bottom:1px solid var(--border);">
+                            <td style="padding:0.75rem;">
+                                <span style="font-weight:600; color:var(--text);">@team.City @team.Name</span>
+                                <span style="font-size:0.8rem; color:var(--text-muted); margin-left:0.4rem;">(@team.Abbreviation)</span>
+                            </td>
+                            <td style="padding:0.75rem; color:var(--text-muted);">
+                                @if (team.IsClaimed)
+                                {
+                                    @team.ManagerName
+                                }
+                                else
+                                {
+                                    <span style="font-style:italic; color:var(--text-subtle);">Unclaimed</span>
+                                }
+                            </td>
+                            <td style="text-align:center; padding:0.75rem;">
+                                <span style="font-weight:600; color:@(team.RosterCount > 0 ? "var(--text)" : "var(--text-subtle)");">
+                                    @team.RosterCount
+                                </span>
+                            </td>
+                            <td style="text-align:right; padding:0.75rem;">
+                                <a href="/league/@Model.LeagueAbbreviation/season/@Model.CardYear/team/@team.Abbreviation"
+                                   style="font-size:0.8125rem; color:var(--accent);">Manage roster</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 
 </div>

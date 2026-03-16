@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using StratSphere.Core.Entities;
@@ -32,6 +33,15 @@ public class LeagueMemberAttribute : Attribute, IAsyncActionFilter
         if (!Guid.TryParse(userIdStr, out var userId))
         {
             context.Result = new RedirectToActionResult("Login", "Account", null);
+            return;
+        }
+
+        // Super admin bypasses all league membership and commissioner checks.
+        var userManager = httpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user?.IsAdmin == true)
+        {
+            await next();
             return;
         }
 

@@ -22,11 +22,11 @@ public class TeamController(
     private League ActiveLeague =>
         (HttpContext.Items[LeagueContextMiddleware.LeagueKey] as League)!;
 
-    // GET /league/{slug}/team/create  — commissioner only
+    // GET /league/{leagueAbbr}/team/create  — commissioner only
     [LeagueMember(CommissionerOnly = true)]
     public IActionResult Create() => View(new CreateTeamViewModel());
 
-    // POST /league/{slug}/team/create  — commissioner only
+    // POST /league/{leagueAbbr}/team/create  — commissioner only
     [HttpPost, ValidateAntiForgeryToken]
     [LeagueMember(CommissionerOnly = true)]
     public async Task<IActionResult> Create(CreateTeamViewModel model)
@@ -35,6 +35,14 @@ public class TeamController(
 
         if (!ModelState.IsValid) return View(model);
 
+        var abbreviation = model.Abbreviation.Trim().ToUpper();
+
+        if (await teamRepo.AbbreviationExistsInLeagueAsync(league.Id, abbreviation))
+        {
+            ModelState.AddModelError(nameof(model.Abbreviation), "That abbreviation is already used by another team in this league.");
+            return View(model);
+        }
+
         var team = new Team
         {
             Id = Guid.NewGuid(),
@@ -42,46 +50,53 @@ public class TeamController(
             UserId = null,
             City = model.City.Trim(),
             Name = model.Name.Trim(),
-            Abbreviation = model.Abbreviation.Trim().ToUpper()
+            Abbreviation = abbreviation
         };
 
         await teamRepo.AddAsync(team);
         await teamRepo.SaveChangesAsync();
 
-        return Redirect($"/league/{league.Slug}/team/{team.Id}");
+        return Redirect($"/league/{league.Abbreviation}");
     }
 
-    // POST /league/{slug}/team/{id}/claim
+    // POST /league/{leagueAbbr}/season/{year}/team/{teamAbbr}/claim
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Claim(Guid id)
+    public async Task<IActionResult> Claim(int year, string teamAbbr)
     {
         var league = ActiveLeague;
         var userId = CurrentUserId;
+
+        var team = league.Teams.FirstOrDefault(t =>
+            t.Abbreviation.ToUpperInvariant() == teamAbbr.ToUpperInvariant());
+        if (team is null) return NotFound();
 
         // Prevent claiming if user already has a team in this league
         if (league.Teams.Any(t => t.UserId == userId))
-            return Redirect($"/league/{league.Slug}");
+            return Redirect($"/league/{league.Abbreviation}");
 
-        await teamRepo.ClaimAsync(id, userId, league.Id);
+        await teamRepo.ClaimAsync(team.Id, userId, league.Id);
 
-        return Redirect($"/league/{league.Slug}/team/{id}");
+        return Redirect($"/league/{league.Abbreviation}/season/{year}/team/{teamAbbr.ToUpper()}");
     }
 
-    // GET /league/{slug}/team/{id}?seasonId=
-    public async Task<IActionResult> Detail(Guid id, Guid? seasonId)
+    // GET /league/{leagueAbbr}/season/{year}/team/{teamAbbr}
+    public async Task<IActionResult> Detail(int year, string teamAbbr)
     {
         var league = ActiveLeague;
         var userId = CurrentUserId;
-        var team = await teamRepo.GetByIdAsync(id);
 
-        if (team is null || team.LeagueId != league.Id)
-            return NotFound();
+        var team = league.Teams.FirstOrDefault(t =>
+            t.Abbreviation.ToUpperInvariant() == teamAbbr.ToUpperInvariant());
+        if (team is null) return NotFound();
+
+        var season = league.Seasons.FirstOrDefault(s => s.CardYear == year);
+        if (season is null) return NotFound();
 
         var isOwner = team.UserId == userId;
         var isCommissioner = league.CommissionerId == userId;
         var canManage = isOwner || isCommissioner;
 
-        // Build season list from the active league (already loaded by middleware)
+        // Build season list for tabs
         var seasons = league.Seasons
             .OrderByDescending(s => s.CardYear)
             .ThenBy(s => s.Name)
@@ -93,15 +108,13 @@ public class TeamController(
             })
             .ToList();
 
-        // Default to first season if none specified
-        var selected = seasons.FirstOrDefault(s => s.Id == seasonId)
-            ?? seasons.FirstOrDefault();
+        var selected = seasons.FirstOrDefault(s => s.CardYear == year);
 
-        // Load roster for selected season — batch all Lahman lookups to avoid N+1
+        // Load roster — batch all Lahman lookups to avoid N+1
         var roster = new List<TeamDetailViewModel.RosterRow>();
         if (selected is not null)
         {
-            var slots = (await rosterRepo.GetByTeamAndSeasonAsync(team.Id, selected.Id)).ToList();
+            var slots = (await rosterRepo.GetByTeamAndSeasonAsync(team.Id, season.Id)).ToList();
             if (slots.Count > 0)
             {
                 var playerIds = slots.Select(s => s.Card.LahmanPlayerId).Distinct().ToList();
@@ -148,7 +161,7 @@ public class TeamController(
             Abbreviation = team.Abbreviation,
             OwnerName = team.User?.DisplayName,
             LeagueName = league.Name,
-            LeagueSlug = league.Slug,
+            LeagueAbbreviation = league.Abbreviation,
             IsOwner = isOwner,
             IsClaimed = team.UserId.HasValue,
             CanManage = canManage,

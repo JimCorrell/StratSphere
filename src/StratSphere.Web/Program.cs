@@ -7,6 +7,7 @@ using StratSphere.Core.Services;
 using StratSphere.Data;
 using StratSphere.Data.Repositories;
 using StratSphere.Web.Middleware;
+using StratSphere.Web.Services;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +52,12 @@ builder.Services.AddScoped<IRosterRepository,      RosterRepository>();
 builder.Services.AddScoped<IPlayerCardRepository,  PlayerCardRepository>();
 builder.Services.AddScoped<ILahmanRepository,      LahmanRepository>();
 
+// ── Email ─────────────────────────────────────────────────────────────────────
+builder.Services.AddTransient<IEmailSender<ApplicationUser>, LoggingEmailSender>();
+
+// ── Seed ──────────────────────────────────────────────────────────────────────
+builder.Services.AddScoped<DataSeeder>();
+
 // ── Services ──────────────────────────────────────────────────────────────────
 builder.Services.AddScoped<LeagueService>();
 builder.Services.AddScoped<StandingsService>();
@@ -79,9 +86,12 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Apply any pending EF Core migrations on startup
+// Apply any pending EF Core migrations, then seed required data
 using (var scope = app.Services.CreateScope())
+{
     await scope.ServiceProvider.GetRequiredService<StratSphereDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<DataSeeder>().SeedAsync();
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -100,22 +110,38 @@ app.UseAuthorization();
 app.UseMiddleware<LeagueContextMiddleware>();
 
 // ── Routes ────────────────────────────────────────────────────────────────────
-// Explicit league management routes must come before the slug route
+// ── League (non-scoped) ───────────────────────────────────────────────────────
 app.MapControllerRoute("league-index",      "league",            new { controller = "League", action = "Index" });
 app.MapControllerRoute("league-create",     "league/create",     new { controller = "League", action = "Create" });
 app.MapControllerRoute("league-join",       "league/join",       new { controller = "League", action = "Join" });
 app.MapControllerRoute("league-not-member", "league/not-member", new { controller = "League", action = "NotMember" });
+app.MapControllerRoute("league-delete-all", "league/delete-all", new { controller = "League", action = "DeleteAllLeagues" });
 
-// Detail routes with GUIDs need explicit routes so the GUID lands in {id}, not {action}
-app.MapControllerRoute("team-detail",   "league/{slug}/team/{id:guid}",   new { controller = "Team",   action = "Detail" });
-app.MapControllerRoute("season-detail", "league/{slug}/season/{id:guid}", new { controller = "Season", action = "Detail" });
+// ── League (scoped by abbreviation) ──────────────────────────────────────────
+app.MapControllerRoute("league-archive",             "league/{leagueAbbr}/archive",             new { controller = "League", action = "Archive" });
+app.MapControllerRoute("league-unarchive",           "league/{leagueAbbr}/unarchive",           new { controller = "League", action = "Unarchive" });
+app.MapControllerRoute("league-delete",              "league/{leagueAbbr}/delete",              new { controller = "League", action = "DeleteLeague" });
+app.MapControllerRoute("league-assign-commissioner", "league/{leagueAbbr}/assign-commissioner", new { controller = "League", action = "AssignCommissioner" });
 
-app.MapControllerRoute(
-    name: "league",
-    pattern: "league/{slug}/{controller=League}/{action=Detail}/{id?}");
+// ── Season ("create" before {year:int} so the literal doesn't match as int) ──
+app.MapControllerRoute("season-create",   "league/{leagueAbbr}/season/create",              new { controller = "Season", action = "Create" });
+app.MapControllerRoute("season-activate", "league/{leagueAbbr}/season/{year:int}/activate", new { controller = "Season", action = "Activate" });
+app.MapControllerRoute("season-complete", "league/{leagueAbbr}/season/{year:int}/complete", new { controller = "Season", action = "Complete" });
+app.MapControllerRoute("season-detail",   "league/{leagueAbbr}/season/{year:int}",          new { controller = "Season", action = "Detail" });
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// ── Team ──────────────────────────────────────────────────────────────────────
+app.MapControllerRoute("team-create", "league/{leagueAbbr}/team/create",                             new { controller = "Team", action = "Create" });
+app.MapControllerRoute("team-claim",  "league/{leagueAbbr}/season/{year:int}/team/{teamAbbr}/claim", new { controller = "Team", action = "Claim" });
+app.MapControllerRoute("team-detail", "league/{leagueAbbr}/season/{year:int}/team/{teamAbbr}",       new { controller = "Team", action = "Detail" });
+
+// ── Roster ────────────────────────────────────────────────────────────────────
+app.MapControllerRoute("roster-search", "league/{leagueAbbr}/Roster/SearchCards", new { controller = "Roster", action = "SearchCards" });
+app.MapControllerRoute("roster-add",    "league/{leagueAbbr}/Roster/AddPlayer",   new { controller = "Roster", action = "AddPlayer" });
+app.MapControllerRoute("roster-drop",   "league/{leagueAbbr}/Roster/Drop",        new { controller = "Roster", action = "Drop" });
+
+// ── League detail (must be last league route) ─────────────────────────────────
+app.MapControllerRoute("league-detail", "league/{leagueAbbr}", new { controller = "League", action = "Detail" });
+
+app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

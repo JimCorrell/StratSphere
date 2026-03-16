@@ -27,6 +27,31 @@
                 <span asp-validation-for="Name" class="text-muted" style="font-size:0.8rem"></span>
             </div>
 
+            <div class="form-group">
+                <label asp-for="Abbreviation" class="form-label">League Abbreviation</label>
+                <input asp-for="Abbreviation" class="form-control"
+                       placeholder="e.g. RBL86" maxlength="6"
+                       style="text-transform:uppercase; letter-spacing:0.1em;"
+                       oninput="this.value=this.value.toUpperCase()" />
+                <small class="text-muted" style="font-size:0.8rem;">
+                    4–6 uppercase letters or digits. Must be unique across all StratSphere leagues.
+                </small>
+                <span asp-validation-for="Abbreviation" class="text-muted" style="font-size:0.8rem; display:block; color:var(--error)"></span>
+            </div>
+
+            @if (Model.ShowPhoneField)
+            {
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" type="tel"
+                           placeholder="e.g. 555-867-5309" />
+                    <small class="text-muted" style="font-size:0.8rem;">
+                        Commissioner contact info. You can update this anytime in your profile.
+                    </small>
+                    <span asp-validation-for="PhoneNumber" class="text-muted" style="font-size:0.8rem; display:block; color:var(--error)"></span>
+                </div>
+            }
+
             <button type="submit" class="btn btn-primary btn-full btn-lg mt-2">
                 Create league
             </button>

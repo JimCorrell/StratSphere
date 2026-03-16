@@ -6,7 +6,7 @@ namespace StratSphere.Core.Services;
 
 public class LeagueService(ILeagueRepository leagueRepo)
 {
-    public async Task<League> CreateLeagueAsync(string name, Guid commissionerId)
+    public async Task<League> CreateLeagueAsync(string name, string abbreviation, Guid commissionerId)
     {
         var slug = await GenerateUniqueSlugAsync(name);
 
@@ -15,6 +15,7 @@ public class LeagueService(ILeagueRepository leagueRepo)
             Id = Guid.NewGuid(),
             Name = name,
             Slug = slug,
+            Abbreviation = abbreviation.ToUpperInvariant(),
             CommissionerId = commissionerId,
             Status = LeagueStatus.Setup
         };

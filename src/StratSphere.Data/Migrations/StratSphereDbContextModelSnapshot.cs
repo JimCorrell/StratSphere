@@ -182,6 +182,9 @@ namespace StratSphere.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -575,6 +578,14 @@ namespace StratSphere.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Abbreviation")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("CommissionerId")
                         .HasColumnType("uuid");
 
@@ -599,6 +610,9 @@ namespace StratSphere.Data.Migrations
                         .HasDefaultValueSql("'Setup'");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Abbreviation")
+                        .IsUnique();
 
                     b.HasIndex("CommissionerId");
 

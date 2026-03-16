@@ -6,6 +6,7 @@ public interface ITeamRepository
 {
     Task<Team?> GetByIdAsync(Guid id);
     Task<IEnumerable<Team>> GetBySeasonIdAsync(Guid seasonId);
+    Task<bool> AbbreviationExistsInLeagueAsync(Guid leagueId, string abbreviation);
     Task<Team?> GetByUserAndLeagueAsync(Guid userId, Guid leagueId);
     Task AddAsync(Team team);
     Task SaveChangesAsync();

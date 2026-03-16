@@ -12,10 +12,10 @@ public class LeagueContextMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context, ILeagueRepository leagueRepo)
     {
-        if (context.Request.RouteValues.TryGetValue("slug", out var slugObj)
-            && slugObj is string slug && !string.IsNullOrEmpty(slug))
+        if (context.Request.RouteValues.TryGetValue("leagueAbbr", out var abbrObj)
+            && abbrObj is string abbr && !string.IsNullOrEmpty(abbr))
         {
-            var league = await leagueRepo.GetBySlugAsync(slug);
+            var league = await leagueRepo.GetByAbbreviationAsync(abbr);
             if (league is not null)
                 context.Items[LeagueKey] = league;
         }

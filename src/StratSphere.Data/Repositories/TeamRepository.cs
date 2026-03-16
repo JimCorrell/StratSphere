@@ -18,6 +18,9 @@ public class TeamRepository(StratSphereDbContext db) : ITeamRepository
     public Task<Team?> GetByUserAndLeagueAsync(Guid userId, Guid leagueId) =>
         db.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.LeagueId == leagueId);
 
+    public Task<bool> AbbreviationExistsInLeagueAsync(Guid leagueId, string abbreviation) =>
+        db.Teams.AnyAsync(t => t.LeagueId == leagueId && t.Abbreviation.ToUpper() == abbreviation.ToUpper());
+
     public async Task AddAsync(Team team) => await db.Teams.AddAsync(team);
     public Task SaveChangesAsync() => db.SaveChangesAsync();
 

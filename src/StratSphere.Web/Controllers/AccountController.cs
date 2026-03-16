@@ -12,6 +12,7 @@ namespace StratSphere.Web.Controllers;
 public class AccountController(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
+    IEmailSender<ApplicationUser> emailSender,
     ILeagueRepository leagueRepo) : Controller
 {
     // GET /account/login
@@ -102,6 +103,8 @@ public class AccountController(
         {
             DisplayName = user.DisplayName,
             Email = user.Email ?? string.Empty,
+            EmailConfirmed = user.EmailConfirmed,
+            PhoneNumber = user.PhoneNumber,
             MemberSince = user.CreatedAt,
             LeagueCount = leagues.Count()
         });
@@ -118,6 +121,7 @@ public class AccountController(
         if (user is null) return NotFound();
 
         user.DisplayName = model.DisplayName;
+        user.PhoneNumber = model.PhoneNumber;
         var result = await userManager.UpdateAsync(user);
 
         if (result.Succeeded)
@@ -130,5 +134,49 @@ public class AccountController(
             ModelState.AddModelError(string.Empty, error.Description);
 
         return View(model);
+    }
+
+    // GET /account/confirm-email?userId=...&token=...
+    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            TempData["Error"] = "Invalid confirmation link.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        var result = await userManager.ConfirmEmailAsync(user, token);
+        if (result.Succeeded)
+            TempData["Success"] = "Email confirmed! You can now create seasons.";
+        else
+            TempData["Error"] = "Email confirmation failed. The link may have expired — request a new one below.";
+
+        return RedirectToAction(nameof(Profile));
+    }
+
+    // POST /account/resend-confirmation
+    [HttpPost, ValidateAntiForgeryToken, Authorize]
+    public async Task<IActionResult> ResendConfirmation()
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user is null) return NotFound();
+
+        if (user.EmailConfirmed)
+        {
+            TempData["Success"] = "Your email is already confirmed.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationLink = Url.Action(
+            nameof(ConfirmEmail), "Account",
+            new { userId = user.Id, token },
+            Request.Scheme)!;
+
+        await emailSender.SendConfirmationLinkAsync(user, user.Email!, confirmationLink);
+        TempData["Success"] = "Confirmation email sent. Check the server logs for the link (dev mode).";
+        return RedirectToAction(nameof(Profile));
     }
 }

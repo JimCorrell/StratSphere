@@ -22,7 +22,7 @@ public class LeagueServiceTests
     {
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("My League", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("My League", "MYL", Guid.NewGuid());
 
         Assert.Equal("My League", result.Name);
     }
@@ -33,7 +33,7 @@ public class LeagueServiceTests
         var commissionerId = Guid.NewGuid();
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("Test League", commissionerId);
+        var result = await _sut.CreateLeagueAsync("Test League", "TST", commissionerId);
 
         Assert.Equal(commissionerId, result.CommissionerId);
     }
@@ -43,7 +43,7 @@ public class LeagueServiceTests
     {
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("Test League", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("Test League", "TST", Guid.NewGuid());
 
         Assert.Equal(LeagueStatus.Setup, result.Status);
     }
@@ -54,7 +54,7 @@ public class LeagueServiceTests
         var commissionerId = Guid.NewGuid();
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("Test League", commissionerId);
+        var result = await _sut.CreateLeagueAsync("Test League", "TST", commissionerId);
 
         var member = Assert.Single(result.Members);
         Assert.Equal(commissionerId, member.UserId);
@@ -66,7 +66,7 @@ public class LeagueServiceTests
     {
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("My Test League", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("My Test League", "MTL", Guid.NewGuid());
 
         Assert.Equal("my-test-league", result.Slug);
     }
@@ -76,7 +76,7 @@ public class LeagueServiceTests
     {
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("Bob's \"League\"", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("Bob's \"League\"", "BOB", Guid.NewGuid());
 
         Assert.Equal("bobs-league", result.Slug);
     }
@@ -89,7 +89,7 @@ public class LeagueServiceTests
             .ReturnsAsync(true)   // "my-league-1" exists
             .ReturnsAsync(false); // "my-league-2" is free
 
-        var result = await _sut.CreateLeagueAsync("My League", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("My League", "MYL", Guid.NewGuid());
 
         Assert.Equal("my-league-2", result.Slug);
     }
@@ -99,7 +99,7 @@ public class LeagueServiceTests
     {
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        await _sut.CreateLeagueAsync("Test League", Guid.NewGuid());
+        await _sut.CreateLeagueAsync("Test League", "TST", Guid.NewGuid());
 
         _leagueRepoMock.Verify(r => r.AddAsync(It.IsAny<League>()), Times.Once);
         _leagueRepoMock.Verify(r => r.SaveChangesAsync(), Times.Once);
@@ -161,7 +161,7 @@ public class LeagueServiceTests
     {
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("Season 2025", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("Season 2025", "SEA25", Guid.NewGuid());
 
         Assert.Equal("season-2025", result.Slug);
     }
@@ -173,7 +173,7 @@ public class LeagueServiceTests
         // This test documents that behavior and verifies hyphens are still correct.
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("Les Étoiles", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("Les Étoiles", "LES", Guid.NewGuid());
 
         // 'é' IsLetterOrDigit == true, so slug contains it
         Assert.Equal("les-étoiles", result.Slug);
@@ -186,7 +186,7 @@ public class LeagueServiceTests
         // The slug logic strips everything; documents that an empty base slug is returned.
         _leagueRepoMock.Setup(r => r.SlugExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
 
-        var result = await _sut.CreateLeagueAsync("!@#$%^&*()", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("!@#$%^&*()", "SPEC", Guid.NewGuid());
 
         Assert.Equal(string.Empty, result.Slug);
     }
@@ -201,7 +201,7 @@ public class LeagueServiceTests
             .ReturnsAsync(true)   // "test-2" exists
             .ReturnsAsync(false); // "test-3" is free
 
-        var result = await _sut.CreateLeagueAsync("Test", Guid.NewGuid());
+        var result = await _sut.CreateLeagueAsync("Test", "TST", Guid.NewGuid());
 
         Assert.Equal("test-3", result.Slug);
     }
