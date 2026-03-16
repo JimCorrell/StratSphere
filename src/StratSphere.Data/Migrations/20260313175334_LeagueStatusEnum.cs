@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace StratSphere.Data.Migrations
 {
+    [DbContext(typeof(StratSphereDbContext))]
+    [Migration("20260313175334_LeagueStatusEnum")]
     /// <inheritdoc />
     public partial class LeagueStatusEnum : Migration
     {

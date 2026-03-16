@@ -1,10 +1,13 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace StratSphere.Data.Migrations
 {
+    [DbContext(typeof(StratSphereDbContext))]
+    [Migration("20260306215229_AddRosterSlotTimestamps")]
     /// <inheritdoc />
     public partial class AddRosterSlotTimestamps : Migration
     {
