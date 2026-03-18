@@ -1,0 +1,81 @@
+@model int
+@{
+    var statusCode = Model;
+
+    string headline, message, icon;
+    switch (statusCode)
+    {
+        case 404:
+            icon = "🔍";
+            headline = "Page Not Found";
+            message = "That page doesn't exist or may have moved.";
+            break;
+        case 403:
+            icon = "🔒";
+            headline = "Access Denied";
+            message = "You don't have permission to view this page.";
+            break;
+        case 429:
+            icon = "⏱️";
+            headline = "Too Many Requests";
+            message = "You've made too many requests. Please wait a moment and try again.";
+            break;
+        case >= 500:
+            icon = "⚙️";
+            headline = "Something Went Wrong";
+            message = "An unexpected error occurred on our end. Please try again shortly.";
+            break;
+        default:
+            icon = "⚠️";
+            headline = "Unexpected Error";
+            message = "Something didn't go as planned.";
+            break;
+    }
+
+    ViewData["Title"] = headline;
+    Layout = "_Layout";
+}
+
+<div style="display:flex; align-items:center; justify-content:center; min-height:60vh; padding:3rem 1rem;">
+    <div style="text-align:center; max-width:480px;">
+
+        <div style="font-size:4rem; margin-bottom:1rem; line-height:1;">@icon</div>
+
+        @if (statusCode > 0)
+        {
+            <p style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+                       color:var(--amber); margin-bottom:0.5rem;">Error @statusCode</p>
+        }
+
+        <h1 style="font-size:2rem; color:var(--cream); margin:0 0 0.75rem;">@headline</h1>
+        <p style="color:var(--text-muted); font-size:1rem; margin-bottom:2rem;">@message</p>
+
+        <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a href="/league"
+                   style="display:inline-block; padding:0.6rem 1.5rem; background:var(--amber);
+                          color:#000; font-weight:700; border-radius:6px; text-decoration:none;
+                          font-size:0.875rem;">
+                    My Leagues
+                </a>
+            }
+            else
+            {
+                <a href="/"
+                   style="display:inline-block; padding:0.6rem 1.5rem; background:var(--amber);
+                          color:#000; font-weight:700; border-radius:6px; text-decoration:none;
+                          font-size:0.875rem;">
+                    Home
+                </a>
+            }
+            <button onclick="history.back()"
+                    style="padding:0.6rem 1.5rem; background:transparent; color:var(--text-muted);
+                           font-weight:600; border:1px solid var(--border); border-radius:6px;
+                           cursor:pointer; font-size:0.875rem;">
+                Go Back
+            </button>
+        </div>
+
+    </div>
+</div>
