@@ -101,6 +101,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Friendly pages for 4xx/5xx — re-executes the pipeline at the error path
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();

@@ -85,7 +85,11 @@ public class SeasonController(
         var league = ActiveLeague;
         var season = await seasonRepo.GetByLeagueAndYearAsync(league.Id, year);
 
-        if (season is null) return NotFound();
+        if (season is null)
+        {
+            TempData["Error"] = $"No season found for year {year} in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         // Build team roster rows
         var teamRows = new List<SeasonDetailViewModel.TeamRosterRow>();
@@ -129,7 +133,11 @@ public class SeasonController(
     {
         var league = ActiveLeague;
         var season = await seasonRepo.GetByLeagueAndYearAsync(league.Id, year);
-        if (season is null) return NotFound();
+        if (season is null)
+        {
+            TempData["Error"] = $"No season found for year {year} in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         if (season.Status != SeasonStatus.Setup)
         {
@@ -149,7 +157,11 @@ public class SeasonController(
     {
         var league = ActiveLeague;
         var season = await seasonRepo.GetByLeagueAndYearAsync(league.Id, year);
-        if (season is null) return NotFound();
+        if (season is null)
+        {
+            TempData["Error"] = $"No season found for year {year} in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         if (season.Status != SeasonStatus.Active)
         {

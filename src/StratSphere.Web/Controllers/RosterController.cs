@@ -60,7 +60,10 @@ public class RosterController(
         var team = league.Teams.FirstOrDefault(t => t.Id == model.TeamId);
 
         if (team is null || team.LeagueId != league.Id)
-            return NotFound();
+        {
+            TempData["Error"] = "Team not found in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         if (!CanManage(team, league))
             return Forbid();
@@ -87,7 +90,10 @@ public class RosterController(
         var team = league.Teams.FirstOrDefault(t => t.Id == teamId);
 
         if (team is null || team.LeagueId != league.Id)
-            return NotFound();
+        {
+            TempData["Error"] = "Team not found in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         if (!CanManage(team, league))
             return Forbid();

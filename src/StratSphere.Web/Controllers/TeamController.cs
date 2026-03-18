@@ -68,7 +68,11 @@ public class TeamController(
 
         var team = league.Teams.FirstOrDefault(t =>
             t.Abbreviation.ToUpperInvariant() == teamAbbr.ToUpperInvariant());
-        if (team is null) return NotFound();
+        if (team is null)
+        {
+            TempData["Error"] = $"Team \"{teamAbbr.ToUpper()}\" not found in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         // Prevent claiming if user already has a team in this league
         if (league.Teams.Any(t => t.UserId == userId))
@@ -87,10 +91,18 @@ public class TeamController(
 
         var team = league.Teams.FirstOrDefault(t =>
             t.Abbreviation.ToUpperInvariant() == teamAbbr.ToUpperInvariant());
-        if (team is null) return NotFound();
+        if (team is null)
+        {
+            TempData["Error"] = $"Team \"{teamAbbr.ToUpper()}\" not found in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         var season = league.Seasons.FirstOrDefault(s => s.CardYear == year);
-        if (season is null) return NotFound();
+        if (season is null)
+        {
+            TempData["Error"] = $"No season found for year {year} in this league.";
+            return Redirect($"/league/{league.Abbreviation}");
+        }
 
         var isOwner = team.UserId == userId;
         var isCommissioner = league.CommissionerId == userId;

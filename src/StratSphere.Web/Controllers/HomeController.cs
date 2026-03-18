@@ -17,4 +17,15 @@ public class HomeController : Controller
     // GET /home/dashboard — preserved for bookmarks
     [Authorize]
     public IActionResult Dashboard() => RedirectToAction("Index", "League");
+
+    // GET /Home/Error?statusCode={code}  — used by UseStatusCodePagesWithReExecute and UseExceptionHandler
+    [AllowAnonymous]
+    public IActionResult Error(int statusCode = 0)
+    {
+        // Preserve the original status code in the response (re-execute resets it to 200)
+        if (statusCode > 0)
+            Response.StatusCode = statusCode;
+
+        return View(statusCode);
+    }
 }
