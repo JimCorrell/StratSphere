@@ -1,12 +1,9 @@
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace StratSphere.Data.Migrations
 {
-    [DbContext(typeof(StratSphereDbContext))]
-    [Migration("20260313173449_AddActiveRosterSlotPartialUniqueIndex")]
     /// <inheritdoc />
     public partial class AddActiveRosterSlotPartialUniqueIndex : Migration
     {

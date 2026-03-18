@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,8 +6,6 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace StratSphere.Data.Migrations
 {
-    [DbContext(typeof(StratSphereDbContext))]
-    [Migration("20260306194938_InitialCreate")]
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {

@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace StratSphere.Data.Migrations
 {
-    [DbContext(typeof(StratSphereDbContext))]
-    [Migration("20260313175334_LeagueStatusEnum")]
     /// <inheritdoc />
     public partial class LeagueStatusEnum : Migration
     {

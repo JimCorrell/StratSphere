@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace StratSphere.Data.Migrations
 {
-    [DbContext(typeof(StratSphereDbContext))]
-    [Migration("20260316163829_AddIsAdminToApplicationUser")]
     /// <inheritdoc />
     public partial class AddIsAdminToApplicationUser : Migration
     {
