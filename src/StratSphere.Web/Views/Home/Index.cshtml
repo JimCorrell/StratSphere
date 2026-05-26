@@ -1,25 +1,66 @@
-@{ ViewData["Title"] = "Home"; Layout = "_Layout"; }
+@{ ViewData["Title"] = "StratSphere"; Layout = "_Layout"; }
 
-<div style="background: var(--panel); color: var(--cream); padding: 5rem 0 4rem; text-align: center; border-bottom: 3px solid var(--amber);">
-    <div class="container">
-        <p style="font-size:0.8125rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-light);margin-bottom:1rem;">
+@* ── Hero — full-bleed within .page ─────────────────────────────────────── *@
+<div style="background:var(--ink);color:var(--paper);margin:-24px -28px 0;padding:64px 60px 56px">
+    <div style="max-width:720px">
+        <div style="font-family:var(--f-sans);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--mustard);margin-bottom:18px">
             Strat-O-Matic League Management
-        </p>
-        <h1 style="font-size:3.5rem;color:var(--cream);margin-bottom:1.25rem;line-height:1.1;">
-            Your league.<br/>Your stats.<br/>Your history.
+        </div>
+        <h1 style="font-family:var(--f-display);font-weight:900;font-size:72px;text-transform:uppercase;letter-spacing:-.02em;line-height:.88;margin:0 0 24px;color:var(--paper)">
+            Run the league<br/>of your dreams.
         </h1>
-        <p style="font-size:1.125rem;color:rgba(226,232,240,0.7);max-width:520px;margin:0 auto 2.5rem;">
-            Host Strat-O-Matic simulation leagues with real Lahman player data,
-            standings, rosters, and stats — all in one place.
+        <p style="font-family:var(--f-serif);font-size:18px;line-height:1.6;color:rgba(239,227,200,.72);max-width:520px;margin:0 0 36px">
+            Host Strat-O-Matic simulation leagues with real Lahman historical data —
+            standings, rosters, player cards, and season stats all in one place.
         </p>
-        <div class="d-flex gap-2" style="justify-content:center;flex-wrap:wrap;">
-            <a asp-controller="Account" asp-action="Register" class="btn btn-amber btn-lg">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+            <a href="/account/register" class="btn" style="background:var(--mustard);color:var(--ink);border-color:var(--mustard);font-size:13px;padding:11px 22px">
                 Start a league free
             </a>
-            <a asp-controller="Account" asp-action="Login" class="btn btn-outline btn-lg"
-               style="border-color:rgba(226,232,240,0.3);color:var(--cream);">
+            <a href="/account/login" class="btn ghost" style="border-color:rgba(239,227,200,.38);color:var(--paper);font-size:13px;padding:11px 22px">
                 Sign in
             </a>
         </div>
+    </div>
+</div>
+
+@* ── Features grid ────────────────────────────────────────────────────────── *@
+<div class="col-3" style="margin-top:var(--gap)">
+    <div class="card" style="padding:24px 24px 28px">
+        <div style="font-family:var(--f-display);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--mustard);margin-bottom:8px">Real Player Cards</div>
+        <div style="font-family:var(--f-display);font-size:28px;font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:10px">Lahman Historical Data</div>
+        <p style="font-family:var(--f-serif);font-size:14px;line-height:1.6;color:var(--ink-2);margin:0">
+            Every card backed by the complete Lahman baseball database — 150+ years of batting, pitching, and fielding stats for every player who ever stepped on a field.
+        </p>
+    </div>
+    <div class="card" style="padding:24px 24px 28px">
+        <div style="font-family:var(--f-display);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--mustard);margin-bottom:8px">Live Standings</div>
+        <div style="font-family:var(--f-display);font-size:28px;font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:10px">Every split tracked</div>
+        <p style="font-family:var(--f-serif);font-size:14px;line-height:1.6;color:var(--ink-2);margin:0">
+            Win–loss, run differential, home/away records, last-10 streaks — standings recalculate automatically from game results across your full season schedule.
+        </p>
+    </div>
+    <div class="card" style="padding:24px 24px 28px">
+        <div style="font-family:var(--f-display);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--mustard);margin-bottom:8px">Commissioner Tools</div>
+        <div style="font-family:var(--f-display);font-size:28px;font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:10px">You run the show</div>
+        <p style="font-family:var(--f-serif);font-size:14px;line-height:1.6;color:var(--ink-2);margin:0">
+            Create seasons, manage rosters, control team assignments, and keep your league running — from setup through the final out of the championship season.
+        </p>
+    </div>
+</div>
+
+@* ── Card-year callout ────────────────────────────────────────────────────── *@
+<div class="card lift-accent" style="margin-top:var(--gap);padding:32px 36px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap">
+    <div>
+        <div class="eyebrow" style="margin-bottom:8px">Any era. Any legend.</div>
+        <div style="font-family:var(--f-display);font-weight:900;font-size:32px;text-transform:uppercase;line-height:1;margin-bottom:10px">
+            1927 Yankees. 1986 Mets. 2001 Mariners.
+        </div>
+        <p style="font-family:var(--f-serif);font-size:15px;color:var(--ink-2);margin:0;max-width:540px;line-height:1.6">
+            Each season uses a single card year — draft from that era's Lahman stats and build the roster you always imagined.
+        </p>
+    </div>
+    <div style="flex-shrink:0">
+        <a href="/account/register" class="btn" style="font-size:13px;padding:11px 22px">Get started</a>
     </div>
 </div>

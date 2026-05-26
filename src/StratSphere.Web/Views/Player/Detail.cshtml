@@ -1,0 +1,208 @@
+@model StratSphere.Web.Models.ViewModels.Player.PlayerDetailViewModel
+@{
+    ViewData["Title"] = Model.FullName;
+    Layout = "_Layout";
+
+    const string thStyle  = "font-family:var(--f-display);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:10px 10px;white-space:nowrap";
+    const string thNum    = thStyle + ";text-align:right";
+    const string tdMono   = "padding:8px 10px;font-family:var(--f-mono);font-size:12px;text-align:right;white-space:nowrap";
+    const string tdLeft   = "padding:8px 10px;font-family:var(--f-mono);font-size:12px;white-space:nowrap";
+}
+
+@* ── Player header ────────────────────────────────────────────────────────── *@
+<div class="card" style="margin-bottom:var(--gap);padding:28px 28px 24px">
+    <div class="eyebrow" style="margin-bottom:6px">
+        <a href="/league/@Model.LeagueAbbreviation" style="color:var(--ink-3);text-decoration:none">@Model.LeagueName</a>
+        <span style="color:var(--rule-strong)"> / </span>
+        <span>Player Card</span>
+    </div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap">
+        <div>
+            <h1 style="font-family:var(--f-display);font-weight:900;font-size:52px;text-transform:uppercase;letter-spacing:-.015em;line-height:.9;margin:0 0 10px">
+                @Model.FullName
+            </h1>
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                <span style="font-family:var(--f-display);font-size:18px;font-weight:700;text-transform:uppercase;color:var(--oxblood)">@Model.CardPosition</span>
+                @if (!string.IsNullOrEmpty(Model.Bats) || !string.IsNullOrEmpty(Model.Throws))
+                {
+                    <span style="font-family:var(--f-sans);font-size:12px;color:var(--ink-3);letter-spacing:.06em">
+                        B/T: @(Model.Bats ?? "?")/@(Model.Throws ?? "?")
+                    </span>
+                }
+                @if (Model.BirthYear.HasValue)
+                {
+                    <span style="font-family:var(--f-sans);font-size:12px;color:var(--ink-3);letter-spacing:.06em">
+                        b. @Model.BirthYear
+                    </span>
+                }
+                @if (!string.IsNullOrEmpty(Model.CareerSpan))
+                {
+                    <span style="font-family:var(--f-sans);font-size:12px;color:var(--ink-3);letter-spacing:.06em">
+                        @Model.CareerSpan
+                    </span>
+                }
+            </div>
+        </div>
+        @* Card year chip *@
+        <div style="text-align:center;flex-shrink:0">
+            <div style="background:var(--ink);color:var(--paper);border-radius:6px;padding:10px 18px;display:inline-block">
+                <div style="font-family:var(--f-display);font-size:28px;font-weight:900;line-height:1">@Model.CardYear</div>
+                <div style="font-family:var(--f-sans);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-top:2px">Card Year</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ── Sim season stats placeholder ─────────────────────────────────────────── *@
+<div class="card" style="margin-bottom:var(--gap);padding:20px 24px">
+    <div class="eyebrow" style="margin-bottom:6px">@Model.LeagueName · Season Stats</div>
+    <div style="font-family:var(--f-sans);font-size:13px;color:var(--ink-3);font-style:italic">
+        Season stats accumulate as games are played
+    </div>
+</div>
+
+@* ── Career batting ───────────────────────────────────────────────────────── *@
+@if (Model.HasBatting)
+{
+    <div class="card" style="margin-bottom:var(--gap);overflow-x:auto;padding:0">
+        <div style="padding:16px 20px 12px;border-bottom:1px solid var(--rule)">
+            <div class="eyebrow">Historical · Career Batting</div>
+        </div>
+        <table style="width:100%;border-collapse:collapse">
+            <thead>
+                <tr style="border-bottom:2px solid var(--rule-strong)">
+                    <th style="@thStyle;width:48px">YEAR</th>
+                    <th style="@thStyle">TEAM</th>
+                    <th style="@thStyle;width:28px">LG</th>
+                    <th style="@thNum;width:36px">G</th>
+                    <th style="@thNum;width:40px">AB</th>
+                    <th style="@thNum;width:36px">R</th>
+                    <th style="@thNum;width:36px">H</th>
+                    <th style="@thNum;width:32px">2B</th>
+                    <th style="@thNum;width:32px">3B</th>
+                    <th style="@thNum;width:36px">HR</th>
+                    <th style="@thNum;width:40px">RBI</th>
+                    <th style="@thNum;width:36px">BB</th>
+                    <th style="@thNum;width:36px">SO</th>
+                    <th style="@thNum;width:36px">SB</th>
+                    <th style="@thNum;width:48px">BA</th>
+                    <th style="@thNum;width:48px">OBP</th>
+                    <th style="@thNum;width:48px">SLG</th>
+                    <th style="@thNum;width:52px;padding-right:16px">OPS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.CareerBatting)
+                {
+                    var isCard = row.YearId == Model.CardYear;
+                    var rowBg  = isCard ? "background:color-mix(in srgb,var(--mustard) 18%,transparent)"
+                                       : (Model.CareerBatting.ToList().IndexOf(row) % 2 == 1 ? "background:var(--paper-2)" : "");
+                    <tr style="border-bottom:1px solid var(--rule);@rowBg">
+                        <td style="@tdLeft;font-weight:@(isCard ? "700" : "400")">
+                            @row.YearId@(isCard ? " ★" : "")
+                        </td>
+                        <td style="@tdLeft;color:var(--ink-2)">@row.TeamId</td>
+                        <td style="@tdLeft;color:var(--ink-3)">@(row.LgId ?? "—")</td>
+                        <td style="@tdMono">@row.G</td>
+                        <td style="@tdMono">@row.AB</td>
+                        <td style="@tdMono">@row.R</td>
+                        <td style="@tdMono">@row.H</td>
+                        <td style="@tdMono">@row.Doubles</td>
+                        <td style="@tdMono">@row.Triples</td>
+                        <td style="@tdMono">@row.HR</td>
+                        <td style="@tdMono">@row.RBI</td>
+                        <td style="@tdMono">@row.BB</td>
+                        <td style="@tdMono">@row.SO</td>
+                        <td style="@tdMono">@row.SB</td>
+                        <td style="@tdMono;font-weight:@(isCard ? "700" : "400")">@row.BADisplay</td>
+                        <td style="@tdMono">@row.OBPDisplay</td>
+                        <td style="@tdMono">@row.SLGDisplay</td>
+                        <td style="@tdMono;padding-right:16px;font-weight:@(isCard ? "700" : "400")">@row.OPSDisplay</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@* ── Career pitching ──────────────────────────────────────────────────────── *@
+@if (Model.HasPitching)
+{
+    <div class="card" style="margin-bottom:var(--gap);overflow-x:auto;padding:0">
+        <div style="padding:16px 20px 12px;border-bottom:1px solid var(--rule)">
+            <div class="eyebrow">Historical · Career Pitching</div>
+        </div>
+        <table style="width:100%;border-collapse:collapse">
+            <thead>
+                <tr style="border-bottom:2px solid var(--rule-strong)">
+                    <th style="@thStyle;width:48px">YEAR</th>
+                    <th style="@thStyle">TEAM</th>
+                    <th style="@thStyle;width:28px">LG</th>
+                    <th style="@thNum;width:36px">W</th>
+                    <th style="@thNum;width:36px">L</th>
+                    <th style="@thNum;width:36px">G</th>
+                    <th style="@thNum;width:36px">GS</th>
+                    <th style="@thNum;width:36px">SV</th>
+                    <th style="@thNum;width:48px">IP</th>
+                    <th style="@thNum;width:36px">H</th>
+                    <th style="@thNum;width:36px">ER</th>
+                    <th style="@thNum;width:36px">BB</th>
+                    <th style="@thNum;width:36px">SO</th>
+                    <th style="@thNum;width:52px">ERA</th>
+                    <th style="@thNum;width:56px">WHIP</th>
+                    <th style="@thNum;width:48px;padding-right:16px">K/9</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.CareerPitching)
+                {
+                    var isCard = row.YearId == Model.CardYear;
+                    var rowBg  = isCard ? "background:color-mix(in srgb,var(--mustard) 18%,transparent)"
+                                       : (Model.CareerPitching.ToList().IndexOf(row) % 2 == 1 ? "background:var(--paper-2)" : "");
+                    <tr style="border-bottom:1px solid var(--rule);@rowBg">
+                        <td style="@tdLeft;font-weight:@(isCard ? "700" : "400")">
+                            @row.YearId@(isCard ? " ★" : "")
+                        </td>
+                        <td style="@tdLeft;color:var(--ink-2)">@row.TeamId</td>
+                        <td style="@tdLeft;color:var(--ink-3)">@(row.LgId ?? "—")</td>
+                        <td style="@tdMono;font-weight:@(isCard ? "700" : "400")">@row.W</td>
+                        <td style="@tdMono;color:var(--ink-2)">@row.L</td>
+                        <td style="@tdMono">@row.G</td>
+                        <td style="@tdMono">@row.GS</td>
+                        <td style="@tdMono">@row.SV</td>
+                        <td style="@tdMono">@row.IPDisplay</td>
+                        <td style="@tdMono">@row.H</td>
+                        <td style="@tdMono">@row.ER</td>
+                        <td style="@tdMono">@row.BB</td>
+                        <td style="@tdMono">@row.SO</td>
+                        <td style="@tdMono;font-weight:@(isCard ? "700" : "400")">@row.ERADisplay</td>
+                        <td style="@tdMono">@row.WHIPDisplay</td>
+                        <td style="@tdMono;padding-right:16px">@row.K9Display</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@* ── Stub sections ────────────────────────────────────────────────────────── *@
+<div class="col-2" style="margin-bottom:var(--gap)">
+    <div class="card" style="padding:28px 24px;text-align:center">
+        <div style="font-family:var(--f-display);font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3)">Game Log</div>
+        <div style="font-family:var(--f-sans);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-top:6px">Coming soon</div>
+    </div>
+    <div class="card" style="padding:28px 24px;text-align:center">
+        <div style="font-family:var(--f-display);font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3)">Hot Zone</div>
+        <div style="font-family:var(--f-sans);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-top:6px">Coming soon</div>
+    </div>
+</div>
+
+@if (!Model.HasBatting && !Model.HasPitching)
+{
+    <div class="card" style="padding:40px 24px;text-align:center">
+        <div style="font-family:var(--f-display);font-size:32px;font-weight:900;text-transform:uppercase;color:var(--ink-3)">No stats found</div>
+        <div style="font-family:var(--f-sans);font-size:13px;color:var(--ink-3);margin-top:8px">
+            No Lahman data for @Model.FullName · @Model.CardYear
+        </div>
+    </div>
+}

@@ -155,11 +155,12 @@ public class TeamController(
 
                     roster.Add(new TeamDetailViewModel.RosterRow
                     {
-                        SlotId = slot.Id,
-                        PlayerName = person.FullName,
-                        Position = slot.Card.Position,
-                        CardYear = slot.Card.CardYear,
-                        StatLine = statLine
+                        SlotId         = slot.Id,
+                        LahmanPlayerId = slot.Card.LahmanPlayerId,
+                        PlayerName     = person.FullName,
+                        Position       = slot.Card.Position,
+                        CardYear       = slot.Card.CardYear,
+                        StatLine       = statLine
                     });
                 }
             }

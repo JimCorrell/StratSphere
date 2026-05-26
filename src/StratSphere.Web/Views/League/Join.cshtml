@@ -1,18 +1,17 @@
 @model StratSphere.Web.Models.ViewModels.League.JoinLeagueViewModel
 @{ ViewData["Title"] = "Join League"; Layout = "_Layout"; }
 
-<div class="auth-wrapper">
-    <div class="auth-card">
-
-        <div class="auth-logo">
-            <h2 class="auth-title">Join a League</h2>
-            <p class="auth-subtitle">Enter the league slug shared by the commissioner.</p>
-        </div>
+<div style="max-width:480px;margin:2rem auto">
+    <div class="card" style="padding:32px 32px 28px">
+        <div class="eyebrow" style="margin-bottom:8px">Join the League</div>
+        <h1 style="font-family:var(--f-display);font-weight:900;font-size:40px;text-transform:uppercase;letter-spacing:-.01em;line-height:.95;margin:0 0 6px">Enter Your Code</h1>
+        <p style="font-family:var(--f-serif);font-size:14px;color:var(--ink-2);margin:0 0 24px;line-height:1.5">
+            Enter the league slug shared by the commissioner.
+        </p>
 
         @if (!ViewData.ModelState.IsValid)
         {
             <div class="alert alert-error">
-                <span>⚠</span>
                 <div asp-validation-summary="ModelOnly"></div>
             </div>
         }
@@ -23,19 +22,20 @@
             <div class="form-group">
                 <label asp-for="Slug" class="form-label">League Slug</label>
                 <input asp-for="Slug" class="form-control"
-                       placeholder="e.g. retro-1986-league" autocomplete="off" autofocus />
-                <span asp-validation-for="Slug" class="text-muted" style="font-size:0.8rem"></span>
+                       placeholder="e.g. retro-1986-league"
+                       style="font-family:var(--f-mono)"
+                       autocomplete="off" autofocus />
+                <span asp-validation-for="Slug" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full btn-lg mt-2">
+            <button type="submit" class="btn" style="width:100%;justify-content:center;margin-top:8px;font-size:13px;padding:11px">
                 Join league
             </button>
         </form>
+    </div>
 
-        <div class="auth-footer">
-            <a asp-controller="League" asp-action="Create">Create a new league instead</a>
-        </div>
-
+    <div style="text-align:center;margin-top:14px;font-family:var(--f-sans);font-size:12px;color:var(--ink-3)">
+        <a href="/league/create" style="color:var(--ink-2)">Create a new league instead</a>
     </div>
 </div>
 

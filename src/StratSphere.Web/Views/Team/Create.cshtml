@@ -1,18 +1,17 @@
 @model StratSphere.Web.Models.ViewModels.Team.CreateTeamViewModel
 @{ ViewData["Title"] = "Create Team"; Layout = "_Layout"; }
 
-<div class="auth-wrapper">
-    <div class="auth-card">
-
-        <div class="auth-logo">
-            <h2 class="auth-title">Create Your Team</h2>
-            <p class="auth-subtitle">Set up your franchise for this league.</p>
-        </div>
+<div style="max-width:480px;margin:2rem auto">
+    <div class="card" style="padding:32px 32px 28px">
+        <div class="eyebrow" style="margin-bottom:8px">Commissioner · Team Setup</div>
+        <h1 style="font-family:var(--f-display);font-weight:900;font-size:40px;text-transform:uppercase;letter-spacing:-.01em;line-height:.95;margin:0 0 6px">Create a Team</h1>
+        <p style="font-family:var(--f-serif);font-size:14px;color:var(--ink-2);margin:0 0 24px;line-height:1.5">
+            Set up a franchise. Managers claim teams from the scoreboard.
+        </p>
 
         @if (!ViewData.ModelState.IsValid)
         {
             <div class="alert alert-error">
-                <span>⚠</span>
                 <div asp-validation-summary="ModelOnly"></div>
             </div>
         }
@@ -23,26 +22,31 @@
             <div class="form-group">
                 <label asp-for="City" class="form-label">City</label>
                 <input asp-for="City" class="form-control" placeholder="e.g. Chicago" autofocus />
-                <span asp-validation-for="City" class="text-muted" style="font-size:0.8rem"></span>
+                <span asp-validation-for="City" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Name" class="form-label">Team Name</label>
                 <input asp-for="Name" class="form-control" placeholder="e.g. Cubs" />
-                <span asp-validation-for="Name" class="text-muted" style="font-size:0.8rem"></span>
+                <span asp-validation-for="Name" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Abbreviation" class="form-label">Abbreviation</label>
-                <input asp-for="Abbreviation" class="form-control" placeholder="e.g. CHC" maxlength="10" style="text-transform:uppercase;" />
-                <span asp-validation-for="Abbreviation" class="text-muted" style="font-size:0.8rem"></span>
+                <input asp-for="Abbreviation" class="form-control"
+                       placeholder="e.g. CHC" maxlength="10"
+                       style="text-transform:uppercase;font-family:var(--f-mono);letter-spacing:.08em"
+                       oninput="this.value=this.value.toUpperCase()" />
+                <div style="font-family:var(--f-sans);font-size:11px;color:var(--ink-3);margin-top:4px">
+                    2–6 uppercase letters · must be unique in this league
+                </div>
+                <span asp-validation-for="Abbreviation" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full btn-lg mt-2">
+            <button type="submit" class="btn" style="width:100%;justify-content:center;margin-top:8px;font-size:13px;padding:11px">
                 Create team
             </button>
         </form>
-
     </div>
 </div>
 

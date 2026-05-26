@@ -30,10 +30,11 @@ public class TeamDetailViewModel
 
     public class RosterRow
     {
-        public Guid SlotId { get; set; }
-        public string PlayerName { get; set; } = "";
-        public string Position { get; set; } = "";
-        public int CardYear { get; set; }
-        public string StatLine { get; set; } = "";
+        public Guid   SlotId         { get; set; }
+        public string LahmanPlayerId { get; set; } = "";
+        public string PlayerName     { get; set; } = "";
+        public string Position       { get; set; } = "";
+        public int    CardYear       { get; set; }
+        public string StatLine       { get; set; } = "";
     }
 }

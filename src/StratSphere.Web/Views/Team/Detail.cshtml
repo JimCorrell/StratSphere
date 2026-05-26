@@ -172,7 +172,9 @@
                                     @foreach (var row in hitters)
                                     {
                                         <tr>
-                                            <td class="l" style="font-family:var(--f-display);text-transform:uppercase;font-weight:700;letter-spacing:.02em">@row.PlayerName</td>
+                                            <td class="l" style="font-family:var(--f-display);text-transform:uppercase;font-weight:700;letter-spacing:.02em">
+                                                <a href="/league/@Model.LeagueAbbreviation/player/@row.LahmanPlayerId/@row.CardYear" style="color:var(--ink);text-decoration:none">@row.PlayerName</a>
+                                            </td>
                                             <td class="l"><span class="pos-pill">@row.Position</span></td>
                                             <td style="font-family:var(--f-mono);font-size:12px">@row.CardYear</td>
                                             <td style="font-weight:700;color:var(--accent)">@(string.IsNullOrEmpty(row.StatLine) ? "—" : row.StatLine)</td>
@@ -223,7 +225,9 @@
                                     @foreach (var row in pitchers)
                                     {
                                         <tr>
-                                            <td class="l" style="font-family:var(--f-display);text-transform:uppercase;font-weight:700;letter-spacing:.02em">@row.PlayerName</td>
+                                            <td class="l" style="font-family:var(--f-display);text-transform:uppercase;font-weight:700;letter-spacing:.02em">
+                                                <a href="/league/@Model.LeagueAbbreviation/player/@row.LahmanPlayerId/@row.CardYear" style="color:var(--ink);text-decoration:none">@row.PlayerName</a>
+                                            </td>
                                             <td class="l">
                                                 <span class="pos-pill" style="background:@(row.Position == "SP" ? "var(--pennant)" : "var(--green-field)");color:#fff;border-color:transparent">@row.Position</span>
                                             </td>

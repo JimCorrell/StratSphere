@@ -1,18 +1,17 @@
 @model StratSphere.Web.Models.ViewModels.League.CreateLeagueViewModel
 @{ ViewData["Title"] = "Create League"; Layout = "_Layout"; }
 
-<div class="auth-wrapper">
-    <div class="auth-card">
-
-        <div class="auth-logo">
-            <h2 class="auth-title">Create a League</h2>
-            <p class="auth-subtitle">You'll be the commissioner. Invite managers after.</p>
-        </div>
+<div style="max-width:480px;margin:2rem auto">
+    <div class="card" style="padding:32px 32px 28px">
+        <div class="eyebrow" style="margin-bottom:8px">Commissioner Setup</div>
+        <h1 style="font-family:var(--f-display);font-weight:900;font-size:40px;text-transform:uppercase;letter-spacing:-.01em;line-height:.95;margin:0 0 6px">Create a League</h1>
+        <p style="font-family:var(--f-serif);font-size:14px;color:var(--ink-2);margin:0 0 24px;line-height:1.5">
+            You'll be the commissioner. Invite managers after.
+        </p>
 
         @if (!ViewData.ModelState.IsValid)
         {
             <div class="alert alert-error">
-                <span>⚠</span>
                 <div asp-validation-summary="ModelOnly"></div>
             </div>
         }
@@ -22,45 +21,41 @@
 
             <div class="form-group">
                 <label asp-for="Name" class="form-label">League Name</label>
-                <input asp-for="Name" class="form-control"
-                       placeholder="e.g. Retro 1986 League" autofocus />
-                <span asp-validation-for="Name" class="text-muted" style="font-size:0.8rem"></span>
+                <input asp-for="Name" class="form-control" placeholder="e.g. Retro 1986 League" autofocus />
+                <span asp-validation-for="Name" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Abbreviation" class="form-label">League Abbreviation</label>
-                <input asp-for="Abbreviation" class="form-control"
-                       placeholder="e.g. RBL86" maxlength="6"
-                       style="text-transform:uppercase; letter-spacing:0.1em;"
+                <label asp-for="Abbreviation" class="form-label">Abbreviation</label>
+                <input asp-for="Abbreviation" class="form-control" placeholder="e.g. RBL86" maxlength="6"
+                       style="text-transform:uppercase;letter-spacing:.08em;font-family:var(--f-mono)"
                        oninput="this.value=this.value.toUpperCase()" />
-                <small class="text-muted" style="font-size:0.8rem;">
-                    4–6 uppercase letters or digits. Must be unique across all StratSphere leagues.
-                </small>
-                <span asp-validation-for="Abbreviation" class="text-muted" style="font-size:0.8rem; display:block; color:var(--error)"></span>
+                <div style="font-family:var(--f-sans);font-size:11px;color:var(--ink-3);margin-top:4px">
+                    4–6 uppercase letters or digits · must be unique
+                </div>
+                <span asp-validation-for="Abbreviation" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
             </div>
 
             @if (Model.ShowPhoneField)
             {
                 <div class="form-group">
-                    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
-                    <input asp-for="PhoneNumber" class="form-control" type="tel"
-                           placeholder="e.g. 555-867-5309" />
-                    <small class="text-muted" style="font-size:0.8rem;">
-                        Commissioner contact info. You can update this anytime in your profile.
-                    </small>
-                    <span asp-validation-for="PhoneNumber" class="text-muted" style="font-size:0.8rem; display:block; color:var(--error)"></span>
+                    <label asp-for="PhoneNumber" class="form-label">Phone Number <span style="font-weight:400;letter-spacing:0">(optional)</span></label>
+                    <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="e.g. 555-867-5309" />
+                    <div style="font-family:var(--f-sans);font-size:11px;color:var(--ink-3);margin-top:4px">
+                        Commissioner contact — you can update this anytime in your profile.
+                    </div>
+                    <span asp-validation-for="PhoneNumber" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
                 </div>
             }
 
-            <button type="submit" class="btn btn-primary btn-full btn-lg mt-2">
+            <button type="submit" class="btn" style="width:100%;justify-content:center;margin-top:8px;font-size:13px;padding:11px">
                 Create league
             </button>
         </form>
+    </div>
 
-        <div class="auth-footer">
-            <a asp-controller="League" asp-action="Join">Join an existing league instead</a>
-        </div>
-
+    <div style="text-align:center;margin-top:14px;font-family:var(--f-sans);font-size:12px;color:var(--ink-3)">
+        <a href="/league/join" style="color:var(--ink-2)">Join an existing league instead</a>
     </div>
 </div>
 
