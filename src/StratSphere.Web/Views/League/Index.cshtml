@@ -1,112 +1,99 @@
 @model StratSphere.Web.Models.ViewModels.League.LeagueIndexViewModel
 @{ ViewData["Title"] = Model.IsAdmin ? "All Leagues" : "My Leagues"; Layout = "_Layout"; }
 
-<div class="container" style="padding: 3rem 1rem;">
+<div class="sec-hdr" style="margin-bottom:var(--gap)">
+    <h2>@(Model.IsAdmin ? "All Leagues" : "My Leagues")</h2>
+    @if (Model.IsAdmin && Model.Leagues.Any())
+    {
+        <span class="right">
+            <form action="/league/delete-all" method="post" style="margin:0;display:inline"
+                  onsubmit="return confirm('Permanently delete ALL leagues and all related data? This cannot be undone.')">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn sm danger" style="cursor:pointer">Delete All</button>
+            </form>
+        </span>
+    }
+</div>
 
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
-        <h1 style="color:var(--text); margin:0;">@(Model.IsAdmin ? "All Leagues" : "My Leagues")</h1>
-        <div style="display:flex; gap:0.5rem; align-items:center;">
-            @if (Model.IsAdmin && Model.Leagues.Any())
+@if (TempData["Success"] != null)
+{
+    <div style="background:var(--green-field);color:#fff;padding:9px 16px;margin-bottom:var(--gap);font-family:var(--f-sans);font-size:11px;font-weight:700;letter-spacing:.1em">✓ @TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div style="background:var(--oxblood);color:#fff;padding:9px 16px;margin-bottom:var(--gap);font-family:var(--f-sans);font-size:11px;font-weight:700;letter-spacing:.1em">⚠ @TempData["Error"]</div>
+}
+
+<div class="tenant-picker">
+
+    @foreach (var league in Model.Leagues)
+    {
+        var mark = league.Abbreviation.Length > 0 ? league.Abbreviation[0].ToString().ToUpper() : "?";
+        <a href="/league/@league.Abbreviation.ToLower()" class="tenant-pick @(league.IsArchived ? "" : "")"
+           style="text-decoration:none;color:inherit;@(league.IsArchived ? "opacity:.55" : "")">
+            <span class="mark">@mark</span>
+            <div class="body">
+                <b>@league.Name</b>
+                @if (league.IsArchived)
+                {
+                    <div style="color:var(--ink-3)">@league.Abbreviation · <span style="text-transform:uppercase;letter-spacing:.08em;font-size:10px;font-weight:700">Archived</span></div>
+                }
+                else
+                {
+                    <div>@league.Abbreviation · @league.Status</div>
+                }
+                <div style="margin-top:4px">@league.MemberCount member@(league.MemberCount == 1 ? "" : "s")</div>
+            </div>
+            @if (!string.IsNullOrEmpty(league.Role))
             {
-                <form action="/league/delete-all" method="post" style="margin:0;"
-                      onsubmit="return confirm('Permanently delete ALL leagues and all related data? This cannot be undone.');">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-danger" style="font-size:0.8125rem;">Delete All Leagues</button>
-                </form>
+                <span class="pill @(league.Role == "Commissioner" ? "accent" : "")" style="font-size:9px;align-self:flex-start">@league.Role</span>
             }
-            <a asp-controller="League" asp-action="Create" class="btn btn-amber">+ New League</a>
-        </div>
-    </div>
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success mb-3">✓ @TempData["Success"]</div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-error mb-3">⚠ @TempData["Error"]</div>
-    }
-
-    @if (!Model.Leagues.Any())
-    {
-        <div style="padding:3rem 2rem; background:var(--panel); border:1px solid var(--border); border-radius:8px; text-align:center;">
-            <p style="color:var(--text-muted); margin-bottom:1.25rem;">
-                @(Model.IsAdmin ? "No leagues exist yet." : "You're not in any leagues yet.")
-            </p>
-            <a asp-controller="League" asp-action="Create" class="btn btn-amber">Create a league</a>
-            @if (!Model.IsAdmin)
+            @if (Model.IsAdmin && !league.IsArchived)
             {
-                <a asp-controller="League" asp-action="Join" class="btn btn-outline" style="margin-left:0.5rem;">Join a league</a>
-            }
-        </div>
-    }
-    else
-    {
-        <div style="display:flex; flex-direction:column; gap:0.75rem;">
-            @foreach (var league in Model.Leagues)
-            {
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:1.25rem 1.5rem;
-                            background:var(--panel); border:1px solid var(--border); border-radius:8px; gap:1rem;
-                            opacity:@(league.IsArchived ? "0.6" : "1");">
-
-                    <a href="/league/@league.Abbreviation" style="flex:1; min-width:0; text-decoration:none; color:inherit;">
-                        <div style="font-size:1.1rem; font-weight:600; color:var(--text);">
-                            @league.Name
-                            @if (league.IsArchived)
-                            {
-                                <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
-                                             color:var(--text-muted); margin-left:0.5rem; vertical-align:middle;">Archived</span>
-                            }
-                        </div>
-                        <div style="font-size:0.8125rem; color:var(--text-muted); margin-top:0.2rem;">
-                            @league.MemberCount member@(league.MemberCount == 1 ? "" : "s") &middot; @league.Status
-                        </div>
-                    </a>
-
-                    <div style="display:flex; align-items:center; gap:0.75rem; flex-shrink:0;">
-                        @if (!string.IsNullOrEmpty(league.Role))
-                        {
-                            <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
-                                         color:@(league.Role == "Commissioner" ? "var(--amber)" : "var(--text-muted)");">
-                                @league.Role
-                            </span>
-                        }
-
-                        @if (Model.IsAdmin)
-                        {
-                            if (league.IsArchived)
-                            {
-                                <form action="/league/@league.Abbreviation/unarchive" method="post" style="margin:0;">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-ghost" style="font-size:0.75rem; padding:0.25rem 0.625rem;">Restore</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form action="/league/@league.Abbreviation/archive" method="post" style="margin:0;">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-ghost" style="font-size:0.75rem; padding:0.25rem 0.625rem;">Archive</button>
-                                </form>
-                            }
-                            <form action="/league/@league.Abbreviation/delete" method="post" style="margin:0;"
-                                  onsubmit="return confirm('Permanently delete &quot;@league.Name&quot; and all its seasons, teams, and player data? This cannot be undone.');">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-danger" style="font-size:0.75rem; padding:0.25rem 0.625rem;">Delete</button>
-                            </form>
-                        }
-                    </div>
+                <div style="align-self:flex-start;display:flex;gap:6px" onclick="event.preventDefault()">
+                    <form action="/league/@league.Abbreviation/archive" method="post" style="margin:0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn sm ghost" style="cursor:pointer">Archive</button>
+                    </form>
+                    <form action="/league/@league.Abbreviation/delete" method="post" style="margin:0"
+                          onsubmit="return confirm('Permanently delete &quot;@league.Name&quot; and all its data?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn sm danger" style="cursor:pointer">Delete</button>
+                    </form>
                 </div>
             }
-        </div>
+            @if (Model.IsAdmin && league.IsArchived)
+            {
+                <div style="align-self:flex-start" onclick="event.preventDefault()">
+                    <form action="/league/@league.Abbreviation/unarchive" method="post" style="margin:0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn sm ghost" style="cursor:pointer">Restore</button>
+                    </form>
+                </div>
+            }
+        </a>
+    }
 
-        @if (!Model.IsAdmin)
-        {
-            <div style="margin-top:1.5rem; text-align:center;">
-                <a asp-controller="League" asp-action="Join" style="font-size:0.875rem; color:var(--text-muted);">
-                    Join another league
-                </a>
+    @* New league card *@
+    <a href="/league/create" class="tenant-pick new" style="text-decoration:none;color:inherit">
+        <span class="mark" style="background:var(--paper-2);color:var(--ink)">+</span>
+        <div class="body">
+            <b>Start a new league</b>
+            <div>Replay, dynasty, draft-and-keep</div>
+            <div style="margin-top:4px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;font-weight:700">Create →</div>
+        </div>
+    </a>
+
+    @if (!Model.IsAdmin)
+    {
+        <a href="/league/join" class="tenant-pick new" style="text-decoration:none;color:inherit">
+            <span class="mark" style="background:var(--paper-2);color:var(--ink)">↪</span>
+            <div class="body">
+                <b>Join with code</b>
+                <div>Commissioner invitation</div>
+                <div style="margin-top:4px;font-family:var(--f-mono);color:var(--ink-3)">Enter league slug</div>
             </div>
-        }
+        </a>
     }
 
 </div>

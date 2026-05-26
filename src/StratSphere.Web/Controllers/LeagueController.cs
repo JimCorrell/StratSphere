@@ -171,6 +171,8 @@ public class LeagueController(
                 .ToList();
         }
 
+        ViewData["ActiveTab"] = "scoreboard";
+
         var model = new LeagueDetailViewModel
         {
             Id = league.Id,
