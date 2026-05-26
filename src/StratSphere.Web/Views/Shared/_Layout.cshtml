@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="paper" id="app-root">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,46 +7,53 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script>
+    (function(){
+        var m = document.cookie.match(/(?:^|;\s*)theme=([^;]+)/);
+        if (m) document.documentElement.dataset.theme = m[1];
+    })();
+    </script>
 </head>
 <body>
 
-<nav class="navbar">
-    <a asp-controller="Home" asp-action="Index" class="navbar-brand">
-        <span class="brand-dot"></span>
-        StratSphere
-    </a>
+@await Html.PartialAsync("_TopStrip")
 
-    <ul class="navbar-nav">
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <li><a asp-controller="Home" asp-action="Dashboard" class="nav-link">Dashboard</a></li>
-            <li><a asp-controller="League" asp-action="Index" class="nav-link">My Leagues</a></li>
-            <div class="navbar-divider"></div>
-            <li><a asp-controller="Account" asp-action="Profile" class="nav-link">@User.Identity.Name?.Split('@')[0]</a></li>
-            <li>
-                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-ghost" style="font-size:0.875rem;padding:0.4rem 0.75rem;color:rgba(226,232,240,0.6)">
-                        Sign out
-                    </button>
-                </form>
-            </li>
-        }
-        else
-        {
-            <li><a asp-controller="Account" asp-action="Login" class="nav-link">Sign in</a></li>
-            <li><a asp-controller="Account" asp-action="Register" class="nav-link btn btn-amber" style="margin-left:0.25rem;padding:0.4rem 1rem">Get started</a></li>
-        }
-    </ul>
-</nav>
+@{
+    var isCommish = Context.Items[LeagueContextMiddleware.IsCommissionerKey] is bool c && c;
+    var hasLeague = Context.Items[LeagueContextMiddleware.LeagueKey] != null;
+}
 
-<div class="page-wrapper">
+@if (isCommish)
+{
+    @await Html.PartialAsync("_CommishBar")
+}
+
+@if (hasLeague)
+{
+    @await Html.PartialAsync("_Masthead")
+    @await Html.PartialAsync("_PrimaryNav")
+}
+
+<div class="page">
     @RenderBody()
 </div>
 
-<footer class="site-footer">
-    &copy; @DateTime.Now.Year StratSphere &mdash; Built for Strat-O-Matic leagues
-</footer>
+@{
+    var footerLeague = Context.Items[LeagueContextMiddleware.LeagueKey] as League;
+}
+<div class="footer no-sel">
+    <span class="brand-tag">★ StratSphere</span>
+    @if (footerLeague != null)
+    {
+        <span>@footerLeague.Name &middot; @footerLeague.Abbreviation</span>
+    }
+    <span class="spacer"></span>
+    <span style="font-size:11px;opacity:.7">Theme:</span>
+    <button class="theme-btn" data-theme-val="paper">☀ Paper</button>
+    <button class="theme-btn" data-theme-val="dark">☽ Night</button>
+    <button class="theme-btn" data-theme-val="scoreboard">⬛ Board</button>
+    <span>&copy; @DateTime.Now.Year StratSphere</span>
+</div>
 
 <script src="~/js/site.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)

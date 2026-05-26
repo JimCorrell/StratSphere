@@ -1,0 +1,35 @@
+@{
+    var league    = Context.Items[LeagueContextMiddleware.LeagueKey] as League;
+    var activeTab = ViewData["ActiveTab"] as string ?? "";
+    var abbr      = league?.Abbreviation.ToLower() ?? "";
+}
+
+<div class="primary-nav no-sel">
+
+    <a href="/league/@abbr"
+       class="nv @(activeTab == "scoreboard" ? "active" : "")"
+       style="text-decoration:none">
+        @if (activeTab == "scoreboard") { <span class="dot">●</span> }
+        Scoreboard
+    </a>
+
+    <a href="/league/@abbr/standings"
+       class="nv @(activeTab == "standings" ? "active" : "")"
+       style="text-decoration:none">
+        @if (activeTab == "standings") { <span class="dot">●</span> }
+        Standings
+    </a>
+
+    <span class="nv" style="opacity:.5;cursor:default" title="Coming soon">Teams</span>
+    <span class="nv" style="opacity:.5;cursor:default" title="Coming soon">Players</span>
+    <span class="nv" style="opacity:.5;cursor:default" title="Coming soon">Stats</span>
+    <span class="nv" style="opacity:.5;cursor:default" title="Coming soon">Trade Wire</span>
+    <span class="nv" style="opacity:.5;cursor:default" title="Coming soon">Almanac</span>
+
+    <div class="primary-nav-right">
+        <div class="search-pill">
+            <span>⌕</span> Search players &amp; teams <kbd>⌘K</kbd>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,15 @@
+@{
+    var league = Context.Items[LeagueContextMiddleware.LeagueKey] as League;
+}
+
+<div class="commish-bar no-sel">
+    <span>⚙</span>
+    <b>Commissioner Console</b>
+    <span>&middot; @(league?.Name ?? "League")</span>
+    <div class="commish-actions">
+        <button disabled title="Coming soon">Schedule</button>
+        <button disabled title="Coming soon">Transactions</button>
+        <button disabled title="Coming soon">Park Factors</button>
+        <button disabled title="Coming soon">Advance Day</button>
+    </div>
+</div>

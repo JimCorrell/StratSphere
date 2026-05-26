@@ -102,3 +102,9 @@ tools/Stratsphere.DataImport/lahman-csvs/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Claude Code — do not commit
+.claude/backups/
+
+# Claude Code — do not commit
+.claude/memory/auto-*

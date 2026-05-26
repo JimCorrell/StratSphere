@@ -1,0 +1,49 @@
+@{
+    var league = Context.Items[LeagueContextMiddleware.LeagueKey] as League;
+    if (league == null) { return; }
+
+    var activeSeason = league.Seasons
+        .OrderByDescending(s => s.CardYear)
+        .FirstOrDefault();
+
+    var seasonYear = activeSeason?.CardYear.ToString() ?? "—";
+    var crest      = league.Abbreviation.Length > 0
+        ? league.Abbreviation[0].ToString().ToUpper()
+        : "?";
+
+    int dayNum = 0;
+    if (activeSeason?.StartDate != null)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        dayNum = today.DayNumber - activeSeason.StartDate.Value.DayNumber + 1;
+        if (dayNum < 0) dayNum = 0;
+    }
+}
+
+<div class="masthead no-sel">
+    <div class="masthead-logo">
+        <div class="masthead-crest">@crest</div>
+        <div class="masthead-text">
+            <h1>@league.Name</h1>
+            <div class="sub">@seasonYear &middot; EST. @league.CreatedAt.Year</div>
+        </div>
+    </div>
+    <div class="masthead-right">
+        <div class="masthead-stat">
+            <div class="lbl">Today</div>
+            <div class="val">—</div>
+        </div>
+        <div class="masthead-stat">
+            <div class="lbl">Day</div>
+            <div class="val">@(dayNum > 0 ? dayNum.ToString() : "—")</div>
+        </div>
+        <div class="masthead-stat">
+            <div class="lbl">Sim Rate</div>
+            <div class="val">1×/24h</div>
+        </div>
+        <div class="masthead-stat">
+            <div class="lbl">Season</div>
+            <div class="val">@seasonYear</div>
+        </div>
+    </div>
+</div>

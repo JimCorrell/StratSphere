@@ -22,3 +22,5 @@
 **EF enum-to-string:** Use `HasDefaultValueSql("'Value'")` not `HasDefaultValue("Value")` when the property type and column type differ. `HasDefaultValue` throws at model build time.
 
 **Routing — GUID in 4th URL segment.** The generic slug route parses anything in position 4 as an action name. Any route where a GUID lands there needs an explicit route with `:guid` constraint registered before the slug route in `Program.cs`.
+
+**Razor views — use `Context`, not `HttpContext`.** In `.cshtml` files, `HttpContext` resolves to the type `Microsoft.AspNetCore.Http.HttpContext`, not the instance. Use `Context.Items[...]`, `Context.User`, etc. Using `HttpContext.Items[...]` causes build error: "An object reference is required for the non-static field, method, or property 'HttpContext.Items'".

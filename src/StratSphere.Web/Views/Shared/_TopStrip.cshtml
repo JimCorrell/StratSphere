@@ -1,0 +1,106 @@
+@{
+    var activeLeague    = Context.Items[LeagueContextMiddleware.LeagueKey]       as League;
+    var userLeagues     = Context.Items[LeagueContextMiddleware.UserLeaguesKey]  as IEnumerable<League>
+                          ?? Enumerable.Empty<League>();
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var isCommish       = Context.Items[LeagueContextMiddleware.IsCommissionerKey] is bool b && b;
+
+    // Compute season day for meta strip
+    string? dayLabel = null;
+    if (activeLeague != null)
+    {
+        var activeSeason = activeLeague.Seasons
+            .OrderByDescending(s => s.CardYear)
+            .FirstOrDefault(s => s.Status != SeasonStatus.Completed);
+        if (activeSeason?.StartDate != null)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var day   = today.DayNumber - activeSeason.StartDate.Value.DayNumber + 1;
+            if (day > 0 && day <= 162) dayLabel = $"Day {day} of 162";
+        }
+    }
+}
+
+<div class="top-strip no-sel">
+
+    @* Left: tenant switcher *@
+    @if (isAuthenticated)
+    {
+        if (activeLeague != null)
+        {
+            var mark = activeLeague.Abbreviation.Length > 0
+                ? activeLeague.Abbreviation[0].ToString().ToUpper()
+                : "?";
+            <div class="tenant-switcher" id="tenant-switcher">
+                <span class="tenant-mark">@mark</span>
+                <span>
+                    <div class="tenant-name">@activeLeague.Name</div>
+                    <div class="tenant-meta">@activeLeague.Abbreviation</div>
+                </span>
+                <span class="tenant-caret">▼</span>
+                <div class="tenant-menu" id="tenant-menu" style="display:none">
+                    <div class="tenant-menu-hdr">Your Leagues</div>
+                    @foreach (var lg in userLeagues)
+                    {
+                        var lgMark = lg.Abbreviation.Length > 0
+                            ? lg.Abbreviation[0].ToString().ToUpper()
+                            : "?";
+                        <a href="/league/@lg.Abbreviation.ToLower()" class="tenant-row">
+                            <span class="tenant-mark" style="width:30px;height:30px;flex:0 0 30px;font-size:16px">@lgMark</span>
+                            <div class="tenant-row-body">
+                                <b>@lg.Name</b>
+                                <div style="font-size:11px;opacity:.7">@lg.Abbreviation</div>
+                            </div>
+                            @if (lg.Id == activeLeague.Id) { <span class="check">✓</span> }
+                        </a>
+                    }
+                    <div class="tenant-menu-foot">
+                        <a href="/league/create">+ New League</a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <a href="/league" class="tenant-switcher" style="text-decoration:none">
+                <span class="tenant-mark" style="font-size:16px">★</span>
+                <span>
+                    <div class="tenant-name">StratSphere</div>
+                    <div class="tenant-meta">My Leagues</div>
+                </span>
+            </a>
+        }
+    }
+    else
+    {
+        <span style="font-family:var(--f-display);text-transform:uppercase;font-weight:900;color:var(--paper);letter-spacing:.12em;font-size:14px">
+            ★ STRATSPHERE
+        </span>
+    }
+
+    <div class="top-strip-spacer"></div>
+
+    @* Right: meta strip *@
+    <div class="top-strip-meta">
+        @if (dayLabel != null) { <span>@dayLabel</span> }
+        <span>SIM ENGINE: <b>v1.0</b></span>
+        @if (isCommish)
+        {
+            <span style="color:var(--mustard);font-weight:700">◉ COMMISH</span>
+        }
+        @if (isAuthenticated)
+        {
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;display:inline-flex;align-items:center">
+                @Html.AntiForgeryToken()
+                <button type="submit" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;letter-spacing:inherit">
+                    ↪ SIGN OUT
+                </button>
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" style="color:var(--paper)">↪ SIGN IN</a>
+        }
+    </div>
+
+</div>
