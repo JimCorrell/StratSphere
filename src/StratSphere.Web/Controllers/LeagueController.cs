@@ -228,15 +228,69 @@ public class LeagueController(
 
     // GET /league/{leagueAbbr}/standings
     [LeagueMember]
-    public IActionResult Standings()
+    public async Task<IActionResult> Standings(string view = "league")
     {
         var league = HttpContext.Items[LeagueContextMiddleware.LeagueKey] as League;
         if (league is null) return NotFound();
 
+        var userId = CurrentUserId;
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        var isAdmin = user?.IsAdmin == true;
+        var isCommissioner = isAdmin || league.CommissionerId == userId;
+
+        var activeSeason = league.Seasons
+            .OrderByDescending(s => s.CardYear)
+            .FirstOrDefault(s => s.Status == SeasonStatus.Active)
+            ?? league.Seasons.OrderByDescending(s => s.CardYear).FirstOrDefault();
+
+        var rows = new List<StandingsPageViewModel.StandingsRow>();
+        if (activeSeason is not null)
+        {
+            var standings = (await standingsRepo.GetBySeasonIdAsync(activeSeason.Id))
+                .OrderByDescending(s => s.WinPct)
+                .ThenByDescending(s => s.RunDiff)
+                .ToList();
+
+            var leader = standings.FirstOrDefault();
+            rows = standings.Select(s => new StandingsPageViewModel.StandingsRow
+            {
+                TeamId       = s.TeamId,
+                City         = s.Team.City,
+                Name         = s.Team.Name,
+                Abbreviation = s.Team.Abbreviation,
+                Color        = s.Team.Color,
+                ColorInk     = s.Team.ColorInk,
+                Monogram     = s.Team.Monogram,
+                Wins         = s.Wins,
+                Losses       = s.Losses,
+                Ties         = s.Ties,
+                WinPct       = s.WinPct,
+                GB = leader is null ? 0
+                   : Math.Round(((decimal)(leader.Wins - s.Wins) + (s.Losses - leader.Losses)) / 2m, 1),
+                RunsScored   = s.RunsScored,
+                RunsAllowed  = s.RunsAllowed,
+                RunDiff      = s.RunDiff,
+                Streak       = s.Streak,
+                HomeWins     = s.HomeWins,
+                HomeLosses   = s.HomeLosses,
+                AwayWins     = s.AwayWins,
+                AwayLosses   = s.AwayLosses,
+                Last10Wins   = s.Last10Wins,
+                Last10Losses = s.Last10Losses
+            }).ToList();
+        }
+
         ViewData["ActiveTab"] = "standings";
-        ViewData["LeagueName"] = league.Name;
-        ViewData["LeagueAbbreviation"] = league.Abbreviation;
-        return View();
+
+        return View(new StandingsPageViewModel
+        {
+            LeagueName         = league.Name,
+            LeagueAbbreviation = league.Abbreviation,
+            CardYear           = activeSeason?.CardYear,
+            IsCommissioner     = isCommissioner,
+            ActiveView         = view,
+            Teams              = rows
+        });
     }
 
     // POST /league/{leagueAbbr}/assign-commissioner

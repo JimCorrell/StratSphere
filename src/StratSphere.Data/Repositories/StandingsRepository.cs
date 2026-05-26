@@ -24,12 +24,18 @@ public class StandingsRepository(StratSphereDbContext db) : IStandingsRepository
             db.Standings.Add(standings);
         else
         {
-            existing.Wins = standings.Wins;
-            existing.Losses = standings.Losses;
-            existing.Ties = standings.Ties;
-            existing.RunsScored = standings.RunsScored;
+            existing.Wins        = standings.Wins;
+            existing.Losses      = standings.Losses;
+            existing.Ties        = standings.Ties;
+            existing.RunsScored  = standings.RunsScored;
             existing.RunsAllowed = standings.RunsAllowed;
-            existing.Streak = standings.Streak;
+            existing.Streak      = standings.Streak;
+            existing.HomeWins    = standings.HomeWins;
+            existing.HomeLosses  = standings.HomeLosses;
+            existing.AwayWins    = standings.AwayWins;
+            existing.AwayLosses  = standings.AwayLosses;
+            existing.Last10Wins  = standings.Last10Wins;
+            existing.Last10Losses = standings.Last10Losses;
             existing.LastUpdated = standings.LastUpdated;
         }
     }

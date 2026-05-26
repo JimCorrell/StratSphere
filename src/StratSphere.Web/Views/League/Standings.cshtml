@@ -1,23 +1,119 @@
+@model StratSphere.Web.Models.ViewModels.League.StandingsPageViewModel
 @{
     ViewData["Title"] = "Standings";
     Layout = "_Layout";
-    var leagueName = ViewData["LeagueName"] as string ?? "";
-    var abbr       = ViewData["LeagueAbbreviation"] as string ?? "";
+    var isLeague = Model.ActiveView != "wildcard";
+    var isWild   = Model.ActiveView == "wildcard";
+
+    const string thRow  = "font-family:var(--f-display);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:10px 10px;white-space:nowrap";
+    const string thNum  = thRow + ";text-align:right";
+    const string tdMono = "padding:9px 10px;font-family:var(--f-mono);font-size:13px;text-align:right;white-space:nowrap";
+    const string tdMonoSm = "padding:9px 10px;font-family:var(--f-mono);font-size:12px;text-align:right;white-space:nowrap";
 }
 
-<div class="card lift-accent" style="margin-bottom:var(--gap);padding:22px 24px">
-    <div class="eyebrow">@abbr · Standings</div>
-    <h2 style="font-family:var(--f-display);font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:-.01em;margin:4px 0 0">@leagueName</h2>
+@* ── Header ───────────────────────────────────────────────────────────────── *@
+<div class="card" style="margin-bottom:var(--gap);padding:20px 24px 0">
+    <div class="eyebrow" style="margin-bottom:4px">
+        @Model.LeagueAbbreviation · @(Model.CardYear.HasValue ? Model.CardYear + " Season" : "Standings")
+    </div>
+    <h2 style="font-family:var(--f-display);font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:-.01em;margin:4px 0 12px">
+        @Model.LeagueName
+    </h2>
+    <div class="inner-tabs" style="margin:0 -24px;padding:0 24px">
+        <button onclick="location.href='?view=league'" class="@(isLeague ? "on" : "")">League</button>
+        <button onclick="location.href='?view=wildcard'" class="@(isWild ? "on" : "")">Wild Card</button>
+    </div>
 </div>
 
-<div style="padding:80px 0;text-align:center">
-    <div style="font-family:var(--f-display);font-size:48px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);line-height:1">
-        Standings
+@* ── Wild Card stub ───────────────────────────────────────────────────────── *@
+@if (isWild)
+{
+    <div style="padding:80px 0;text-align:center">
+        <div style="font-family:var(--f-display);font-size:48px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);line-height:1">Wild Card</div>
+        <div style="font-family:var(--f-sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-top:10px">
+            Wild card standings · Coming soon to your console
+        </div>
+        <div style="margin-top:28px">
+            <a href="/league/@Model.LeagueAbbreviation/standings?view=league" class="btn ghost" style="text-decoration:none">← League Standings</a>
+        </div>
     </div>
-    <div style="font-family:var(--f-sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-top:10px">
-        Full standings · Coming soon to your console
+}
+@* ── No standings data yet ────────────────────────────────────────────────── *@
+else if (!Model.Teams.Any())
+{
+    <div class="card" style="padding:60px 24px;text-align:center">
+        <div style="font-family:var(--f-display);font-size:36px;font-weight:900;text-transform:uppercase;color:var(--ink-3);line-height:1">No standings data</div>
+        <div style="font-family:var(--f-sans);font-size:13px;color:var(--ink-3);margin-top:10px">
+            Standings populate once game results are entered
+        </div>
+        <div style="margin-top:28px">
+            <a href="/league/@Model.LeagueAbbreviation" class="btn ghost" style="text-decoration:none">← Back to Scoreboard</a>
+        </div>
     </div>
-    <div style="margin-top:28px">
-        <a href="/league/@abbr" class="btn ghost" style="text-decoration:none">← Back to Scoreboard</a>
+}
+@* ── Full standings table ─────────────────────────────────────────────────── *@
+else
+{
+    <div class="card" style="overflow-x:auto;padding:0">
+        <table style="width:100%;border-collapse:collapse">
+            <thead>
+                <tr style="border-bottom:2px solid var(--rule-strong)">
+                    <th style="@thRow;width:36px;text-align:center">#</th>
+                    <th style="@thRow;min-width:200px">TEAM</th>
+                    <th style="@thNum;width:36px">W</th>
+                    <th style="@thNum;width:36px">L</th>
+                    <th style="@thNum;width:48px">PCT</th>
+                    <th style="@thNum;width:40px">GB</th>
+                    <th style="@thNum;width:44px">R</th>
+                    <th style="@thNum;width:44px">RA</th>
+                    <th style="@thNum;width:52px">DIFF</th>
+                    <th style="@thNum;width:44px">STK</th>
+                    <th style="@thNum;width:54px">HOME</th>
+                    <th style="@thNum;width:54px">AWAY</th>
+                    <th style="@thNum;width:48px;padding-right:16px">L10</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int rank = 0; }
+                @foreach (var row in Model.Teams)
+                {
+                    rank++;
+                    var chipBg    = row.Color   ?? "var(--ink)";
+                    var chipInk   = row.ColorInk ?? "var(--paper)";
+                    var mono      = !string.IsNullOrEmpty(row.Monogram) ? row.Monogram
+                                  : row.Abbreviation.Length >= 2 ? row.Abbreviation[..2] : row.Abbreviation;
+                    var diffColor   = row.RunDiff > 0 ? "var(--green-field)" : row.RunDiff < 0 ? "var(--oxblood)" : "inherit";
+                    var streakColor = row.Streak?.StartsWith("W") == true ? "var(--green-field)"
+                                   : row.Streak?.StartsWith("L") == true ? "var(--oxblood)" : "inherit";
+                    var rowBg = rank % 2 == 0 ? "background:var(--paper-2)" : "";
+
+                    <tr style="border-bottom:1px solid var(--rule);@rowBg">
+                        <td style="padding:9px 10px;font-family:var(--f-sans);font-size:11px;color:var(--ink-3);text-align:center;font-weight:600">@rank</td>
+                        <td style="padding:9px 10px">
+                            <div style="display:flex;align-items:center;gap:10px">
+                                <div style="width:28px;height:28px;border-radius:4px;background:@chipBg;color:@chipInk;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:9px;font-weight:900;letter-spacing:.06em;flex-shrink:0;text-transform:uppercase">@mono</div>
+                                <div style="font-family:var(--f-display);font-size:14px;font-weight:700;text-transform:uppercase;line-height:1.15">
+                                    @row.City @row.Name
+                                </div>
+                            </div>
+                        </td>
+                        <td style="@tdMono;font-weight:700">@row.Wins</td>
+                        <td style="@tdMono;color:var(--ink-2)">@row.Losses</td>
+                        <td style="@tdMono">@row.WinPctDisplay</td>
+                        <td style="@tdMono;color:var(--ink-3)">@row.GBDisplay</td>
+                        <td style="@tdMonoSm">@row.RunsScored</td>
+                        <td style="@tdMonoSm;color:var(--ink-2)">@row.RunsAllowed</td>
+                        <td style="@tdMonoSm;font-weight:700;color:@diffColor">@row.RunDiffDisplay</td>
+                        <td style="@tdMonoSm;font-weight:700;color:@streakColor">@(row.Streak ?? "—")</td>
+                        <td style="@tdMonoSm">@row.HomeRecord</td>
+                        <td style="@tdMonoSm">@row.AwayRecord</td>
+                        <td style="@tdMonoSm;padding-right:16px">@row.Last10Display</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-</div>
+    <div style="margin-top:8px;font-family:var(--f-sans);font-size:11px;color:var(--ink-3);text-align:right">
+        Standings recalculated from game results · Home/Away splits updated automatically
+    </div>
+}

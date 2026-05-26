@@ -11,6 +11,12 @@ public class Standings
     public int RunsScored { get; set; }
     public int RunsAllowed { get; set; }
     public string? Streak { get; set; }
+    public int HomeWins    { get; set; }
+    public int HomeLosses  { get; set; }
+    public int AwayWins    { get; set; }
+    public int AwayLosses  { get; set; }
+    public int Last10Wins  { get; set; }
+    public int Last10Losses { get; set; }
     public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 
     // Derived

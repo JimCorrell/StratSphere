@@ -884,6 +884,24 @@ namespace StratSphere.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AwayLosses")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AwayWins")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("HomeLosses")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("HomeWins")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Last10Losses")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Last10Wins")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("timestamp with time zone");
 
