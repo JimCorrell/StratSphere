@@ -12,6 +12,10 @@ public class TeamDetailViewModel
     public bool IsOwner { get; set; }
     public bool IsClaimed { get; set; }
     public bool CanManage { get; set; }
+    public string? Color    { get; set; }
+    public string? ColorInk { get; set; }
+    public string? Monogram { get; set; }
+    public string ActiveTab { get; set; } = "roster";
 
     public IEnumerable<SeasonOption> Seasons { get; set; } = [];
     public SeasonOption? SelectedSeason { get; set; }

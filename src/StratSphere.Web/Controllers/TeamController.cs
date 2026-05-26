@@ -84,7 +84,7 @@ public class TeamController(
     }
 
     // GET /league/{leagueAbbr}/season/{year}/team/{teamAbbr}
-    public async Task<IActionResult> Detail(int year, string teamAbbr)
+    public async Task<IActionResult> Detail(int year, string teamAbbr, string tab = "roster")
     {
         var league = ActiveLeague;
         var userId = CurrentUserId;
@@ -165,6 +165,12 @@ public class TeamController(
             }
         }
 
+        ViewData["ActiveTab"] = "teams";
+
+        var mono = !string.IsNullOrEmpty(team.Monogram)
+            ? team.Monogram
+            : team.Abbreviation.Length >= 2 ? team.Abbreviation[..2] : team.Abbreviation;
+
         var model = new TeamDetailViewModel
         {
             Id = team.Id,
@@ -177,6 +183,10 @@ public class TeamController(
             IsOwner = isOwner,
             IsClaimed = team.UserId.HasValue,
             CanManage = canManage,
+            Color = team.Color,
+            ColorInk = team.ColorInk,
+            Monogram = mono,
+            ActiveTab = tab,
             Seasons = seasons,
             SelectedSeason = selected,
             Roster = roster

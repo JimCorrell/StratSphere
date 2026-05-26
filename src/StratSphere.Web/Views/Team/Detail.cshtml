@@ -1,183 +1,303 @@
 @model StratSphere.Web.Models.ViewModels.Team.TeamDetailViewModel
 @{ ViewData["Title"] = $"{Model.City} {Model.Name}"; Layout = "_Layout"; }
 
-<div style="background:var(--panel); border-bottom:3px solid var(--amber); padding:2rem 0;">
-    <div class="container">
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-            <div>
-                <p style="font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
-                           color:var(--amber-light); margin-bottom:0.4rem;">
-                    <a href="/league/@Model.LeagueAbbreviation" style="color:var(--amber-light); text-decoration:none;">@Model.LeagueName</a>
-                    &rsaquo; Team
-                </p>
-                <h1 style="color:var(--cream); margin:0; font-size:2rem;">@Model.City @Model.Name</h1>
-                <p style="color:rgba(226,232,240,0.5); margin:0.3rem 0 0; font-size:0.875rem;">
-                    @Model.Abbreviation
-                </p>
-            </div>
+@{
+    var teamColor    = Model.Color    ?? "var(--ink)";
+    var teamColorInk = Model.ColorInk ?? "var(--paper)";
+    var hasCssColor  = Model.Color != null;
+    var hitters      = Model.Roster.Where(r => r.Position is not "SP" and not "RP")
+                                   .OrderBy(r => r.Position).ThenBy(r => r.PlayerName).ToList();
+    var pitchers     = Model.Roster.Where(r => r.Position is "SP" or "RP")
+                                   .OrderBy(r => r.Position).ThenBy(r => r.PlayerName).ToList();
+}
+
+@if (TempData["Success"] != null)
+{
+    <div style="background:var(--green-field);color:#fff;padding:9px 16px;margin-bottom:var(--gap);font-family:var(--f-sans);font-size:11px;font-weight:700;letter-spacing:.1em">✓ @TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div style="background:var(--oxblood);color:#fff;padding:9px 16px;margin-bottom:var(--gap);font-family:var(--f-sans);font-size:11px;font-weight:700;letter-spacing:.1em">⚠ @TempData["Error"]</div>
+}
+
+@* ── TeamBigCard ── *@
+<div class="bigcard" @(hasCssColor ? $"style=\"box-shadow: 6px 6px 0 {teamColor}\"" : "")>
+    <span class="team-chip huge"
+          style="background:@teamColor;color:@teamColorInk;border-color:@teamColor">@Model.Monogram</span>
+    <div>
+        <span class="city">@Model.City.ToUpper()</span>
+        <h2>@Model.Name</h2>
+        <div class="est">
+            <a href="/league/@Model.LeagueAbbreviation" style="color:inherit;text-decoration:none">@Model.LeagueName</a>
+            · @Model.Abbreviation
             @if (Model.IsOwner)
             {
-                <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--amber);">
-                    Your team
-                </span>
+                <span style="color:var(--accent)"> · YOUR TEAM</span>
             }
-            else if (Model.IsClaimed)
+            else if (!Model.IsClaimed)
             {
-                <span style="font-size:0.875rem; color:var(--text-muted);">@Model.OwnerName</span>
+                <span style="color:var(--ink-3)"> · UNCLAIMED</span>
             }
             else
             {
-                <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-subtle);">
-                    Unclaimed
-                </span>
+                <span style="color:var(--ink-3)"> · MGR. @Model.OwnerName?.ToUpper()</span>
             }
         </div>
     </div>
+    <div class="stats">
+        <div><div class="lbl">Record</div><div class="val">—</div></div>
+        <div><div class="lbl">PCT</div><div class="val">.---</div></div>
+        <div><div class="lbl">Run Diff</div><div class="val">—</div></div>
+        <div><div class="lbl">Streak</div><div class="val">—</div></div>
+    </div>
 </div>
 
-<div class="container" style="padding:2.5rem 1rem;">
-
-    @if (!Model.Seasons.Any())
+@* ── Inner tabs + claim button ── *@
+<div style="margin-top:18px;display:flex;align-items:center;gap:12px">
+    <div class="inner-tabs" style="flex:1">
+        <button data-tab="roster"       class="@(Model.ActiveTab == "roster"       ? "on" : "")">Roster</button>
+        <button data-tab="schedule"     class="@(Model.ActiveTab == "schedule"     ? "on" : "")">Schedule</button>
+        <button data-tab="stats"        class="@(Model.ActiveTab == "stats"        ? "on" : "")">Stats</button>
+        <button data-tab="news"         class="@(Model.ActiveTab == "news"         ? "on" : "")">News</button>
+        <button data-tab="depth"        class="@(Model.ActiveTab == "depth"        ? "on" : "")">Depth Chart</button>
+        <button data-tab="transactions" class="@(Model.ActiveTab == "transactions" ? "on" : "")">Transactions</button>
+    </div>
+    @if (!Model.IsClaimed && Model.SelectedSeason is not null)
     {
-        <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:2rem; text-align:center; color:var(--text-muted);">
-            No seasons created yet. Ask the commissioner to create a season before managing rosters.
-        </div>
+        <form action="/league/@Model.LeagueAbbreviation/season/@Model.SelectedSeason.CardYear/team/@Model.Abbreviation/claim"
+              method="post" style="margin:0">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn sm primary" style="cursor:pointer">Take Control</button>
+        </form>
     }
-    else
-    {
-        <!-- Season tabs -->
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem;">
-            @foreach (var season in Model.Seasons)
-            {
-                var isActive = Model.SelectedSeason?.Id == season.Id;
-                <a href="/league/@Model.LeagueAbbreviation/season/@season.CardYear/team/@Model.Abbreviation"
-                   style="padding:0.4rem 1rem; border-radius:20px; font-size:0.8125rem; font-weight:600;
-                          text-decoration:none; border:1px solid @(isActive ? "var(--accent)" : "var(--border)");
-                          background:@(isActive ? "var(--accent)" : "transparent");
-                          color:@(isActive ? "var(--cream)" : "var(--text-muted)");">
-                    @season.Name
-                </a>
-            }
-        </div>
+</div>
 
-        @if (Model.SelectedSeason is not null)
+@* ── Tab panels ── *@
+<div style="margin-top:18px">
+
+    @* ── Roster ── *@
+    @if (Model.ActiveTab == "roster")
+    {
+        @if (!Model.Seasons.Any())
         {
-            <!-- Add player search (managers + commissioner only) -->
-            @if (Model.CanManage)
+            <div class="card" style="padding:40px;text-align:center;color:var(--ink-3);font-family:var(--f-sans);font-size:13px">
+                No seasons created yet. Ask the commissioner to create a season before managing rosters.
+            </div>
+        }
+        else
+        {
+            @* Season selector *@
+            @if (Model.Seasons.Count() > 1)
             {
-                <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:1.5rem;">
-                    <h3 style="color:var(--text); margin:0 0 1rem; font-size:0.9rem; font-weight:700;
-                               text-transform:uppercase; letter-spacing:0.06em;">Add Player</h3>
-                    <div style="position:relative;">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--gap)">
+                    @foreach (var season in Model.Seasons)
+                    {
+                        var isActiveSeason = Model.SelectedSeason?.Id == season.Id;
+                        <a href="/league/@Model.LeagueAbbreviation/season/@season.CardYear/team/@Model.Abbreviation?tab=roster"
+                           class="pill @(isActiveSeason ? "ink" : "outline")"
+                           style="text-decoration:none">@season.Name</a>
+                    }
+                </div>
+            }
+
+            @* Add player search (managers + commissioner only) *@
+            @if (Model.CanManage && Model.SelectedSeason is not null)
+            {
+                <div class="card" style="margin-bottom:var(--gap);padding:16px 20px">
+                    <div class="card-hdr" style="padding:0 0 10px">
+                        <h3>Add Player</h3>
+                        <span class="stamp">@Model.SelectedSeason.Name · @Model.SelectedSeason.CardYear Cards</span>
+                    </div>
+                    <div style="position:relative">
                         <input id="playerSearch" type="text" autocomplete="off"
                                placeholder="Search by name (e.g. Roger Clemens)…"
-                               class="form-control"
+                               style="width:100%;padding:9px 12px;border:1.5px solid var(--rule-strong);background:var(--paper-2);font-family:var(--f-sans);font-size:13px;color:var(--ink);box-sizing:border-box"
                                data-team-id="@Model.Id"
                                data-season-id="@Model.SelectedSeason.Id"
                                data-card-year="@Model.SelectedSeason.CardYear"
                                data-league-abbr="@Model.LeagueAbbreviation" />
-                        <div id="searchResults" style="display:none; position:absolute; top:100%; left:0; right:0;
-                                                       background:var(--panel-raised); border:1px solid var(--border);
-                                                       border-radius:0 0 6px 6px; z-index:100; max-height:280px; overflow-y:auto;">
-                        </div>
+                        <div id="searchResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--paper);border:1.5px solid var(--rule-strong);border-top:0;z-index:100;max-height:280px;overflow-y:auto"></div>
                     </div>
-
-                    <!-- Hidden add form, submitted by JS when user picks a result -->
-                    <form id="addPlayerForm" asp-controller="Roster" asp-action="AddPlayer" method="post" style="display:none;">
+                    <form id="addPlayerForm" asp-controller="Roster" asp-action="AddPlayer" method="post" style="display:none">
                         @Html.AntiForgeryToken()
-                        <input type="hidden" name="TeamId" id="fp_teamId" />
-                        <input type="hidden" name="SeasonId" id="fp_seasonId" />
+                        <input type="hidden" name="TeamId"         id="fp_teamId" />
+                        <input type="hidden" name="SeasonId"       id="fp_seasonId" />
                         <input type="hidden" name="LahmanPlayerId" id="fp_lahmanId" />
-                        <input type="hidden" name="CardYear" id="fp_cardYear" />
-                        <input type="hidden" name="Position" id="fp_position" />
+                        <input type="hidden" name="CardYear"       id="fp_cardYear" />
+                        <input type="hidden" name="Position"       id="fp_position" />
                     </form>
                 </div>
             }
 
-            <!-- Roster table -->
-            <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
-                <div style="padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
-                    <h3 style="color:var(--text); margin:0; font-size:0.9rem; font-weight:700;
-                               text-transform:uppercase; letter-spacing:0.06em;">
-                        @Model.SelectedSeason.Name Roster
-                        @if (Model.Roster.Any())
-                        {
-                            <span style="font-weight:400; color:var(--text-muted); font-size:0.8rem; text-transform:none; letter-spacing:0;">
-                                — @Model.Roster.Count() players
-                            </span>
-                        }
-                    </h3>
+            @if (!Model.Roster.Any())
+            {
+                <div class="card" style="padding:40px;text-align:center;color:var(--ink-3);font-family:var(--f-sans);font-size:13px">
+                    @if (Model.CanManage)
+                    {
+                        <span>No players yet. Search above to add your first card.</span>
+                    }
+                    else
+                    {
+                        <span>No players on the roster yet.</span>
+                    }
                 </div>
+            }
+            else
+            {
+                <div class="col-2" style="grid-template-columns:1.4fr 1fr">
 
-                @if (!Model.Roster.Any())
-                {
-                    <div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:0.875rem;">
-                        @if (Model.CanManage)
+                    @* Position Players *@
+                    <div class="card lift">
+                        <div class="card-hdr">
+                            <h3>Position Players</h3>
+                            <span class="stamp">@hitters.Count ACTIVE</span>
+                        </div>
+                        @if (!hitters.Any())
                         {
-                            <span>No players yet. Search above to add your first card.</span>
+                            <div style="padding:24px;text-align:center;color:var(--ink-3);font-family:var(--f-sans);font-size:12px">No position players added yet.</div>
                         }
                         else
                         {
-                            <span>No players on the roster yet.</span>
+                            <table class="roster">
+                                <thead>
+                                    <tr>
+                                        <th class="l">Player</th>
+                                        <th class="l">Pos</th>
+                                        <th>Year</th>
+                                        <th>AVG</th>
+                                        @if (Model.CanManage) { <th style="width:50px"></th> }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in hitters)
+                                    {
+                                        <tr>
+                                            <td class="l" style="font-family:var(--f-display);text-transform:uppercase;font-weight:700;letter-spacing:.02em">@row.PlayerName</td>
+                                            <td class="l"><span class="pos-pill">@row.Position</span></td>
+                                            <td style="font-family:var(--f-mono);font-size:12px">@row.CardYear</td>
+                                            <td style="font-weight:700;color:var(--accent)">@(string.IsNullOrEmpty(row.StatLine) ? "—" : row.StatLine)</td>
+                                            @if (Model.CanManage)
+                                            {
+                                                <td>
+                                                    <form asp-controller="Roster" asp-action="Drop" method="post" style="margin:0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="slotId"    value="@row.SlotId" />
+                                                        <input type="hidden" name="teamId"    value="@Model.Id" />
+                                                        <input type="hidden" name="seasonId"  value="@Model.SelectedSeason!.Id" />
+                                                        <input type="hidden" name="cardYear"  value="@Model.SelectedSeason!.CardYear" />
+                                                        <input type="hidden" name="teamAbbr"  value="@Model.Abbreviation" />
+                                                        <button type="submit" class="btn sm ghost" style="color:var(--oxblood);cursor:pointer;font-size:10px">Drop</button>
+                                                    </form>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         }
                     </div>
-                }
-                else
-                {
-                    <table style="width:100%; border-collapse:collapse;">
-                        <thead>
-                            <tr style="border-bottom:1px solid var(--border);">
-                                <th style="padding:0.6rem 1.25rem; text-align:left; font-size:0.7rem; font-weight:700;
-                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Player</th>
-                                <th style="padding:0.6rem 0.75rem; text-align:left; font-size:0.7rem; font-weight:700;
-                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Pos</th>
-                                <th style="padding:0.6rem 0.75rem; text-align:left; font-size:0.7rem; font-weight:700;
-                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Year</th>
-                                <th style="padding:0.6rem 0.75rem; text-align:right; font-size:0.7rem; font-weight:700;
-                                           text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Stats</th>
-                                @if (Model.CanManage)
-                                {
-                                    <th style="padding:0.6rem 1.25rem; width:60px;"></th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var row in Model.Roster.OrderBy(r => r.Position).ThenBy(r => r.PlayerName))
-                            {
-                                <tr style="border-bottom:1px solid var(--border);">
-                                    <td style="padding:0.75rem 1.25rem; font-weight:500; color:var(--text);">@row.PlayerName</td>
-                                    <td style="padding:0.75rem 0.75rem; font-size:0.8rem; font-weight:600; color:var(--accent);">@row.Position</td>
-                                    <td style="padding:0.75rem 0.75rem; font-size:0.8rem; color:var(--text-muted);">@row.CardYear</td>
-                                    <td style="padding:0.75rem 0.75rem; text-align:right; font-size:0.8rem; color:var(--text-muted); font-variant-numeric:tabular-nums;">@row.StatLine</td>
-                                    @if (Model.CanManage)
+
+                    @* Pitchers *@
+                    <div class="card lift">
+                        <div class="card-hdr">
+                            <h3>Pitchers</h3>
+                            <span class="stamp">@pitchers.Count ACTIVE</span>
+                        </div>
+                        @if (!pitchers.Any())
+                        {
+                            <div style="padding:24px;text-align:center;color:var(--ink-3);font-family:var(--f-sans);font-size:12px">No pitchers added yet.</div>
+                        }
+                        else
+                        {
+                            <table class="roster">
+                                <thead>
+                                    <tr>
+                                        <th class="l">Pitcher</th>
+                                        <th class="l">Role</th>
+                                        <th>Year</th>
+                                        <th>ERA</th>
+                                        @if (Model.CanManage) { <th style="width:50px"></th> }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in pitchers)
                                     {
-                                        <td style="padding:0.75rem 1.25rem; text-align:right;">
-                                            <form asp-controller="Roster" asp-action="Drop" method="post" style="margin:0;">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="slotId" value="@row.SlotId" />
-                                                <input type="hidden" name="teamId" value="@Model.Id" />
-                                                <input type="hidden" name="seasonId" value="@Model.SelectedSeason.Id" />
-                                                <input type="hidden" name="cardYear" value="@Model.SelectedSeason.CardYear" />
-                                                <input type="hidden" name="teamAbbr" value="@Model.Abbreviation" />
-                                                <button type="submit" class="btn btn-ghost"
-                                                        style="font-size:0.7rem; padding:0.2rem 0.5rem; color:var(--red-error);">
-                                                    Drop
-                                                </button>
-                                            </form>
-                                        </td>
+                                        <tr>
+                                            <td class="l" style="font-family:var(--f-display);text-transform:uppercase;font-weight:700;letter-spacing:.02em">@row.PlayerName</td>
+                                            <td class="l">
+                                                <span class="pos-pill" style="background:@(row.Position == "SP" ? "var(--pennant)" : "var(--green-field)");color:#fff;border-color:transparent">@row.Position</span>
+                                            </td>
+                                            <td style="font-family:var(--f-mono);font-size:12px">@row.CardYear</td>
+                                            <td style="font-weight:700;color:var(--accent)">@(string.IsNullOrEmpty(row.StatLine) ? "—" : row.StatLine)</td>
+                                            @if (Model.CanManage)
+                                            {
+                                                <td>
+                                                    <form asp-controller="Roster" asp-action="Drop" method="post" style="margin:0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="slotId"    value="@row.SlotId" />
+                                                        <input type="hidden" name="teamId"    value="@Model.Id" />
+                                                        <input type="hidden" name="seasonId"  value="@Model.SelectedSeason!.Id" />
+                                                        <input type="hidden" name="cardYear"  value="@Model.SelectedSeason!.CardYear" />
+                                                        <input type="hidden" name="teamAbbr"  value="@Model.Abbreviation" />
+                                                        <button type="submit" class="btn sm ghost" style="color:var(--oxblood);cursor:pointer;font-size:10px">Drop</button>
+                                                    </form>
+                                                </td>
+                                            }
+                                        </tr>
                                     }
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-            </div>
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+
+                </div>
+            }
         }
+    }
+
+    @* ── Schedule ── *@
+    @if (Model.ActiveTab == "schedule")
+    {
+        <div style="padding:60px;text-align:center;font-family:var(--f-display);color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em">
+            Schedule · Coming soon to your console
+        </div>
+    }
+
+    @* ── Stats ── *@
+    @if (Model.ActiveTab == "stats")
+    {
+        <div style="padding:60px;text-align:center;font-family:var(--f-display);color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em">
+            Team Stats · Coming soon to your console
+        </div>
+    }
+
+    @* ── News ── *@
+    @if (Model.ActiveTab == "news")
+    {
+        <div style="padding:60px;text-align:center;font-family:var(--f-display);color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em">
+            The Wire · Coming soon to your console
+        </div>
+    }
+
+    @* ── Depth Chart ── *@
+    @if (Model.ActiveTab == "depth")
+    {
+        <div style="padding:60px;text-align:center;font-family:var(--f-display);color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em">
+            Depth Chart · Coming soon to your console
+        </div>
+    }
+
+    @* ── Transactions ── *@
+    @if (Model.ActiveTab == "transactions")
+    {
+        <div style="padding:60px;text-align:center;font-family:var(--f-display);color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em">
+            Transactions · Coming soon to your console
+        </div>
     }
 
 </div>
 
-@if (Model.CanManage && Model.SelectedSeason is not null)
+@if (Model.CanManage && Model.SelectedSeason is not null && Model.ActiveTab == "roster")
 {
     @section Scripts {
         <script>
@@ -185,6 +305,7 @@
             const input    = document.getElementById('playerSearch');
             const results  = document.getElementById('searchResults');
             const form     = document.getElementById('addPlayerForm');
+            if (!input) return;
             const teamId   = input.dataset.teamId;
             const seasonId = input.dataset.seasonId;
             const cardYear = input.dataset.cardYear;
@@ -207,7 +328,7 @@
             async function fetchResults(q) {
                 const url = `/league/${abbr}/Roster/SearchCards?teamId=${teamId}&year=${cardYear}&q=${encodeURIComponent(q)}`;
                 try {
-                    const res = await fetch(url);
+                    const res  = await fetch(url);
                     const data = await res.json();
                     renderResults(data);
                 } catch { results.style.display = 'none'; }
@@ -215,7 +336,7 @@
 
             function renderResults(players) {
                 if (!players.length) {
-                    results.innerHTML = '<div style="padding:0.75rem 1rem; color:var(--text-muted); font-size:0.875rem;">No players found.</div>';
+                    results.innerHTML = '<div style="padding:10px 14px;color:var(--ink-3);font-family:var(--f-sans);font-size:13px">No players found.</div>';
                     results.style.display = 'block';
                     return;
                 }
@@ -223,11 +344,11 @@
                     <button type="button"
                         data-id="${p.lahmanPlayerId}" data-pos="${p.position}" data-year="${p.cardYear}"
                         onclick="selectPlayer(this)"
-                        style="display:flex; align-items:center; justify-content:space-between; width:100%; padding:0.625rem 1rem; background:none; border:none; border-bottom:1px solid var(--border); color:var(--text); cursor:pointer; text-align:left; font-size:0.875rem;"
-                        onmouseover="this.style.background='var(--border)'"
+                        style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 14px;background:none;border:0;border-bottom:1px dashed var(--rule);color:var(--ink);cursor:pointer;text-align:left;font-family:var(--f-sans);font-size:13px"
+                        onmouseover="this.style.background='var(--paper-2)'"
                         onmouseout="this.style.background='none'">
-                        <span style="font-weight:500;">${p.name}</span>
-                        <span style="font-size:0.75rem; color:var(--accent); font-weight:600;">${p.position}</span>
+                        <span style="font-family:var(--f-display);text-transform:uppercase;font-weight:700;letter-spacing:.02em">${p.name}</span>
+                        <span class="pos-pill">${p.position}</span>
                     </button>`).join('');
                 results.style.display = 'block';
             }

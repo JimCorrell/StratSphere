@@ -8,7 +8,10 @@ public class Team
     public string Name { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string Abbreviation { get; set; } = string.Empty;
-    public string? LogoUrl { get; set; }
+    public string? LogoUrl   { get; set; }
+    public string? Color     { get; set; }
+    public string? ColorInk  { get; set; }
+    public string? Monogram  { get; set; }
 
     public League League { get; set; } = null!;
     public ApplicationUser? User { get; set; }

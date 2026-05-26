@@ -13,6 +13,9 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         b.Property(x => x.Name).HasMaxLength(100);
         b.Property(x => x.City).HasMaxLength(100);
         b.Property(x => x.Abbreviation).HasMaxLength(3);
+        b.Property(x => x.Color).HasMaxLength(20);
+        b.Property(x => x.ColorInk).HasMaxLength(20);
+        b.Property(x => x.Monogram).HasMaxLength(4);
 
         b.HasOne(x => x.League).WithMany(x => x.Teams).HasForeignKey(x => x.LeagueId);
         b.HasOne(x => x.User).WithMany(x => x.Teams).HasForeignKey(x => x.UserId).IsRequired(false);

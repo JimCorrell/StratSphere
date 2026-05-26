@@ -142,6 +142,8 @@ app.MapControllerRoute("roster-search", "league/{leagueAbbr}/Roster/SearchCards"
 app.MapControllerRoute("roster-add",    "league/{leagueAbbr}/Roster/AddPlayer",   new { controller = "Roster", action = "AddPlayer" });
 app.MapControllerRoute("roster-drop",   "league/{leagueAbbr}/Roster/Drop",        new { controller = "Roster", action = "Drop" });
 
+app.MapControllerRoute("league-standings", "league/{leagueAbbr}/standings", new { controller = "League", action = "Standings" });
+
 // ── League detail (must be last league route) ─────────────────────────────────
 app.MapControllerRoute("league-detail", "league/{leagueAbbr}", new { controller = "League", action = "Detail" });
 

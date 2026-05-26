@@ -226,6 +226,19 @@ public class LeagueController(
         return View(model);
     }
 
+    // GET /league/{leagueAbbr}/standings
+    [LeagueMember]
+    public IActionResult Standings()
+    {
+        var league = HttpContext.Items[LeagueContextMiddleware.LeagueKey] as League;
+        if (league is null) return NotFound();
+
+        ViewData["ActiveTab"] = "standings";
+        ViewData["LeagueName"] = league.Name;
+        ViewData["LeagueAbbreviation"] = league.Abbreviation;
+        return View();
+    }
+
     // POST /league/{leagueAbbr}/assign-commissioner
     [HttpPost, ValidateAntiForgeryToken]
     [LeagueMember(CommissionerOnly = true)]

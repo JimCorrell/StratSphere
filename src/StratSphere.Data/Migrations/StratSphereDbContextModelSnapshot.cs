@@ -937,11 +937,23 @@ namespace StratSphere.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ColorInk")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<Guid>("LeagueId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("LogoUrl")
                         .HasColumnType("text");
+
+                    b.Property<string>("Monogram")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
 
                     b.Property<string>("Name")
                         .IsRequired()
