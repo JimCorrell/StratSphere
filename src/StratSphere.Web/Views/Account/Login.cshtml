@@ -1,72 +1,102 @@
 @model StratSphere.Web.Models.ViewModels.Account.LoginViewModel
-@{ ViewData["Title"] = "Sign In"; Layout = "_Layout"; }
+@{ ViewData["Title"] = "Sign In"; Layout = null; }
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In — StratSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script>
+    (function(){
+        var m = document.cookie.match(/(?:^|;\s*)theme=([^;]+)/);
+        if (m) document.documentElement.dataset.theme = m[1];
+    })();
+    </script>
+</head>
+<body>
 
-<div class="auth-wrapper">
-    <div class="auth-card">
+<div class="login-shell">
 
-        <div class="auth-logo">
-            <div class="auth-logo-mark">
-                <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="14" cy="14" r="11" stroke="#FACC15" stroke-width="2"/>
-                    <path d="M8 14 Q14 8 20 14 Q14 20 8 14Z" fill="#FACC15" opacity="0.7"/>
-                    <circle cx="14" cy="14" r="2.5" fill="#E2E8F0"/>
-                </svg>
-            </div>
-            <h2 class="auth-title">Welcome back</h2>
-            <p class="auth-subtitle">Sign in to your StratSphere account</p>
+    <div class="login-art">
+        <div class="brand"><span class="star">★</span> StratSphere</div>
+        <h1>
+            Run the<br/>
+            <em>league</em><br/>
+            of your<br/>
+            dreams.
+        </h1>
+        <div class="tag">
+            A multi-tenant home for stat-engine baseball — replays, dynasties, and dice-and-card leagues, all in one office. Built for commissioners, owners, and the chronically obsessed.
         </div>
+        <div class="stats-strip">
+            <div class="it"><div class="lbl">Active Leagues</div><div class="val">1,284</div></div>
+            <div class="it"><div class="lbl">Sims / Day</div><div class="val">42,180</div></div>
+            <div class="it"><div class="lbl">Commissioners</div><div class="val">3,602</div></div>
+            <div class="it"><div class="lbl">Hot Stove</div><div class="val" style="color:var(--mustard)">OPEN</div></div>
+        </div>
+    </div>
+
+    <div class="login-form">
+        <div class="eyebrow">Member sign-in · ★</div>
+        <h2>Step into the<br/>front office.</h2>
+        <p class="lead">Sign in to your StratSphere account to manage your leagues, set lineups, and run today's slate of games.</p>
 
         @if (!ViewData.ModelState.IsValid)
         {
-            <div class="alert alert-error">
-                <span>⚠</span>
+            <div style="background:var(--oxblood);color:#fff;padding:10px 14px;margin-bottom:16px;font-family:var(--f-sans);font-size:12px;font-weight:700;letter-spacing:.06em">
                 <div asp-validation-summary="ModelOnly"></div>
             </div>
         }
 
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success">✓ @TempData["Success"]</div>
+            <div style="background:var(--green-field);color:#fff;padding:10px 14px;margin-bottom:16px;font-family:var(--f-sans);font-size:12px;font-weight:700;letter-spacing:.06em">
+                ✓ @TempData["Success"]
+            </div>
         }
 
         <form asp-action="Login" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="ReturnUrl" />
 
-            <div class="form-group">
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" type="email"
-                       placeholder="you@example.com" autocomplete="email" autofocus />
-                <span asp-validation-for="Email" class="text-muted" style="font-size:0.8rem"></span>
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" type="email" placeholder="you@example.com" autocomplete="email" autofocus />
+            <span asp-validation-for="Email" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
+
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" type="password" placeholder="••••••••" autocomplete="current-password" />
+            <span asp-validation-for="Password" style="font-family:var(--f-sans);font-size:11px;color:var(--oxblood)"></span>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-family:var(--f-sans);font-size:11px">
+                <label style="display:flex;align-items:center;gap:6px;margin:0;letter-spacing:0;text-transform:none;font-weight:500;color:var(--ink-2)">
+                    <input asp-for="RememberMe" type="checkbox" /> Keep me signed in
+                </label>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" type="password"
-                       placeholder="••••••••" autocomplete="current-password" />
-                <span asp-validation-for="Password" class="text-muted" style="font-size:0.8rem"></span>
+            <div style="margin-top:22px;display:flex;gap:10px">
+                <button type="submit" class="btn primary" style="flex:1;justify-content:center;cursor:pointer">Sign in →</button>
             </div>
-
-            <div class="form-group">
-                <div class="form-check">
-                    <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
-                    <label asp-for="RememberMe" class="form-check-label">Keep me signed in</label>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-full btn-lg mt-2">
-                Sign in
-            </button>
         </form>
 
-        <div class="auth-footer">
-            Don't have an account?
-            <a asp-controller="Account" asp-action="Register">Create one free</a>
+        <hr class="dash-rule" style="margin:26px 0" />
+
+        <div style="display:flex;gap:10px">
+            <a asp-controller="Account" asp-action="Register" class="btn ghost" style="flex:1;justify-content:center;text-decoration:none">Create Account</a>
         </div>
 
+        <div style="margin-top:28px;font-family:var(--f-sans);font-size:10.5px;color:var(--ink-3);letter-spacing:.08em">
+            By signing in you agree to the StratSphere Terms and acknowledge the use of cookies for live sim state.
+        </div>
     </div>
+
 </div>
 
+<script src="~/js/site.js" asp-append-version="true"></script>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+</body>
+</html>
