@@ -1,0 +1,65 @@
+@model StratSphere.Web.Models.ViewModels.Import.SomMapTeamsViewModel
+@{ ViewData["Title"] = "Map Teams"; Layout = "_Layout"; }
+
+<div style="max-width:720px;margin:2rem auto">
+    <div style="margin-bottom:12px">
+        <a href="/league/@Model.LeagueAbbreviation/import" style="font-family:var(--f-sans);font-size:12px;color:var(--ink-3);text-decoration:none;letter-spacing:.04em">
+            ← Back to import
+        </a>
+    </div>
+
+    <div class="card" style="padding:28px 32px">
+        <div class="eyebrow" style="margin-bottom:8px">Step 2 · Team Mapping</div>
+        <h1 style="font-family:var(--f-display);font-weight:900;font-size:32px;text-transform:uppercase;letter-spacing:-.01em;line-height:.95;margin:0 0 8px">Map Your Teams</h1>
+        <p style="font-family:var(--f-serif);font-size:14px;color:var(--ink-2);margin:0 0 24px;line-height:1.5">
+            Match each SOM league team to the corresponding team in <strong>@Model.SeasonName</strong>.
+            Teams that couldn't be matched can be left blank — those games and stats will be skipped.
+        </p>
+
+        <form action="/league/@Model.LeagueAbbreviation/import/run" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="tempFileKey" value="@Model.TempFileKey" />
+
+            <div style="border:1.5px solid var(--rule-strong);overflow:hidden">
+                <div style="display:grid;grid-template-columns:1fr 32px 1fr;gap:0;align-items:center;background:var(--paper-2);padding:10px 16px;border-bottom:2px solid var(--rule-strong)">
+                    <div style="font-family:var(--f-display);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">SOM Team</div>
+                    <div></div>
+                    <div style="font-family:var(--f-display);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">StratSphere Team</div>
+                </div>
+
+                @{ int rowNum = 0; }
+                @foreach (var somAbbr in Model.SomTeams)
+                {
+                    rowNum++;
+                    var suggested = Model.Suggestions.TryGetValue(somAbbr, out var sugId) ? sugId : Guid.Empty;
+                    <div style="display:grid;grid-template-columns:1fr 32px 1fr;gap:0;align-items:center;padding:10px 16px;border-bottom:1px solid var(--rule);@(rowNum % 2 == 0 ? "background:var(--paper-2)" : "")">
+                        <div style="font-family:var(--f-mono);font-size:14px;font-weight:700;letter-spacing:.08em">@somAbbr</div>
+                        <div style="text-align:center;color:var(--ink-3);font-size:14px">→</div>
+                        <select name="teamMap[@somAbbr]"
+                                style="font-family:var(--f-sans);font-size:13px;padding:6px 8px;border:1.5px solid var(--rule-strong);background:var(--paper);color:var(--ink);width:100%">
+                            <option value="">— skip —</option>
+                            @foreach (var team in Model.StratSphereTeams)
+                            {
+                                if (team.Id == suggested)
+                                {
+                                    <option value="@team.Id" selected="selected">@team.DisplayName</option>
+                                }
+                                else
+                                {
+                                    <option value="@team.Id">@team.DisplayName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                }
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:20px">
+                <button type="submit" class="btn" style="font-size:13px;padding:10px 20px">
+                    Run Import
+                </button>
+                <a href="/league/@Model.LeagueAbbreviation/import" class="btn ghost" style="font-size:13px;padding:10px 20px">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -21,4 +21,10 @@ public interface ILahmanRepository
     /// </summary>
     Task<IEnumerable<(LahmanPerson Person, string PrimaryPosition)>> SearchCardsAsync(
         string nameQuery, int? cardYear, bool pitchersOnly = false, int limit = 20);
+
+    /// <summary>
+    /// Find a Lahman playerID by last name prefix, first initial, and card year.
+    /// Returns null if no unique match found. Used for SOM import player matching.
+    /// </summary>
+    Task<string?> FindPlayerIdAsync(string lastName, char firstInitial, int year, bool isPitcher);
 }

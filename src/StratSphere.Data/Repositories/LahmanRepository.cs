@@ -89,6 +89,50 @@ public class LahmanRepository(StratSphereDbContext db) : ILahmanRepository
             .Where(f => f.PlayerId == playerId && f.YearId == yearId)
             .ToListAsync();
 
+    public async Task<string?> FindPlayerIdAsync(string lastName, char firstInitial, int year, bool isPitcher)
+    {
+        var firstStr = firstInitial.ToString();
+
+        // Strip generational suffixes that Lahman often omits (e.g., "Tatis Jr" → "Tatis")
+        var cleanLast = System.Text.RegularExpressions.Regex
+            .Replace(lastName, @"\s+(Jr\.?|Sr\.?|II|III|IV|V)$", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+            .Trim();
+
+        // Try exact last-name match first, then fall back to prefix match
+        var candidates = await db.LahmanPeople
+            .AsNoTracking()
+            .Where(p => p.NameLast != null &&
+                       (p.NameLast == cleanLast || p.NameLast.StartsWith(cleanLast)) &&
+                        p.NameFirst != null && p.NameFirst.StartsWith(firstStr))
+            .Select(p => p.PlayerId)
+            .ToListAsync();
+
+        if (candidates.Count == 0) return null;
+
+        // Narrow by having a stat row in the given year
+        List<string> inYear;
+        if (isPitcher)
+        {
+            inYear = await db.LahmanPitching
+                .AsNoTracking()
+                .Where(p => candidates.Contains(p.PlayerId) && p.YearId == year)
+                .Select(p => p.PlayerId)
+                .Distinct()
+                .ToListAsync();
+        }
+        else
+        {
+            inYear = await db.LahmanBatting
+                .AsNoTracking()
+                .Where(b => candidates.Contains(b.PlayerId) && b.YearId == year)
+                .Select(b => b.PlayerId)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        return inYear.Count == 1 ? inYear[0] : null;
+    }
+
     public async Task<IEnumerable<(LahmanPerson Person, string PrimaryPosition)>> SearchCardsAsync(
         string nameQuery, int? cardYear, bool pitchersOnly = false, int limit = 20)
     {

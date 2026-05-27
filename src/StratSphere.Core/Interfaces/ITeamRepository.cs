@@ -5,6 +5,7 @@ namespace StratSphere.Core.Interfaces;
 public interface ITeamRepository
 {
     Task<Team?> GetByIdAsync(Guid id);
+    Task<IEnumerable<Team>> GetByLeagueIdAsync(Guid leagueId);
     Task<IEnumerable<Team>> GetBySeasonIdAsync(Guid seasonId);
     Task<bool> AbbreviationExistsInLeagueAsync(Guid leagueId, string abbreviation);
     Task<Team?> GetByUserAndLeagueAsync(Guid userId, Guid leagueId);

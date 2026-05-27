@@ -15,6 +15,11 @@ public class PlayerCardRepository(StratSphereDbContext db) : IPlayerCardReposito
             c.CardYear == cardYear &&
             c.Position == position);
 
+    public Task<PlayerCard?> GetByLahmanAndYearAsync(string lahmanPlayerId, int cardYear) =>
+        db.PlayerCards.FirstOrDefaultAsync(c =>
+            c.LahmanPlayerId == lahmanPlayerId &&
+            c.CardYear == cardYear);
+
     public async Task<PlayerCard> GetOrCreateAsync(string lahmanPlayerId, int cardYear, string position)
     {
         var card = await GetByLahmanAsync(lahmanPlayerId, cardYear, position);

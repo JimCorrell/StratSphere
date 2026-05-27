@@ -63,6 +63,7 @@ builder.Services.AddScoped<LeagueService>();
 builder.Services.AddScoped<StandingsService>();
 builder.Services.AddScoped<RosterService>();
 builder.Services.AddScoped<PlayerCardService>();
+builder.Services.AddScoped<SomImportService>();
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
 builder.Services.AddRateLimiter(options =>
@@ -144,6 +145,12 @@ app.MapControllerRoute("roster-drop",   "league/{leagueAbbr}/Roster/Drop",      
 
 app.MapControllerRoute("league-standings", "league/{leagueAbbr}/standings", new { controller = "League", action = "Standings" });
 app.MapControllerRoute("player-detail",   "league/{leagueAbbr}/player/{lahmanPlayerId}/{cardYear:int}", new { controller = "Player", action = "Detail" });
+
+// ── Import ────────────────────────────────────────────────────────────────────
+app.MapControllerRoute("import-index",    "league/{leagueAbbr}/import",              new { controller = "Import", action = "Index" });
+app.MapControllerRoute("import-upload",   "league/{leagueAbbr}/import/upload",       new { controller = "Import", action = "Upload" });
+app.MapControllerRoute("import-mapteams","league/{leagueAbbr}/import/map-teams",     new { controller = "Import", action = "MapTeams" });
+app.MapControllerRoute("import-run",     "league/{leagueAbbr}/import/run",           new { controller = "Import", action = "Run" });
 
 // ── League detail (must be last league route) ─────────────────────────────────
 app.MapControllerRoute("league-detail", "league/{leagueAbbr}", new { controller = "League", action = "Detail" });

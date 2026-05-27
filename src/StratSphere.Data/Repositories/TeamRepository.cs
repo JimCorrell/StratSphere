@@ -9,6 +9,13 @@ public class TeamRepository(StratSphereDbContext db) : ITeamRepository
     public Task<Team?> GetByIdAsync(Guid id) =>
         db.Teams.Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
 
+    public async Task<IEnumerable<Team>> GetByLeagueIdAsync(Guid leagueId) =>
+        await db.Teams
+            .Where(t => t.LeagueId == leagueId)
+            .Include(t => t.User)
+            .OrderBy(t => t.City).ThenBy(t => t.Name)
+            .ToListAsync();
+
     public async Task<IEnumerable<Team>> GetBySeasonIdAsync(Guid seasonId) =>
         await db.Teams
             .Where(t => t.RosterSlots.Any(r => r.SeasonId == seasonId))

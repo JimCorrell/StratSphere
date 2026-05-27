@@ -23,4 +23,6 @@
 
 **Routing — GUID in 4th URL segment.** The generic slug route parses anything in position 4 as an action name. Any route where a GUID lands there needs an explicit route with `:guid` constraint registered before the slug route in `Program.cs`.
 
+**`GetBySeasonIdAsync` is roster-filtered, not league-scoped.** `ITeamRepository.GetBySeasonIdAsync` returns only teams with at least one `RosterSlot` in the season. Teams with no players yet are invisible. For any context that needs all teams in a league (import, commissioner views), use `GetByLeagueIdAsync(league.Id)` instead.
+
 **Razor views — use `Context`, not `HttpContext`.** In `.cshtml` files, `HttpContext` resolves to the type `Microsoft.AspNetCore.Http.HttpContext`, not the instance. Use `Context.Items[...]`, `Context.User`, etc. Using `HttpContext.Items[...]` causes build error: "An object reference is required for the non-static field, method, or property 'HttpContext.Items'".
