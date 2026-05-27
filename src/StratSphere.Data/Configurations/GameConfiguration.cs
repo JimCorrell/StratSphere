@@ -11,6 +11,7 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
         b.ToTable("games");
         b.HasKey(x => x.Id);
         b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+        b.Property(x => x.GameNumber).HasDefaultValue(0);
 
         b.HasOne(x => x.Season).WithMany(x => x.Games).HasForeignKey(x => x.SeasonId);
         b.HasOne(x => x.HomeTeam).WithMany().HasForeignKey(x => x.HomeTeamId).OnDelete(DeleteBehavior.Restrict);

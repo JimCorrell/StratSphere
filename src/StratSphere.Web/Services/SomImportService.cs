@@ -14,20 +14,32 @@ public class SomImportService
     {
         using var archive = new ZipArchive(lzpStream, ZipArchiveMode.Read, leaveOpen: true);
 
-        var teamOrder = ExtractTeamOrder(archive);
-        var dbPath    = ExtractDb3(archive);
+        var teamOrder  = ExtractTeamOrder(archive);
+        var exportDate = ExtractExportDate(archive);
+        var dbPath     = ExtractDb3(archive);
 
         try
         {
             var games    = QueryGames(dbPath, teamOrder.Length);
             var batting  = QueryBatting(dbPath);
             var pitching = QueryPitching(dbPath);
-            return new SomParseResult(teamOrder, games, batting, pitching);
+            return new SomParseResult(teamOrder, games, batting, pitching, exportDate);
         }
         finally
         {
             if (File.Exists(dbPath)) File.Delete(dbPath);
         }
+    }
+
+    // ── Export date ───────────────────────────────────────────────────────────
+
+    private static DateTime ExtractExportDate(ZipArchive archive)
+    {
+        var timestamps = archive.Entries
+            .Where(e => e.LastWriteTime != DateTimeOffset.MinValue)
+            .Select(e => e.LastWriteTime.UtcDateTime)
+            .ToList();
+        return timestamps.Count > 0 ? timestamps.Max() : DateTime.UtcNow;
     }
 
     // ── Team order ────────────────────────────────────────────────────────────
@@ -80,20 +92,22 @@ public class SomImportService
         var results = new List<SomGame>();
 
         const string sql = """
-            SELECT a.Day, a.Team AS HomeTeam, a.OtherTeam AS AwayTeam,
+            SELECT a.Day, COALESCE(a.Which, 0) AS GameNumber,
+                   a.Team AS HomeTeam, a.OtherTeam AS AwayTeam,
                    a.HomeRuns, b.AwayRuns
             FROM (
-                SELECT Day, Team, OtherTeam, SUM(Runs) AS HomeRuns
+                SELECT Day, COALESCE(Which, 0) AS Which, Team, OtherTeam, SUM(Runs) AS HomeRuns
                 FROM BatterLog
-                GROUP BY Day, Team, OtherTeam
+                GROUP BY Day, COALESCE(Which, 0), Team, OtherTeam
             ) a
             JOIN (
-                SELECT Day, Team, OtherTeam, SUM(Runs) AS AwayRuns
+                SELECT Day, COALESCE(Which, 0) AS Which, Team, OtherTeam, SUM(Runs) AS AwayRuns
                 FROM BatterLog
-                GROUP BY Day, Team, OtherTeam
-            ) b ON a.Day = b.Day AND a.Team = b.OtherTeam AND a.OtherTeam = b.Team
+                GROUP BY Day, COALESCE(Which, 0), Team, OtherTeam
+            ) b ON a.Day = b.Day AND a.Which = b.Which
+                AND a.Team = b.OtherTeam AND a.OtherTeam = b.Team
             WHERE a.Team < a.OtherTeam
-            ORDER BY a.Day, a.Team
+            ORDER BY a.Day, a.Which, a.Team
             """;
 
         using var conn = new SqliteConnection($"Data Source={dbPath};Mode=ReadOnly");
@@ -104,10 +118,11 @@ public class SomImportService
         {
             results.Add(new SomGame(
                 Day:        reader.GetInt32(0),
-                HomeTeam:   reader.GetInt32(1),
-                AwayTeam:   reader.GetInt32(2),
-                HomeRuns:   reader.GetInt32(3),
-                AwayRuns:   reader.GetInt32(4)
+                GameNumber: reader.GetInt32(1),
+                HomeTeam:   reader.GetInt32(2),
+                AwayTeam:   reader.GetInt32(3),
+                HomeRuns:   reader.GetInt32(4),
+                AwayRuns:   reader.GetInt32(5)
             ));
         }
 
@@ -250,10 +265,11 @@ public sealed record SomParseResult(
     string[]          TeamOrder,   // 30 SOM team abbreviations in index order
     List<SomGame>     Games,
     List<SomBatterStats>  Batting,
-    List<SomPitcherStats> Pitching
+    List<SomPitcherStats> Pitching,
+    DateTime          ExportDate   // max LastWriteTime across ZIP entries
 );
 
-public sealed record SomGame(int Day, int HomeTeam, int AwayTeam, int HomeRuns, int AwayRuns);
+public sealed record SomGame(int Day, int GameNumber, int HomeTeam, int AwayTeam, int HomeRuns, int AwayRuns);
 
 public sealed record SomBatterStats(
     string Key, int CardYear, string CardTeam,

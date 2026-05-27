@@ -8,12 +8,43 @@
         </a>
     </div>
 
+    @* Hard errors — block the import *@
+    @if (Model.ValidationErrors.Count > 0)
+    {
+        <div style="background:color-mix(in srgb,var(--oxblood) 12%,var(--paper));border:1.5px solid var(--oxblood);padding:14px 18px;margin-bottom:16px">
+            <div style="font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--oxblood);margin-bottom:6px">Import Blocked</div>
+            @foreach (var err in Model.ValidationErrors)
+            {
+                <div style="font-family:var(--f-serif);font-size:13px;color:var(--ink);line-height:1.5">• @err</div>
+            }
+            <div style="font-family:var(--f-sans);font-size:12px;color:var(--ink-2);margin-top:8px">Correct the mapping below and try again.</div>
+        </div>
+    }
+
+    @* Soft warnings — can override *@
+    @if (Model.OlderExportWarning || Model.ValidationWarnings.Count > 0)
+    {
+        <div style="background:color-mix(in srgb,var(--mustard) 15%,var(--paper));border:1.5px solid var(--mustard);padding:14px 18px;margin-bottom:16px">
+            <div style="font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb,var(--mustard) 70%,var(--ink));margin-bottom:6px">Warnings</div>
+            @if (Model.OlderExportWarning && Model.ExportDate.HasValue && Model.LastImportDate.HasValue)
+            {
+                <div style="font-family:var(--f-serif);font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:4px">
+                    • This archive was exported <strong>@Model.ExportDate.Value.ToString("yyyy-MM-dd HH:mm") UTC</strong>, which is earlier than the previous import (<strong>@Model.LastImportDate.Value.ToString("yyyy-MM-dd HH:mm") UTC</strong>). Importing will overwrite existing data with older values.
+                </div>
+            }
+            @foreach (var warn in Model.ValidationWarnings)
+            {
+                <div style="font-family:var(--f-serif);font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:4px">• @warn</div>
+            }
+        </div>
+    }
+
     <div class="card" style="padding:28px 32px">
         <div class="eyebrow" style="margin-bottom:8px">Step 2 · Team Mapping</div>
         <h1 style="font-family:var(--f-display);font-weight:900;font-size:32px;text-transform:uppercase;letter-spacing:-.01em;line-height:.95;margin:0 0 8px">Map Your Teams</h1>
         <p style="font-family:var(--f-serif);font-size:14px;color:var(--ink-2);margin:0 0 24px;line-height:1.5">
             Match each SOM league team to the corresponding team in <strong>@Model.SeasonName</strong>.
-            Teams that couldn't be matched can be left blank — those games and stats will be skipped.
+            Teams left blank will have their games and stats skipped.
         </p>
 
         <form action="/league/@Model.LeagueAbbreviation/import/run" method="post">
@@ -31,7 +62,13 @@
                 @foreach (var somAbbr in Model.SomTeams)
                 {
                     rowNum++;
-                    var suggested = Model.Suggestions.TryGetValue(somAbbr, out var sugId) ? sugId : Guid.Empty;
+                    @* SavedTeamMap (from a previous failed Run) takes precedence over Suggestions *@
+                    Guid selectedId = Guid.Empty;
+                    if (Model.SavedTeamMap.TryGetValue(somAbbr, out var savedStr) && Guid.TryParse(savedStr, out var savedId))
+                        selectedId = savedId;
+                    else if (Model.Suggestions.TryGetValue(somAbbr, out var sugId))
+                        selectedId = sugId;
+
                     <div style="display:grid;grid-template-columns:1fr 32px 1fr;gap:0;align-items:center;padding:10px 16px;border-bottom:1px solid var(--rule);@(rowNum % 2 == 0 ? "background:var(--paper-2)" : "")">
                         <div style="font-family:var(--f-mono);font-size:14px;font-weight:700;letter-spacing:.08em">@somAbbr</div>
                         <div style="text-align:center;color:var(--ink-3);font-size:14px">→</div>
@@ -40,7 +77,7 @@
                             <option value="">— skip —</option>
                             @foreach (var team in Model.StratSphereTeams)
                             {
-                                if (team.Id == suggested)
+                                if (team.Id == selectedId)
                                 {
                                     <option value="@team.Id" selected="selected">@team.DisplayName</option>
                                 }
@@ -53,6 +90,14 @@
                     </div>
                 }
             </div>
+
+            @if (Model.OlderExportWarning || Model.ValidationWarnings.Count > 0)
+            {
+                <label style="display:flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--f-sans);font-size:13px;color:var(--ink);cursor:pointer">
+                    <input type="checkbox" name="overrideWarnings" value="true" @(Model.OverrideWarnings ? "checked" : "") />
+                    I understand the warnings above — proceed with import anyway
+                </label>
+            }
 
             <div style="display:flex;gap:10px;margin-top:20px">
                 <button type="submit" class="btn" style="font-size:13px;padding:10px 20px">

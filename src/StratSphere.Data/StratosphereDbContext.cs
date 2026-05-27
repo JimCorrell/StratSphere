@@ -20,6 +20,7 @@ public class StratSphereDbContext(DbContextOptions<StratSphereDbContext> options
     public DbSet<SimPitchingStats> SimPitchingStats { get; set; }
     public DbSet<Game>             Games            { get; set; }
     public DbSet<Standings>        Standings        { get; set; }
+    public DbSet<SomImportLog>     SomImportLogs    { get; set; }
 
     // ── Lahman tables (lahman schema, read-only) ──────────────────────────────
     public DbSet<LahmanPerson>   LahmanPeople   { get; set; }

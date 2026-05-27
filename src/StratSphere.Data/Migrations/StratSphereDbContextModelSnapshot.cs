@@ -245,6 +245,11 @@ namespace StratSphere.Data.Migrations
                     b.Property<DateOnly>("GameDate")
                         .HasColumnType("date");
 
+                    b.Property<int>("GameNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<int?>("HomeScore")
                         .HasColumnType("integer");
 
@@ -878,6 +883,40 @@ namespace StratSphere.Data.Migrations
                     b.ToTable("sim_pitching_stats", (string)null);
                 });
 
+            modelBuilder.Entity("StratSphere.Core.Entities.SomImportLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("BattersImported")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExportDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("GamesImported")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ImportedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PitchersImported")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SeasonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("UnmatchedPlayers")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SeasonId");
+
+                    b.ToTable("som_import_logs", (string)null);
+                });
+
             modelBuilder.Entity("StratSphere.Core.Entities.Standings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1188,6 +1227,17 @@ namespace StratSphere.Data.Migrations
                     b.Navigation("Season");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("StratSphere.Core.Entities.SomImportLog", b =>
+                {
+                    b.HasOne("StratSphere.Core.Entities.Season", "Season")
+                        .WithMany()
+                        .HasForeignKey("SeasonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Season");
                 });
 
             modelBuilder.Entity("StratSphere.Core.Entities.Standings", b =>

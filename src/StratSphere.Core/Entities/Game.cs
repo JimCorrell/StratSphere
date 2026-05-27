@@ -11,6 +11,7 @@ public class Game
     public int? HomeScore { get; set; }
     public int? AwayScore { get; set; }
     public DateOnly GameDate { get; set; }
+    public int GameNumber { get; set; } = 0;
     public GameStatus Status { get; set; } = GameStatus.Scheduled;
 
     public Season Season { get; set; } = null!;

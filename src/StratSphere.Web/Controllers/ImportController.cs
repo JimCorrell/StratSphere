@@ -63,7 +63,6 @@ public class ImportController(
             return Redirect($"/league/{league.Abbreviation}/import");
         }
 
-        // Parse the archive
         SomParseResult parsed;
         try
         {
@@ -82,7 +81,6 @@ public class ImportController(
             return Redirect($"/league/{league.Abbreviation}/import");
         }
 
-        // Save parse result to temp file — too large for TempData cookie
         var key     = Guid.NewGuid().ToString("N");
         var tmpPath = Path.Combine(Path.GetTempPath(), $"som_{key}.json");
         await IOFile.WriteAllTextAsync(tmpPath, JsonSerializer.Serialize(parsed));
@@ -105,10 +103,9 @@ public class ImportController(
         var tmpPath = Path.Combine(Path.GetTempPath(), $"som_{key}.json");
         if (!IOFile.Exists(tmpPath)) return Redirect($"/league/{league.Abbreviation}/import");
 
-        var parsed   = JsonSerializer.Deserialize<SomParseResult>(await IOFile.ReadAllTextAsync(tmpPath))!;
-        var ssTeams  = (await teamRepo.GetByLeagueIdAsync(league.Id)).ToList();
+        var parsed  = JsonSerializer.Deserialize<SomParseResult>(await IOFile.ReadAllTextAsync(tmpPath))!;
+        var ssTeams = (await teamRepo.GetByLeagueIdAsync(league.Id)).ToList();
 
-        // Auto-suggest: if SOM abbr matches a StratSphere team abbr (case-insensitive), pre-select
         var suggestions = parsed.TeamOrder
             .Select((abbr, idx) => (abbr, idx))
             .Where(t => ssTeams.Any(s => s.Abbreviation.Equals(t.abbr, StringComparison.OrdinalIgnoreCase)))
@@ -117,7 +114,22 @@ public class ImportController(
                 t => ssTeams.First(s => s.Abbreviation.Equals(t.abbr, StringComparison.OrdinalIgnoreCase)).Id
             );
 
-        return View(new SomMapTeamsViewModel
+        // Check if this export is older than the most recent import for this season
+        var lastImport = await db.SomImportLogs
+            .Where(l => l.SeasonId == season.Id)
+            .OrderByDescending(l => l.ExportDate)
+            .FirstOrDefaultAsync();
+
+        // Read validation state that may have been set by a previous Run attempt
+        var savedMapJson   = TempData["SavedTeamMap"]      as string;
+        var errorsJson     = TempData["ValidationErrors"]  as string;
+        var warningsJson   = TempData["ValidationWarnings"] as string;
+
+        var savedTeamMap = savedMapJson is not null
+            ? JsonSerializer.Deserialize<Dictionary<string, string>>(savedMapJson) ?? []
+            : new Dictionary<string, string>();
+
+        var vm = new SomMapTeamsViewModel
         {
             LeagueAbbreviation = league.Abbreviation,
             LeagueName         = league.Name,
@@ -130,13 +142,24 @@ public class ImportController(
                 Abbreviation = t.Abbreviation,
                 DisplayName  = $"{t.City} {t.Name} ({t.Abbreviation})"
             }).OrderBy(t => t.DisplayName).ToList(),
-            Suggestions        = suggestions
-        });
+            Suggestions        = suggestions,
+            SavedTeamMap       = savedTeamMap,
+            ExportDate         = parsed.ExportDate,
+            LastImportDate     = lastImport?.ExportDate,
+            OlderExportWarning = lastImport is not null && parsed.ExportDate < lastImport.ExportDate,
+            ValidationErrors   = errorsJson   is not null ? JsonSerializer.Deserialize<List<string>>(errorsJson)   ?? [] : [],
+            ValidationWarnings = warningsJson is not null ? JsonSerializer.Deserialize<List<string>>(warningsJson) ?? [] : [],
+        };
+
+        return View(vm);
     }
 
     // POST /league/{abbr}/import/run
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Run(string tempFileKey, Dictionary<string, string> teamMap)
+    public async Task<IActionResult> Run(
+        string tempFileKey,
+        Dictionary<string, string> teamMap,
+        bool overrideWarnings = false)
     {
         var league = ActiveLeague;
         var season = await GetActiveSeasonAsync(league.Id);
@@ -153,11 +176,10 @@ public class ImportController(
             return Redirect($"/league/{league.Abbreviation}/import");
         }
 
-        var parsed   = JsonSerializer.Deserialize<SomParseResult>(await IOFile.ReadAllTextAsync(tmpPath))!;
-        var ssTeams  = (await teamRepo.GetByLeagueIdAsync(league.Id)).ToDictionary(t => t.Id);
+        var parsed  = JsonSerializer.Deserialize<SomParseResult>(await IOFile.ReadAllTextAsync(tmpPath))!;
+        var ssTeams = (await teamRepo.GetByLeagueIdAsync(league.Id)).ToDictionary(t => t.Id);
 
         // Build index → StratSphere Team mapping
-        // teamMap keys are SOM team abbreviations, values are StratSphere team ID strings
         var indexToTeam = new Dictionary<int, Team>();
         for (int i = 0; i < parsed.TeamOrder.Length; i++)
         {
@@ -168,6 +190,47 @@ public class ImportController(
             {
                 indexToTeam[i] = team;
             }
+        }
+
+        // ── Validation ──────────────────────────────────────────────────────────
+
+        var errors   = new List<string>();
+        var warnings = new List<string>();
+
+        // Hard error: two SOM teams mapped to the same StratSphere team
+        var duplicates = indexToTeam
+            .GroupBy(kv => kv.Value.Id)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.First().Value)
+            .ToList();
+        foreach (var dup in duplicates)
+            errors.Add($"{dup.City} {dup.Name} ({dup.Abbreviation}) is mapped from multiple SOM teams.");
+
+        // Warning: StratSphere teams in the league that have no SOM mapping
+        var mappedTeamIds = indexToTeam.Values.Select(t => t.Id).ToHashSet();
+        var unmappedSsTeams = ssTeams.Values
+            .Where(t => !mappedTeamIds.Contains(t.Id))
+            .OrderBy(t => t.City)
+            .ToList();
+        foreach (var t in unmappedSsTeams)
+            warnings.Add($"{t.City} {t.Name} ({t.Abbreviation}) has no SOM team mapped — no games or stats will be imported for this team.");
+
+        // Warning: archive export date is older than last import
+        var lastImport = await db.SomImportLogs
+            .Where(l => l.SeasonId == season.Id)
+            .OrderByDescending(l => l.ExportDate)
+            .FirstOrDefaultAsync();
+        if (lastImport is not null && parsed.ExportDate < lastImport.ExportDate)
+            warnings.Add($"This archive was exported on {parsed.ExportDate:yyyy-MM-dd HH:mm} UTC, which is earlier than the previous import ({lastImport.ExportDate:yyyy-MM-dd HH:mm} UTC). Importing will overwrite existing data with older values.");
+
+        // Redirect back to MapTeams if there are errors or unacknowledged warnings
+        if (errors.Count > 0 || (warnings.Count > 0 && !overrideWarnings))
+        {
+            TempData["SomTempKey"]        = tempFileKey;
+            TempData["SavedTeamMap"]      = JsonSerializer.Serialize(teamMap);
+            TempData["ValidationErrors"]  = JsonSerializer.Serialize(errors);
+            TempData["ValidationWarnings"] = JsonSerializer.Serialize(warnings);
+            return Redirect($"/league/{league.Abbreviation}/import/map-teams");
         }
 
         int gamesImported    = 0;
@@ -189,7 +252,8 @@ public class ImportController(
                 .FirstOrDefaultAsync(g => g.SeasonId     == season.Id
                                        && g.HomeTeamId   == homeTeam.Id
                                        && g.AwayTeamId   == awayTeam.Id
-                                       && g.GameDate     == gameDate);
+                                       && g.GameDate     == gameDate
+                                       && g.GameNumber   == game.GameNumber);
             if (existing is null)
             {
                 db.Games.Add(new Game
@@ -201,6 +265,7 @@ public class ImportController(
                     HomeScore  = game.HomeRuns,
                     AwayScore  = game.AwayRuns,
                     GameDate   = gameDate,
+                    GameNumber = game.GameNumber,
                     Status     = GameStatus.Completed
                 });
                 gamesImported++;
@@ -222,7 +287,6 @@ public class ImportController(
             var lahmanId = await lahmanRepo.FindPlayerIdAsync(b.LastName, b.FirstInitial, b.CardYear, isPitcher: false);
             if (lahmanId is null) { unmatched++; continue; }
 
-            // Prefer existing card for this player+year (any position) to avoid duplicates
             var card = await cardRepo.GetByLahmanAndYearAsync(lahmanId, b.CardYear)
                     ?? await cardRepo.GetOrCreateAsync(lahmanId, b.CardYear, "OF");
 
@@ -260,7 +324,6 @@ public class ImportController(
             var lahmanId = await lahmanRepo.FindPlayerIdAsync(p.LastName, p.FirstInitial, p.CardYear, isPitcher: true);
             if (lahmanId is null) { unmatched++; continue; }
 
-            // Derive position from GS ratio: mostly-starter → SP, otherwise RP
             var pitcherPos = (p.G > 0 && p.GS * 2 >= p.G) ? "SP" : "RP";
             var card = await cardRepo.GetByLahmanAndYearAsync(lahmanId, p.CardYear)
                     ?? await cardRepo.GetOrCreateAsync(lahmanId, p.CardYear, pitcherPos);
@@ -299,7 +362,21 @@ public class ImportController(
         var allTeams = await teamRepo.GetBySeasonIdAsync(season.Id);
         await standingsService.RecalculateAsync(season.Id, completedGames, allTeams);
 
-        // Cleanup temp file
+        // ── Save import log ────────────────────────────────────────────────────
+        db.SomImportLogs.Add(new SomImportLog
+        {
+            Id               = Guid.NewGuid(),
+            SeasonId         = season.Id,
+            ExportDate       = parsed.ExportDate,
+            ImportedAt       = DateTime.UtcNow,
+            GamesImported    = gamesImported,
+            BattersImported  = battersImported,
+            PitchersImported = pitchersImported,
+            UnmatchedPlayers = unmatched
+        });
+        await db.SaveChangesAsync();
+
+        // Cleanup
         IOFile.Delete(tmpPath);
         TempData.Remove("SomTempKey");
 
