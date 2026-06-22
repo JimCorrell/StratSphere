@@ -106,6 +106,33 @@ tests/
 
 ---
 
+## Administrator Provisioning
+
+StratSphere does not create administrator accounts at application startup. Register
+the account normally so Identity applies the configured password policy, then promote
+it explicitly in PostgreSQL:
+
+```sql
+BEGIN;
+
+UPDATE "AspNetUsers"
+SET "IsAdmin" = TRUE
+WHERE "NormalizedEmail" = UPPER('admin@example.com');
+
+-- Confirm that exactly the intended account was promoted before committing.
+SELECT "Id", "Email", "IsAdmin"
+FROM "AspNetUsers"
+WHERE "NormalizedEmail" = UPPER('admin@example.com');
+
+COMMIT;
+```
+
+If the `UPDATE` affects anything other than one row, run `ROLLBACK` instead of
+`COMMIT` and verify the email address. Administrator passwords and personal details
+must never be stored in source-controlled configuration.
+
+---
+
 ## Database Overview
 ```
 public schema   App tables (leagues, teams, seasons, rosters, standings)

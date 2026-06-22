@@ -55,9 +55,6 @@ builder.Services.AddScoped<ILahmanRepository,      LahmanRepository>();
 // ── Email ─────────────────────────────────────────────────────────────────────
 builder.Services.AddTransient<IEmailSender<ApplicationUser>, LoggingEmailSender>();
 
-// ── Seed ──────────────────────────────────────────────────────────────────────
-builder.Services.AddScoped<DataSeeder>();
-
 // ── Services ──────────────────────────────────────────────────────────────────
 builder.Services.AddScoped<LeagueService>();
 builder.Services.AddScoped<StandingsService>();
@@ -87,11 +84,11 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Apply any pending EF Core migrations, then seed required data
+// Apply any pending EF Core migrations. Application startup must never create
+// privileged users or mutate existing application data beyond migrations.
 using (var scope = app.Services.CreateScope())
 {
     await scope.ServiceProvider.GetRequiredService<StratSphereDbContext>().Database.MigrateAsync();
-    await scope.ServiceProvider.GetRequiredService<DataSeeder>().SeedAsync();
 }
 
 if (!app.Environment.IsDevelopment())
