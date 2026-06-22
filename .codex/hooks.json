@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/jimcorrell/development/neho_software/StratSphere/.codex/hooks/pre-bash.sh'"
+          }
+        ]
+      }
+    ]
+  }
+}
